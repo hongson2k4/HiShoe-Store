@@ -23,14 +23,14 @@
             <hr class="sidebar-divider">
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#user"
+                    aria-expanded="true" aria-controls="user">
                     <i class="fas fa-fw fa-user"></i>
                     <span>Users</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="user" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        
+                        <a class="collapse-item" href="{{route('users.list')}}">List User</a>
                         <a class="collapse-item" href="cards.html">Cards</a>
                     </div>
                 </div>

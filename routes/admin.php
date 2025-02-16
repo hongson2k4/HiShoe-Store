@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\admin\UserController;
 use App\Models\Users;
 use Illuminate\Http\Request;
@@ -59,3 +60,14 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
     })
 ;
+
+Route::middleware(['admin'])->controller(BrandController::class)
+    ->prefix('admin/brands')
+    ->name('brands.')
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{brand}/edit', 'edit')->name('edit');
+        Route::put('/{brand}', 'update')->name('update');
+        Route::delete('/{brand}', 'destroy')->name('destroy');
+    });

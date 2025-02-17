@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\ProductsController;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -61,5 +62,18 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
         Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
         Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
+    })
+;
+
+Route::middleware(['admin'])->controller(ProductsController::class)
+    ->name('products.')
+    ->prefix('admin/products/')
+    ->group(function () {
+        Route::get('/', [ProductsController::class, 'index'])->name('list');
+        // Route::get('/create', [UserController::class, 'create'])->name('create');
+        // Route::post('store/', [UserController::class, 'store'])->name('store');
+        // Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
+        // Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
+        // Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
     })
 ;

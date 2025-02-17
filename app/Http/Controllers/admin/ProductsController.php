@@ -38,28 +38,30 @@ class ProductsController extends Products
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'username'=>'required',
-            'password'=> 'required',
-            'full_name' => 'required',
-            'email'=> 'required',
-            'avatar'=>'nullable|file|mimes:jpg,jpeg,png',
-            'phone_number'=>'required',
-            'address'=>'required',
+            'id'=>'required',
+            'name'=> 'required',
+            'description' => 'required',
+            'price'=> 'required',
+            'stock_quantity'=>'required',
+            // 'category_id'=>'required',
+            // 'brand_id'=>'required',
+            'image_url'=>'nullable|file|mimes:jpg,jpeg,png',
 
         ]);
-        if($request->hasFile('avatar')){
-            $part = $request->file('avatar')->store('uploads/users','public');
+        if($request->hasFile('image_url')){
+            $part = $request->file('image_url')->store('uploads/users','public');
         }else{
             $part = null;
         };
-        $user = Users::create([
-            'username'=>$validate['username'],
-            'password'=>$validate['password'],
-            'full_name'=>$validate['full_name'],
-            'email'=>$validate['email'],
-            'avatar'=>$part,
-            'phone_number'=>$validate['phone_number'],
-            'address'=>$validate['address'],
+        $user = Products::create([
+            'id'=>$validate['id'],
+            'name'=>$validate['name'],
+            'description'=>$validate['description'],
+            'price'=>$validate['price'],
+            'stock_quantity'=>$validate['stock_quantity'],
+            // 'category_id'=>$validate['category_id'],
+            // 'brand_id'=>$validate['brand_id'],
+            'image_url'=>$part,
             'role'=>0,
         ]);
         return redirect()->route('create_products.list');

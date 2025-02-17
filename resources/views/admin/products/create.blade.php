@@ -3,9 +3,9 @@
 <form action="{{route('products.store')}}" method="POST" enctype="multipart/form-data">
     @csrf
     <div class="mb-3">
-        <label class="form-label">Username</label>
-        <input class="form-control @error('username') is-invalid @enderror" type="text" name="username" value="{{old('username')}}">
-        @error('username')
+        <label class="form-label">ID</label>
+        <input class="form-control @error('username') is-invalid @enderror" type="text" name="username" value="{{old('id')}}">
+        @error('id')
         <div class="invalid-feedback">
             {{$message}}
         </div>
@@ -13,9 +13,9 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input class="form-control @error('password') is-invalid @enderror" type="text" name="password" value="{{old('password')}}">
-        @error('password')
+        <label class="form-label">Name</label>
+        <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{old('name')}}">
+        @error('name')
         <div class="invalid-feedback">
             {{$message}}
         </div>
@@ -23,9 +23,9 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Full name</label>
-        <input class="form-control @error('full_name') is-invalid @enderror" type="text" name="full_name" value="{{old('full_name')}}">
-        @error('full_name')
+        <label class="form-label">Description</label>
+        <input class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description')}}">
+        @error('description')
         <div class="invalid-feedback">
             {{$message}}
         </div>
@@ -33,9 +33,9 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input class="form-control @error('email') is-invalid @enderror" type="email" name="email" value="{{old('email')}}">
-        @error('email')
+        <label class="form-label">Price</label>
+        <input class="form-control @error('price') is-invalid @enderror" type="number" min=1 name="price" value="{{old('price')}}">
+        @error('price')
         <div class="invalid-feedback">
             {{$message}}
         </div>
@@ -43,33 +43,43 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Avatar</label>
-        <input class="form-control @error('avatar') is-invalid @enderror" type="file" name="avatar" id="imageUpload" value="{{old('avatar')}}">
+        <label class="form-label">Stock quantity</label>
+        <input class="form-control @error('stock_quantity') is-invalid @enderror" type="text" name="stock_quantity" value="{{old('stock_quantity')}}">
+        @error('stock_quantity')
+        <div class="invalid-feedback">
+            {{$message}}
+        </div>
+
+        @enderror
+    </div>
+    <!-- <div class="mb-3">
+        <label class="form-label">Category id</label>
+        <input class="form-control @error('category_id') is-invalid @enderror" type="text" name="category_id" value="{{old('category_id')}}">
+        @error('category_id')
+        <div class="invalid-feedback">
+            {{$message}}
+        </div>
+        @enderror
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Brand id</label>
+        <input class="form-control @error('brand_id') is-invalid @enderror" type="text" name="brand_id" value="{{old('brand_id')}}">
+        @error('brand_id')
+        <div class="invalid-feedback">
+            {{$message}}
+        </div>
+        @enderror
+
+    </div> -->
+    <div class="mb-3">
+        <label class="form-label">Image url</label>
+        <input class="form-control @error('image_url') is-invalid @enderror" type="file" name="image_url" id="imageUpload" value="{{old('image_url')}}">
         <div class="image-preview" id="imagePreview">
             <img src="" alt="" class="image-preview__image" height="100">
             <span class="image-preview__default-text"></span>
         </div>
-        @error('avatar')
-        <div class="invalid-feedback">
-            {{$message}}
-        </div>
-
-        @enderror
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Phone number</label>
-        <input class="form-control @error('phone_number') is-invalid @enderror" type="text" name="phone_number" value="{{old('phone_number')}}">
-        @error('phone_number')
-        <div class="invalid-feedback">
-            {{$message}}
-        </div>
-
-        @enderror
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Address</label>
-        <input class="form-control @error('address') is-invalid @enderror" type="text" name="address" value="{{old('address')}}">
-        @error('address')
+        @error('image_url')
         <div class="invalid-feedback">
             {{$message}}
         </div>

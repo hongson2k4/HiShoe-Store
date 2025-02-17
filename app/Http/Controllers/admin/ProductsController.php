@@ -21,49 +21,49 @@ class ProductsController extends Products
     {
         $products = Products::all();
         // dd($users);
-        return view("admin.products.list_products", compact("products"));
+        return view("admin.products.list", compact("products"));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    // public function create()
-    // {
-    //     return view("admin.users.create");
-    // }
+    public function create()
+    {
+        return view("admin.products.create");
+    }
 
     /**
      * Store a newly created resource in storage.
      */
-    // public function store(Request $request)
-    // {
-    //     $validate = $request->validate([
-    //         'username'=>'required',
-    //         'password'=> 'required',
-    //         'full_name' => 'required',
-    //         'email'=> 'required',
-    //         'avatar'=>'nullable|file|mimes:jpg,jpeg,png',
-    //         'phone_number'=>'required',
-    //         'address'=>'required',
+    public function store(Request $request)
+    {
+        $validate = $request->validate([
+            'username'=>'required',
+            'password'=> 'required',
+            'full_name' => 'required',
+            'email'=> 'required',
+            'avatar'=>'nullable|file|mimes:jpg,jpeg,png',
+            'phone_number'=>'required',
+            'address'=>'required',
 
-    //     ]);
-    //     if($request->hasFile('avatar')){
-    //         $part = $request->file('avatar')->store('uploads/users','public');
-    //     }else{
-    //         $part = null;
-    //     };
-    //     $user = Users::create([
-    //         'username'=>$validate['username'],
-    //         'password'=>$validate['password'],
-    //         'full_name'=>$validate['full_name'],
-    //         'email'=>$validate['email'],
-    //         'avatar'=>$part,
-    //         'phone_number'=>$validate['phone_number'],
-    //         'address'=>$validate['address'],
-    //         'role'=>0,
-    //     ]);
-    //     return redirect()->route('users.list');
-    // }
+        ]);
+        if($request->hasFile('avatar')){
+            $part = $request->file('avatar')->store('uploads/users','public');
+        }else{
+            $part = null;
+        };
+        $user = Users::create([
+            'username'=>$validate['username'],
+            'password'=>$validate['password'],
+            'full_name'=>$validate['full_name'],
+            'email'=>$validate['email'],
+            'avatar'=>$part,
+            'phone_number'=>$validate['phone_number'],
+            'address'=>$validate['address'],
+            'role'=>0,
+        ]);
+        return redirect()->route('create_products.list');
+    }
 
     /**
      * Display the specified resource.

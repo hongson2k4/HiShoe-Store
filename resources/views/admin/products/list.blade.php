@@ -3,9 +3,8 @@
     danh sách
 @endsection -->
 @section('content')
-    <!-- <a class="btn btn-secondary" href="{{route('users.create')}}">Thêm mới</a> -->
+    <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới sản phẩm</a>
     <table class="table">
-    <button class="btn btn-succes m-2" href="">Thêm mới sản phẩm</button>
         <thead>
             <tr>
                 <th>ID</th>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\BrandController;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,10 +17,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/', function () {
-    return view('client/home');
-})->name('home');
 
 Route::get('/admin/login', function () {
     return view('admin.login');
@@ -61,6 +58,17 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
         Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
         Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
-    })
-;
+    });
 
+Route::middleware(['admin'])->controller(BrandController::class)
+    ->name('brands.')
+    ->prefix('admin/brands/')
+    ->group(function(){
+        Route::get('/', [BrandController::class, 'index'])->name('list');
+        Route::get('create', [BrandController::class, 'create'])->name('create');
+        Route::post('create', [BrandController::class, 'store']);
+        Route::delete('delete/{id}', [BrandController::class, 'delete'])->name('delete');
+        Route::get('edit/{id}', [BrandController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [BrandController::class, 'update'])->name('update');
+
+    });

@@ -1,7 +1,5 @@
 @extends('admin.layout.main')
-<!-- @section('title')
-    danh sách
-@endsection -->
+
 @section('content')
 <div class="container mt-4">
     <h2 class="mb-3">Brand List</h2>
@@ -10,6 +8,26 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    {{-- Form tìm kiếm và lọc --}}
+    <form action="{{ route('brands.index') }}" method="GET" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Search by name" value="{{ request('search') }}">
+            </div>
+            <div class="col-md-4">
+                <select name="status" class="form-control">
+                    <option value="">-- Filter by Status --</option>
+                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Hidden</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    {{-- Form thêm brand --}}
     <form action="{{ route('brands.store') }}" method="POST" class="mb-4">
         @csrf
         <div class="row">
@@ -25,6 +43,7 @@
         </div>
     </form>
 
+    {{-- Bảng danh sách brand --}}
     <table class="table table-bordered">
         <thead class="table-dark">
             <tr>
@@ -42,15 +61,26 @@
                 <td>{{ $brand->description }}</td>
                 <td>
                     <a href="{{ route('brands.edit', $brand) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('brands.destroy', $brand) }}" method="POST" class="d-inline">
+                    <form action="{{ route('brands.toggle', $brand) }}" method="POST" class="d-inline">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                        @method('PUT')
+                        @if($brand->status)
+                        <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Are you sure you want to hide this brand?')">
+                            Deactive
+                        </button>
+                        @else
+                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to show this brand?')">
+                            Active
+                        </button>
+                        @endif
                     </form>
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
+    <div class="d-flex justify-content-end">
+        {{ $brands->links() }}
+    </div>
 </div>
 @endsection

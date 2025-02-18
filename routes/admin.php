@@ -66,8 +66,10 @@ Route::middleware(['admin'])->controller(BrandController::class)
     ->name('brands.')
     ->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
         Route::get('/{brand}/edit', 'edit')->name('edit');
         Route::put('/{brand}', 'update')->name('update');
-        Route::delete('/{brand}', 'destroy')->name('destroy');
+        Route::put('/{brand}/toggle', 'toggleStatus')->name('toggle');
     });
+

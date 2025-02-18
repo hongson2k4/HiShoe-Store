@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Brand>
  */
-class CategoryFactory extends Factory
+class BrandFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,7 @@ class CategoryFactory extends Factory
     {
         return [
             'name' => fake()->unique()->randomElement([
-                'Giày công sở','Giày thể thao','Giày chạy bộ','Giày bóng đá','Giày lười','Tất'
+                'Nike','Adidas','Puma','New Balance','Converse','Vans','Balenciaga'
             ]),
             'description' => fake()->sentence(10)
         ];

@@ -2,18 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
-use Database\Factories\CategoryFactory;
+use App\Models\Brand;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class CategorySeeder extends Seeder
+class BrandSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Category::Factory(6)->create();
+        Brand::Factory(7)->create();
     }
 }

@@ -142,8 +142,8 @@ class ProductsController extends Products
      */
     // public function destroy(string $id)
     // {
-    //     $user = Users::findOrFail($id)->delete();
-    //     return redirect()->route('users.list');
+    //      $products = Products::findOrFail($id)->delete();
+    //      return redirect()->route('products.list');
     // }
 
     // public function ban(string $id)

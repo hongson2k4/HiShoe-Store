@@ -3,6 +3,7 @@
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\ProductsController;
 use App\Models\Users;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -74,6 +75,6 @@ Route::middleware(['admin'])->controller(ProductsController::class)
         Route::post('store/', [ProductsController::class, 'store'])->name('store');
         // Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
         // Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
-        // Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
+        Route::delete('destroy/{id}', [ProductsController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
     })
 ;

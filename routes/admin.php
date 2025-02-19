@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -70,5 +71,18 @@ Route::middleware(['admin'])->controller(BrandController::class)
         Route::delete('delete/{id}', [BrandController::class, 'delete'])->name('delete');
         Route::get('edit/{id}', [BrandController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [BrandController::class, 'update'])->name('update');
+
+    });
+
+    Route::middleware(['admin'])->controller(CategoryController::class)
+    ->name('category.')
+    ->prefix('admin/category/')
+    ->group(function(){
+        Route::get('/', [CategoryController::class, 'index'])->name('list');
+        Route::get('create', [CategoryController::class, 'create'])->name('create');
+        Route::post('create', [CategoryController::class, 'store']);
+        Route::delete('delete/{id}', [CategoryController::class, 'delete'])->name('delete');
+        Route::get('edit/{id}', [CategoryController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [CategoryController::class, 'update'])->name('update');
 
     });

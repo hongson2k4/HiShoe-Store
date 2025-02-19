@@ -4,8 +4,21 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Products;
+use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+
+// class BrandController extends Brand
+// {
+//     public function create(){
+//         $brands = DB::table('brands')
+//         ->select('brands.*', 'id')
+//         ->orderByDesc('id')
+//         ->get();
+//     }
+// }
 
 class ProductsController extends Products
 {
@@ -29,7 +42,9 @@ class ProductsController extends Products
      */
     public function create()
     {
-        return view("admin.products.create");
+        $brands = DB::table('brands')->get();
+        $categories = DB::table('categories')->get();
+        return view("admin.products.create", compact('categories','brands'));
     }
 
     /**
@@ -43,8 +58,8 @@ class ProductsController extends Products
             'description' => 'required',
             'price'=> 'required',
             'stock_quantity'=>'required',
-            // 'category_id'=>'required',
-            // 'brand_id'=>'required',
+            'category_id'=>'required',
+            'brand_id'=>'required',
             'image_url'=>'nullable|file|mimes:jpg,jpeg,png',
 
         ]);
@@ -59,8 +74,8 @@ class ProductsController extends Products
             'description'=>$validate['description'],
             'price'=>$validate['price'],
             'stock_quantity'=>$validate['stock_quantity'],
-            // 'category_id'=>$validate['category_id'],
-            // 'brand_id'=>$validate['brand_id'],
+            'category_id'=>$validate['category_id'],
+            'brand_id'=>$validate['brand_id'],
             'image_url'=>$part,
             'role'=>0,
         ]);

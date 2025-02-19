@@ -52,26 +52,36 @@
 
         @enderror
     </div>
-    <!-- <div class="mb-3">
-        <label class="form-label">Category id</label>
-        <input class="form-control @error('category_id') is-invalid @enderror" type="text" name="category_id" value="{{old('category_id')}}">
+    <div class="mb-3">
+        <label class="form-label" class="form-control @error('category_id') is-invalid @enderror" type="text" name="category_id" value="{{old('category_id')}}">Category id</label>
         @error('category_id')
         <div class="invalid-feedback">
             {{$message}}
         </div>
         @enderror
-
+            <select name="category_id" id="" class="form-control">
+                @foreach ($categories as $cate)
+                    <option value="{{$cate->id}}">
+                        {{$cate->name}}
+                    </option>
+                @endforeach
+            </select>
     </div>
     <div class="mb-3">
-        <label class="form-label">Brand id</label>
-        <input class="form-control @error('brand_id') is-invalid @enderror" type="text" name="brand_id" value="{{old('brand_id')}}">
+        <label class="form-label" class="form-control @error('brand_id') is-invalid @enderror" type="text" name="brand_id" value="{{old('brand_id')}}">Brand id</label>
         @error('brand_id')
         <div class="invalid-feedback">
             {{$message}}
         </div>
         @enderror
-
-    </div> -->
+            <select name="brand_id" id="" class="form-control">
+                @foreach ($brands as $br)
+                    <option value="{{$br->id}}">
+                        {{$br->name}}
+                    </option>
+                @endforeach
+            </select>
+    </div>
     <div class="mb-3">
         <label class="form-label">Image url</label>
         <input class="form-control @error('image_url') is-invalid @enderror" type="file" name="image_url" id="imageUpload" value="{{old('image_url')}}">

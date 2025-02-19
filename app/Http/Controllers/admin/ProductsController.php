@@ -64,11 +64,11 @@ class ProductsController extends Products
 
         ]);
         if($request->hasFile('image_url')){
-            $part = $request->file('image_url')->store('uploads/users','public');
+            $part = $request->file('image_url')->store('uploads/image_url','public');
         }else{
             $part = null;
         };
-        $user = Products::create([
+        $products = Products::create([
             'id'=>$validate['id'],
             'name'=>$validate['name'],
             'description'=>$validate['description'],
@@ -79,7 +79,7 @@ class ProductsController extends Products
             'image_url'=>$part,
             'role'=>0,
         ]);
-        return redirect()->route('create_products.list');
+        return redirect()->route('products.list');
     }
 
     /**

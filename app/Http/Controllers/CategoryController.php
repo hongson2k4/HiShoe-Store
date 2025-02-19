@@ -2,19 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Request\ValidateCt;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index(){
-        $category = Category::latest('id')->paginate(7);
+    public function index(Request $request){
+        $query = Category::query();
+        if($request->has('search')){
+            $search = $request->input('search');
+            $query->where('name','like',"%{$search}%");
+        }
+        $category = $query->latest('id')->paginate(7);
         return view('admin.categories.index',compact('category'));
     }
     public function create(){
         return view('admin.categories.create');
     }
-    public function store(Request $request){
+    public function store(ValidateCt $request){
         $data= $request->all();
         Category::query()->create($data);
         return redirect()->route('category.list');

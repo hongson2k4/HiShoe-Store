@@ -1,8 +1,13 @@
 @extends('admin.layout.main')
 @section('title',"nhãn hàng")
 @section('content')
-    <h1>Nhãn Hàng</h1>
+    <h1>Brand</h1>
     <div class="container mt-4">
+        <form action="{{ route('brands.list') }}" method="get" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Nhập Tên Danh Mục..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-danger"><i class="fa fa-search"></i></button>
+        </form>
+
         <a href="{{route('brands.create')}}" class="btn btn-outline-primary">Thêm mới</a>
         <h2 class="mb-4">Brand List</h2>
         <table class="table table-bordered">

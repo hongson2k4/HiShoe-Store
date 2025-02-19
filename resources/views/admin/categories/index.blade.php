@@ -3,8 +3,18 @@
 @section('content')
     <h1>Nhãn Hàng</h1>
     <div class="container mt-4">
-        <a href="{{route('brands.create')}}" class="btn btn-outline-primary">Thêm mới</a>
+
+
+        <form action="{{ route('category.list') }}" method="get" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Nhập Tên Danh Mục..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-danger"><i class="fa fa-search"></i></button>
+        </form>
+
+
+
+
         <h2 class="mb-4">Brand List</h2>
+        <a href="{{route('brands.create')}}" class="btn btn-outline-primary">Thêm mới</a>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -32,6 +42,7 @@
                 @endforeach
 
             </tbody>
+            {{-- {{$cate->links()}} --}}
         </table>
     </div>
 @endsection

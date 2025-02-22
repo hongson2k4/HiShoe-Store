@@ -3,6 +3,7 @@
 use App\Http\Controllers\admin\UserController;
 use App\Models\Users;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
@@ -22,15 +23,14 @@ Route::get('/admin/login', function () {
 })->name('admin.login');
 
 Route::post('/admin/login', function (Request $request) {
-    $user = Users::where('username', $request->input('username'))->first();
+    // $user = Users::where('username', $request->input('username'))->first();
 
-    if ($user && Hash::check($request->input('password'), $user->password)) {
-        session(['user' => $user]);
-
-        if ($user->role == 1) {
+    if (Auth::attempt(['username'=>$request->input('username'), 'password'=>$request->input('password')]) ){
+        if (Auth::user()) {
+           
             return redirect()->route('admin.dashboard');
         }
-        session()->flash('error', 'Bạn không có quyền admin!');
+        session()->flash('error', 'Bạn không thể truy cập vào khu vực này!');
         return redirect('/admin/login');
     }
 
@@ -39,7 +39,7 @@ Route::post('/admin/login', function (Request $request) {
 });
 
 Route::get('/admin/logout', function () {
-    session()->forget('user');
+    Auth::logout();
     return redirect()->route('home');
 })->name('admin.logout');
 
@@ -57,5 +57,4 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
         Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
         Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
-    })
-;
+    });

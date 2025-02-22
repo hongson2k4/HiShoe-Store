@@ -1,17 +1,8 @@
 @extends('admin.layout.main')
 @section('content')
-<form action="{{route('products.store')}}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    <div class="mb-3">
-        <label class="form-label">ID</label>
-        <input class="form-control @error('username') is-invalid @enderror" type="text" name="username" value="{{old('id')}}">
-        @error('id')
-        <div class="invalid-feedback">
-            {{$message}}
-        </div>
 
-        @enderror
-    </div>
     <div class="mb-3">
         <label class="form-label">Name</label>
         <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{old('name')}}">
@@ -44,7 +35,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Stock quantity</label>
-        <input class="form-control @error('stock_quantity') is-invalid @enderror" type="text" name="stock_quantity" value="{{old('stock_quantity')}}">
+        <input class="form-control @error('stock_quantity') is-invalid @enderror" type="number" name="stock_quantity" value="{{old('stock_quantity')}}">
         @error('stock_quantity')
         <div class="invalid-feedback">
             {{$message}}

@@ -53,7 +53,6 @@ class ProductsController extends Products
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'id'=>'required',
             'name'=> 'required',
             'description' => 'required',
             'price'=> 'required',
@@ -68,8 +67,7 @@ class ProductsController extends Products
         }else{
             $part = null;
         };
-        $products = Products::create([
-            'id'=>$validate['id'],
+        $product = Products::create([
             'name'=>$validate['name'],
             'description'=>$validate['description'],
             'price'=>$validate['price'],
@@ -77,7 +75,6 @@ class ProductsController extends Products
             'category_id'=>$validate['category_id'],
             'brand_id'=>$validate['brand_id'],
             'image_url'=>$part,
-            'role'=>0,
         ]);
         return redirect()->route('products.list');
     }

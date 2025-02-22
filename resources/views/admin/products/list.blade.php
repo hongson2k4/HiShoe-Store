@@ -28,7 +28,7 @@
                 <td>{{$u->stock_quantity}}</td>
                 <td>{{$u->category_id}}</td>
                 <td>{{$u->brand_id}}</td>
-                <td>{{$u->image_url}}</td>
+                <td><img src="{{ Storage::url($u->image_url) }}" height="100" alt=""></td>
                 <td>
                 <a class="btn btn-warning m-2" href="{{route('users.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
                     <form action="{{route('users.destroy',[$u->id])}}" method="post">

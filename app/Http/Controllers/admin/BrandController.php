@@ -8,6 +8,22 @@ use App\Http\Controllers\Controller;
 
 class BrandController extends Controller
 {
+    public function index()
+    {
+        $brands = Brand::all();
+        return view('admin.brands.list', compact('brands'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        Brand::create($request->all());
+        return redirect()->route('brands.index')->with('success', 'Brand added successfully!');
+    }
     // Hiển thị danh sách brand + tìm kiếm + lọc
     public function index(Request $request)
     {
@@ -31,13 +47,27 @@ class BrandController extends Controller
         return redirect()->route('brands.index')->with('success', 'Brand added successfully!');
     }
 
-    // Chỉnh sửa brand
     public function edit(Brand $brand)
     {
         return view('admin.brands.edit', compact('brand'));
     }
 
-    // Cập nhật brand
+    public function update(Request $request, Brand $brand)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $brand->update($request->all());
+        return redirect()->route('brands.index')->with('success', 'Brand updated successfully!');
+    }
+
+    public function destroy(Brand $brand)
+    {
+        $brand->delete();
+        return redirect()->route('brands.index')->with('success', 'Brand deleted successfully!');
+
     public function update(Request $request, Brand $brand)
     {
         $brand->update($request->only(['name', 'description']));

@@ -36,13 +36,6 @@
                 </div>
             </li>
 
-            <!-- Nav Item - Brands -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('brands.index')}}">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Brands</span></a>
-            </li>
-
             <!-- Heading -->
             <div class="sidebar-heading">
                 Interface

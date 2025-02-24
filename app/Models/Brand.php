@@ -13,3 +13,5 @@ class Brand extends Model
         'description'
     ];
 }
+    protected $fillable = ['name', 'description', 'status'];
+}

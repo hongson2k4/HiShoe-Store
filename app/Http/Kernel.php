@@ -24,7 +24,6 @@ class Kernel extends HttpKernel
     ];
     protected $routeMiddleware = [
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
-        'client' => \App\Http\Middleware\ClientMiddleware::class,
     ];
     /**
      * The application's route middleware groups.

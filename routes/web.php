@@ -34,41 +34,6 @@ Route::controller(AuthController::class)
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::get('/admin/logout', function () {
-    session()->forget('user');
-    return redirect()->route('home');
-})->name('admin.logout');
-
-Route::middleware(['admin'])->get('/admin/dashboard', function () {
-    return view('admin/dashboard');
-})->name('admin.dashboard');
-
-Route::middleware(['admin'])->controller(UserController::class)
-    ->name('users.')
-    ->prefix('admin/users/')
-    ->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('list');
-        Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::post('store/', [UserController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-        Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
-        Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
-    })
-;
-
-Route::middleware(['admin'])->controller(ProductsController::class)
-    ->name('products.')
-    ->prefix('admin/products/')
-    ->group(function () {
-        Route::get('/', [ProductsController::class, 'index'])->name('list');
-        Route::get('/create', [ProductsController::class, 'create'])->name('create');
-        Route::post('/store', [ProductsController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [ProductsController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-        Route::put('/update/{id}', [ProductsController::class, 'updateProduct'])->where('id', '[0-9]+')->name('update');
-        Route::delete('destroy/{id}', [ProductsController::class, 'destroyProduct'])->where('id', '[0-9]+')->name('destroy');
-    })
-;
-
 Route::controller(AuthController::class)
 ->name('password.')
 ->prefix('password/')

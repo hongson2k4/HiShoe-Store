@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -17,9 +18,37 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = Users::all();
+        $search = $request->query('search');
+        $users = Users::query()
+            ->when($search, function ($query) use ($search) {
+                return $query->where('username', 'like', "%{$search}%")
+                             ->orWhere('full_name', 'like', "%{$search}%")
+                             ->orWhere('email', 'like', "%{$search}%")
+                             ->orWhere('phone_number', 'like', "%{$search}%");
+            })
+            ->get();
+
+        $provinces = json_decode(File::get(public_path('hanhchinhvn/tinh_tp.json')), true);
+        $districts = json_decode(File::get(public_path('hanhchinhvn/quan_huyen.json')), true);
+        $wards = json_decode(File::get(public_path('hanhchinhvn/xa_phuong.json')), true);
+
+        foreach ($users as $user) {
+            $addressParts = explode(', ', $user->address);
+            
+            if (count($addressParts) !== 3) {
+                continue;
+            }
+        
+            list($wardCode, $districtCode, $provinceCode) = $addressParts;
+        
+            $wardName = $wards[$wardCode]['name_with_type'] ?? 'N/A';
+            $districtName = $districts[$districtCode]['name_with_type'] ?? 'N/A';
+            $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'N/A';
+        
+            $user->address = "$wardName, $districtName, $provinceName";
+        }
         // dd($users);
         return view("admin.users.list", compact("users"));
     }

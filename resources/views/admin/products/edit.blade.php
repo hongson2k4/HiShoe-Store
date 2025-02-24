@@ -1,12 +1,12 @@
 @extends('admin.layout.main')
 @section('content')
-<form action="{{ route('product.update',$product->id ) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('products.update',$product->id ) }}" method="POST" enctype="multipart/form-data">
     @method('PUT')
     @csrf
 
     <div class="mb-3">
         <label class="form-label">Name</label>
-        <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{old('name', $products['name'])}}">
+        <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{old('name', $product['name'])}}">
         @error('name')
         <div class="invalid-feedback">
             {{$message}}
@@ -16,7 +16,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Description</label>
-        <input class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description', $products['description'])}}">
+        <input class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description', $product['description'])}}">
         @error('description')
         <div class="invalid-feedback">
             {{$message}}
@@ -26,7 +26,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Price</label>
-        <input class="form-control @error('price') is-invalid @enderror" type="number" min=1 name="price" value="{{old('price', $products['price'])}}">
+        <input class="form-control @error('price') is-invalid @enderror" type="number" min=1 name="price" value="{{old('price', $product['price'])}}">
         @error('price')
         <div class="invalid-feedback">
             {{$message}}
@@ -36,7 +36,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Stock quantity</label>
-        <input class="form-control @error('stock_quantity') is-invalid @enderror" type="number" name="stock_quantity" value="{{old('stock_quantity', $products['stock_quantity'])}}">
+        <input class="form-control @error('stock_quantity') is-invalid @enderror" type="number" name="stock_quantity" value="{{old('stock_quantity', $product['stock_quantity'])}}">
         @error('stock_quantity')
         <div class="invalid-feedback">
             {{$message}}
@@ -45,7 +45,7 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label" class="form-control @error('category_id') is-invalid @enderror" type="text" name="category_id" value="{{old('category_id', $products['category_id'])}}">Category id</label>
+        <label class="form-label" class="form-control @error('category_id') is-invalid @enderror" type="text" name="category_id" value="{{old('category_id', $product['category_id'])}}">Category id</label>
         @error('category_id')
         <div class="invalid-feedback">
             {{$message}}
@@ -60,7 +60,7 @@
             </select>
     </div>
     <div class="mb-3">
-        <label class="form-label" class="form-control @error('brand_id') is-invalid @enderror" type="text" name="brand_id" value="{{old('brand_id', $products['brand_id'])}}">Brand id</label>
+        <label class="form-label" class="form-control @error('brand_id') is-invalid @enderror" type="text" name="brand_id" value="{{old('brand_id', $product['brand_id'])}}">Brand id</label>
         @error('brand_id')
         <div class="invalid-feedback">
             {{$message}}
@@ -76,9 +76,9 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Image url</label>
-        <input class="form-control @error('image_url') is-invalid @enderror" type="file" name="image_url" id="imageUpload" value="{{old('image_url', $products['image_url'])}}">
+        <input class="form-control @error('image_url') is-invalid @enderror" type="file" name="image_url" id="imageUpload" value="{{old('image_url', $product['image_url'])}}">
         <div class="image-preview" id="imagePreview">
-            <img src="" alt="" class="image-preview__image" height="100">
+            <img src="{{Storage::url($product->image_url)}}" alt="" class="image-preview__image" height="100">
             <span class="image-preview__default-text"></span>
         </div>
         @error('image_url')

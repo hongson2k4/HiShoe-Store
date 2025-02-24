@@ -74,7 +74,7 @@ Route::middleware(['admin'])->controller(ProductsController::class)
         Route::get('/create', [ProductsController::class, 'create'])->name('create');
         Route::post('/store', [ProductsController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [ProductsController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-        Route::put('/update/{id}', [ProductsController::class, 'update'])->where('id', '[0-9]+')->name('update');
-        Route::delete('destroy/{id}', [ProductsController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
+        Route::put('/update/{id}', [ProductsController::class, 'updateProduct'])->where('id', '[0-9]+')->name('update');
+        Route::delete('destroy/{id}', [ProductsController::class, 'destroyProduct'])->where('id', '[0-9]+')->name('destroy');
     })
 ;

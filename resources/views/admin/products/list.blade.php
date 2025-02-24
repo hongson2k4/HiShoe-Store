@@ -28,10 +28,10 @@
                 <td>{{$u->stock_quantity}}</td>
                 <td>{{$u->category_id}}</td>
                 <td>{{$u->brand_id}}</td>
-                <td>{{$u->image_url}}</td>
+                <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
                 <td>
                 <a class="btn btn-warning m-2" href="{{route('products.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
-                    <form action="{{route('products.destroy',[$u->id])}}" method="post">
+                    <form action="{{route('products.destroy',$u->id)}}" method="post">
                         @method('DELETE')
                         @csrf
                         <button class="btn btn-danger m-2" onclick="return confirm('Xác nhận xóa ?')"> <i class="fas fa-trash"></i></button>

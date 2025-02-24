@@ -83,15 +83,17 @@ class ProductsController extends Products
      */
     public function edit(string $id)
     {
+        $brands = DB::table('brands')->get();
+        $categories = DB::table('categories')->get();
         $product = Products::find($id);
         // dd($product);
-        return view('admin.products.edit', compact('product'));
+        return view('admin.products.edit', compact('product','categories','brands'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateProduct(Request $request, string $id)
     {
         $validate = $request->validate([
             'name'=> 'required',
@@ -103,15 +105,17 @@ class ProductsController extends Products
             'image_url'=>'nullable|file|mimes:jpg,jpeg,png',
         ]);
         $product = Products::find($id);
-        if($request->hasFile('avatar')){
-            if($product->avatar){
-                Storage::disk('public')->delete($product->avatar);
+    
+        if($request->hasFile('image_url')){
+            if($product->image_url){
+                Storage::disk('public')->delete($product->image_url);
             }
-            $part = $request->file('avatar')->store('uploads/products','public');
+            $part = $request->file('image_url')->store('uploads/image_url','public');
         }else{
-            $part = $product->avatar;
+            $part = $product->image_url;
         }
-        $product = Products::create([
+        
+        $product->update([
             'name'=>$validate['name'],
             'description'=>$validate['description'],
             'price'=>$validate['price'],
@@ -126,14 +130,10 @@ class ProductsController extends Products
     /**
      * Remove the specified resource from storage.
      */
-    // public function destroy($id)
-    // {
-    //      $products = Products::findOrFail($id)->delete();
-    //      return redirect()->route('products.list');
-    // }
+    public function destroyProduct($id)
+    {
+        Products::findOrFail($id)->delete();
+        return redirect()->route('products.list');
+    }
 
-    // public function ban(string $id)
-    // {
-
-    // }
 }

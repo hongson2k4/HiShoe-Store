@@ -21,17 +21,17 @@
         <tbody>
             @foreach ($products as $key=>$u)
             <tr>
-                <td>{{$u->id}}</td>
+                <td>{{$key + 1}}</td>
                 <td>{{$u->name}}</td>
                 <td>{{$u->description}}</td>
                 <td>{{$u->price}}</td>
                 <td>{{$u->stock_quantity}}</td>
                 <td>{{$u->category_id}}</td>
                 <td>{{$u->brand_id}}</td>
-                <td><img src="{{ Storage::url($u->image_url) }}" height="100" alt=""></td>
+                <td>{{$u->image_url}}</td>
                 <td>
-                <a class="btn btn-warning m-2" href="{{route('users.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
-                    <form action="{{route('users.destroy',[$u->id])}}" method="post">
+                <a class="btn btn-warning m-2" href="{{route('products.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
+                    <form action="{{route('products.destroy',[$u->id])}}" method="post">
                         @method('DELETE')
                         @csrf
                         <button class="btn btn-danger m-2" onclick="return confirm('Xác nhận xóa ?')"> <i class="fas fa-trash"></i></button>

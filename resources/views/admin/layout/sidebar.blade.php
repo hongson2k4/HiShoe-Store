@@ -35,32 +35,7 @@
                     </div>
                 </div>
             </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#brands"
-                    aria-expanded="true" aria-controls="brands">
-                    <i class="fas fa-solid fa-b"></i>
-                    <span>Brand</span>
-                </a>
-                <div id="brands" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{route('brands.list')}}">List Brand</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
-                    </div>
-                </div>
-            </li>
 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#category"
-                    aria-expanded="true" aria-controls="category">
-                    <i class="fas fa-solid fa-b"></i>
-                    <span>Category</span>
-                </a>
-                <div id="category" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{route('category.list')}}">List Category</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
-                    </div>
-                </div>
             <!-- Nav Item - Brands -->
             <li class="nav-item">
                 <a class="nav-link" href="{{route('brands.index')}}">

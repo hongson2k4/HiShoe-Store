@@ -13,11 +13,11 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav  ">
             <li class="nav-item active">
-              <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="{{ route('home') }}">Trang chủ <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="shop.html">
-                Shop
+                Mua sắm
               </a>
             </li>
             <li class="nav-item">
@@ -36,22 +36,27 @@
           </ul>
           <div class="user_option">
 
-          @if (Auth::user())
-          <a href="{{ route('logout') }}">
-              <i class="fa fa-user" aria-hidden="true"></i>
-              <span>
-                {{ Auth::user()->username }}
-              </span>
-            </a>
+            @if (Auth::user())
+            <div class="dropdown">
+              <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span>
+                  {{ Auth::user()->username }}
+                </span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="{{ route('home') }}">Profile</a>
+                <a class="dropdown-item" href="{{ route('logout') }}">Logout</a>
+              </div>
+            </div>
           @else
-          <a href="{{ route('login') }}">
+          <a href="{{ route('loginForm') }}">
               <i class="fa fa-user" aria-hidden="true"></i>
               <span>
                 Login
               </span>
             </a>
           @endif
-
 
             <a href="">
               <i class="fa fa-shopping-bag" aria-hidden="true"></i>

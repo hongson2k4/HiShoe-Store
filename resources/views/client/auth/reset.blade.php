@@ -1,3 +1,9 @@
+@extends('client.layout.main')
+@section('title')
+HiShoe-Store - Đặt lại mật khẩu
+@endsection
+@section('content')
+
 <form action="{{ route('password.update') }}" method="POST">
     @csrf
     <input type="hidden" name="token" value="{{ $token }}">
@@ -37,3 +43,5 @@
         {{ session('status') }}
     </div>
 @endif
+
+@endsection

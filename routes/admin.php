@@ -1,11 +1,8 @@
 <?php
 
-use App\Http\Controllers\admin\UserController;
-use App\Models\Users;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,30 +15,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/admin/login', function () {
-    return view('admin.login');
-})->name('admin.login');
-
-Route::post('/admin/login', function (Request $request) {
-    // $user = Users::where('username', $request->input('username'))->first();
-
-    if (Auth::attempt(['username'=>$request->input('username'), 'password'=>$request->input('password')]) ){
-        if (Auth::user()) {
-           
-            return redirect()->route('admin.dashboard');
-        }
-        session()->flash('error', 'Bạn không thể truy cập vào khu vực này!');
-        return redirect('/admin/login');
-    }
-
-    session()->flash('error', 'Sai thông tin đăng nhập!');
-    return redirect()->route('admin.login');
+Route::controller(AuthController::class)
+->name('admin.')
+->prefix('admin/')
+->group(function () {
+    Route::get('/login-form', [AuthController::class, 'loginForm'])->name('loginForm');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
-
-Route::get('/admin/logout', function () {
-    Auth::logout();
-    return redirect()->route('home');
-})->name('admin.logout');
 
 Route::middleware(['admin'])->get('/admin/dashboard', function () {
     return view('admin/dashboard');
@@ -52,9 +33,7 @@ Route::middleware(['admin'])->controller(UserController::class)
     ->prefix('admin/users/')
     ->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('list');
-        Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::post('store/', [UserController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-        Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
-        Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
+        Route::get('/edit/{id}', [UserController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [UserController::class, 'update'])->name('update');
+        Route::get('/ban/{id}', [UserController::class, 'ban'])->name('ban');
     });

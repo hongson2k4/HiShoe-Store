@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Users;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -15,25 +15,38 @@ class UserController extends Controller
     public function __construct(){
         $this->view = [];
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $users = Users::query()
+        $status = $request->query('status');
+        $role = $request->query('role');
+        $address = $request->query('address');
+    
+        $users = User::query()
             ->when($search, function ($query) use ($search) {
-                return $query->where('username', 'like', "%{$search}%")
-                             ->orWhere('full_name', 'like', "%{$search}%")
-                             ->orWhere('email', 'like', "%{$search}%")
-                             ->orWhere('phone_number', 'like', "%{$search}%");
+                return $query->where(function ($query) use ($search) {
+                    $query->where('username', 'like', "%{$search}%")
+                          ->orWhere('full_name', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%")
+                          ->orWhere('phone_number', 'like', "%{$search}%");
+                });
+            })
+            ->when($status !== null, function ($query) use ($status) {
+                return $query->where('status', $status);
+            })
+            ->when($role !== null, function ($query) use ($role) {
+                return $query->where('role', $role);
+            })
+            ->when($address, function ($query) use ($address) {
+                return $query->where('address', 'like', "%{$address}%");
             })
             ->get();
-
+    
         $provinces = json_decode(File::get(public_path('hanhchinhvn/tinh_tp.json')), true);
         $districts = json_decode(File::get(public_path('hanhchinhvn/quan_huyen.json')), true);
         $wards = json_decode(File::get(public_path('hanhchinhvn/xa_phuong.json')), true);
-
+    
         foreach ($users as $user) {
             $addressParts = explode(', ', $user->address);
             
@@ -49,72 +62,24 @@ class UserController extends Controller
         
             $user->address = "$wardName, $districtName, $provinceName";
         }
-        // dd($users);
-        return view("admin.users.list", compact("users"));
+    
+        $addresses = $users->pluck('address')->unique();
+    
+        return view("admin.users.list", compact("users", "addresses"));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view("admin.users.create");
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validate = $request->validate([
-            'username'=>'required',
-            'password'=> 'required',
-            'full_name' => 'required',
-            'email'=> 'required',
-            'avatar'=>'nullable|file|mimes:jpg,jpeg,png',
-            'phone_number'=>'required',
-            'address'=>'required',
-
-        ]);
-        if($request->hasFile('avatar')){
-            $part = $request->file('avatar')->store('uploads/users','public');
-        }else{
-            $part = null;
-        };
-        $user = Users::create([
-            'username'=>$validate['username'],
-            'password'=>$validate['password'],
-            'full_name'=>$validate['full_name'],
-            'email'=>$validate['email'],
-            'avatar'=>$part,
-            'phone_number'=>$validate['phone_number'],
-            'address'=>$validate['address'],
-            'role'=>0,
-        ]);
-        return redirect()->route('users.list');
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $user = Users::find($id);
+        $user = User::find($id);
         // dd($user);
         return view('admin.users.edit', compact('user'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $validate = $request->validate([
@@ -127,7 +92,7 @@ class UserController extends Controller
             'address'=>'required',
 
         ]);
-        $user = Users::find($id);
+        $user = User::find($id);
         if($request->hasFile('avatar')){
             if($user->avatar){
                 Storage::disk('public')->delete($user->avatar);
@@ -136,7 +101,7 @@ class UserController extends Controller
         }else{
             $part = $user->avatar;
         }
-        $user = Users::create([
+        $user = User::create([
             'username'=>$validate['username'],
             'password'=>$validate['password'],
             'full_name'=>$validate['full_name'],
@@ -149,17 +114,12 @@ class UserController extends Controller
         return redirect()->route('users.list');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $user = Users::findOrFail($id)->delete();
-        return redirect()->route('users.list');
-    }
-
     public function ban(string $id)
     {
-
+        $user = User::findOrFail($id); // Tìm user theo ID
+        $user->status = $user->status == 0 ? 1 : 0; // Đảo trạng thái
+        $user->save(); // Lưu vào database
+    
+        return redirect()->back()->with('success', 'Trạng thái đã được cập nhật!');
     }
 }

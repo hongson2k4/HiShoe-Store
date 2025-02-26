@@ -5,6 +5,11 @@ HiShoe-Store - Trang chủ
 @section('content')
 
 <div class="container">
+    @if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
     <div class="heading_container heading_center">
         <h2>
             Latest Products

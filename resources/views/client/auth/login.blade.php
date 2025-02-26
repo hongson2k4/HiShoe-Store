@@ -15,26 +15,27 @@ HiShoe-Store - Đăng nhập
             <div id="login-column" class="col-md-6">
                 <div id="login-box" class="col-md-12">
 
-                    <form class="form" action="{{ route('loginForm') }}" method="post">
-                        <h3 class="text-center text-info">Login</h3>
+                    <form class="form" action="{{ route('login') }}" method="post">
+                        <h3 class="text-center text-info">Đăng nhập</h3>
                         @if(session()->has('error'))
                         <p style="color: red;">{{ session('error') }}</p>
                         @endif
                         @csrf
                         <div class="form-group">
-                            <label for="username" class="text-info">Username:</label><br>
+                            <label for="username" class="text-info">Tên người dùng:</label><br>
                             <input type="text" name="username" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="password" class="text-info">Password:</label><br>
+                            <label for="password" class="text-info">Mật khẩu:</label><br>
                             <input type="text" name="password" class="form-control">
                         </div>
                         <div class="form-group">
                             <!-- <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br> -->
-                            <input type="submit" name="submit" class="btn btn-info btn-md" value="submit">
+                            <input type="submit" name="submit" class="btn btn-info btn-md" value="Đăng nhập">
+                            <a href="{{ route('password.request') }}" class="text-info">Quên mật khẩu ?</a>
                         </div>
                         <div id="register-link" class="text-right">
-                            <a href="{{ route('register')}}" class="text-info">Register here</a>
+                            Chưa có tài khoản! <a href="{{ route('registerForm')}}" class="text-info">Đăng ký</a> ngay!
                         </div>
                     </form>
                 </div>

@@ -24,8 +24,29 @@ class ProductsController extends Products
     public function index()
     {
         $products = Products::all();
+        // $products = DB::table('products')
+        // ->join('categories', 'category_id', '=', 'categories.name')
+        // ->select('products.*', 'category_id')
+        // ->orderByDesc('category_id')
+        // ->get();
         // dd($users);
         return view("admin.products.list", compact("products"));
+    }
+
+    //Controller search
+    public function search(Request $request)
+    {
+        $search = $request->search;
+        $products = Products::where(function($query) use ($search){
+            $query->where('name','like',"%$search%")
+            ->orWhere('description','like',"%$search%")
+            ->orWhere('price','like',"%$search%");
+        })
+        ->orWhereHas('brands',function($query) use ($search){
+            $query->where('brand_id','like',"%$search%");
+        })
+        ->get();
+        return view("admin.products.list", compact("products","search"));
     }
 
     /**

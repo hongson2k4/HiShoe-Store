@@ -4,18 +4,23 @@
 @endsection -->
 @section('content')
     <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới sản phẩm</a>
+    <form action="search" method="GET" class="form-inline mb-3 float-right">
+        <input type="text" name="search" class="form-control mr-2" placeholder="Search products" value="{{ request()->query('search') }}">
+        <button type="submit" class="btn btn-success">Search</button>
+    </form>
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Stock_quantity</th>
-                <th>Category_id</th>
-                <th>Brand_id</th>
-                <th>Image_url</th>
-                <th>Action</th>
+                <th>STT</th>
+                <th>Tên Giày</th>
+                <th>Ghi chú</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Loại giày</th>
+                <th>Thương hiệu</th>
+                <th>Hình ảnh</th>
+                <th>Trang thái</th>
+                <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +34,7 @@
                 <td>{{$u->category_id}}</td>
                 <td>{{$u->brand_id}}</td>
                 <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
+                <td></td>
                 <td>
                 <a class="btn btn-warning m-2" href="{{route('products.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
                     <form action="{{route('products.destroy',$u->id)}}" method="post">

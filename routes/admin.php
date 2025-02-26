@@ -2,10 +2,8 @@
 
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\admin\UserController;
-use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 /*

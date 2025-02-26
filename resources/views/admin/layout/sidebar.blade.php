@@ -18,6 +18,7 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
+            
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -35,12 +36,19 @@
                     </div>
                 </div>
             </li>
-
-            <!-- Nav Item - Brands -->
             <li class="nav-item">
-                <a class="nav-link" href="{{route('brands.index')}}">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Brands</span></a>
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#attribute"
+                aria-expanded="true" aria-controls="attribute">
+                <i class="fa-brands fa-creative-commons-by"></i>
+                    <span>Thuộc Tính</span>
+                </a>
+                <div id="attribute" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{route('sizes.index')}}"> Size</a>
+                        <a class="collapse-item" href="{{route('colors.index')}}"> Color</a>
+                        
+                    </div>
+                </div>
             </li>
 
             <!-- Heading -->

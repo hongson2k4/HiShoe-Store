@@ -4,10 +4,6 @@
 @endsection -->
 @section('content')
     <a class="btn btn-secondary" href="{{route('users.create')}}">Thêm mới</a>
-    <form action="{{ route('users.list') }}" method="GET" class="form-inline mb-3">
-        <input type="text" name="search" class="form-control mr-2" placeholder="Search users" value="{{ request()->query('search') }}">
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
     <table class="table">
         <thead>
             <tr>

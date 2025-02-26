@@ -13,11 +13,10 @@ class Users extends Model
         'username',
         'password',
         'full_name',
-        'email',
         'avatar',
+        'email',
         'phone_number',
         'address',
-        'role',
     ];
     public $timestamp = false;
 }

@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\admin\UserController;
+use App\Models\Users;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,14 +22,15 @@ Route::get('/admin/login', function () {
 })->name('admin.login');
 
 Route::post('/admin/login', function (Request $request) {
-    // $user = Users::where('username', $request->input('username'))->first();
+    $user = Users::where('username', $request->input('username'))->first();
 
-    if (Auth::attempt(['username' => $request->input('username'), 'password' => $request->input('password')])) {
-        if (Auth::user()) {
+    if ($user && Hash::check($request->input('password'), $user->password)) {
+        session(['user' => $user]);
 
+        if ($user->role == 1) {
             return redirect()->route('admin.dashboard');
         }
-        session()->flash('error', 'Bạn không thể truy cập vào khu vực này!');
+        session()->flash('error', 'Bạn không có quyền admin!');
         return redirect('/admin/login');
     }
 
@@ -38,7 +39,7 @@ Route::post('/admin/login', function (Request $request) {
 });
 
 Route::get('/admin/logout', function () {
-    Auth::logout();
+    session()->forget('user');
     return redirect()->route('home');
 })->name('admin.logout');
 
@@ -49,25 +50,12 @@ Route::middleware(['admin'])->get('/admin/dashboard', function () {
 Route::middleware(['admin'])->controller(UserController::class)
     ->name('users.')
     ->prefix('admin/users/')
-    ->group(
-        function () {
-            Route::get('/', [UserController::class, 'index'])->name('list');
-            Route::get('/create', [UserController::class, 'create'])->name('create');
-            Route::post('store/', [UserController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-            Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
-            Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
-        }
-    );
-
-Route::middleware(['admin'])->controller(BrandController::class)
-    ->prefix('admin/brands')
-    ->name('brands.')
     ->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
-        Route::get('/{brand}/edit', 'edit')->name('edit');
-        Route::put('/{brand}', 'update')->name('update');
-        Route::put('/{brand}/toggle', 'toggleStatus')->name('toggle');
-    });
+        Route::get('/', [UserController::class, 'index'])->name('list');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('store/', [UserController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
+        Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
+        Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
+    })
+;

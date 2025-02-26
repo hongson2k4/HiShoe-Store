@@ -117,6 +117,9 @@ class UserController extends Controller
     public function ban(string $id)
     {
         $user = User::findOrFail($id); // Tìm user theo ID
+        if ($user->role == 1) {
+            return redirect()->back()->with('error', 'Không thể khóa tài khoản này!');
+        }
         $user->status = $user->status == 0 ? 1 : 0; // Đảo trạng thái
         $user->save(); // Lưu vào database
     

@@ -21,4 +21,4 @@ Route::resource('admin/colors', ColorController::class);
 
 Route::get('/', function () {
     return view('client/home');
-})->name('home');tôi ghi tạm ở đây
+})->name('home');

@@ -4,8 +4,9 @@
 @endsection -->
 @section('content')
     <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới sản phẩm</a>
-    <form action="search" method="GET" class="form-inline mb-3 float-right">
-        <input type="text" name="search" class="form-control mr-2" placeholder="Search products" value="{{ request()->query('search') }}">
+    <form action="{{ route('products.list') }}" method="GET" class="form-inline mb-3 float-right">
+    <input type="text" name="search" class="form-control mr-2" placeholder="Search profucs"
+    value="{{ request()->query('search') }}">
         <button type="submit" class="btn btn-success">Search</button>
     </form>
     <table class="table">
@@ -31,8 +32,8 @@
                 <td>{{$u->description}}</td>
                 <td>{{$u->price}}</td>
                 <td>{{$u->stock_quantity}}</td>
-                <td>{{$u->category_id}}</td>
-                <td>{{$u->brand_id}}</td>
+                <td>{{$u->category->name}}</td>
+                <td>{{$u->brand->name}}</td>
                 <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
                 <td></td>
                 <td>

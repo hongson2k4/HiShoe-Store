@@ -21,9 +21,32 @@ class ProductsController extends Products
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Products::all();
+        $search = $request->query('search');
+
+        $brands = DB::table('brands')->get();
+        $categories = DB::table('categories')->get();
+        $products = Products::query()
+        ->when($search, function ($query) use ($search) {
+            return $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhere('price', 'like', "%{$search}%");
+            });
+        })->with('category')->with('brand')
+        // ->when($status !== null, function ($query) use ($status) {
+        //     return $query->where('status', $status);
+        // })
+        // ->when($role !== null, function ($query) use ($role) {
+        //     return $query->where('role', $role);
+        // })
+        // ->when($address, function ($query) use ($address) {
+        //     return $query->where('address', 'like', "%{$address}%");
+        // })
+        ->get();
+
+        // $products = Products::all();
         // $products = DB::table('products')
         // ->join('categories', 'category_id', '=', 'categories.name')
         // ->select('products.*', 'category_id')

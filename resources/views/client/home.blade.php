@@ -21,7 +21,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p1.png" alt="">
+                        <img src="{{ asset('client/images/p1.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -46,7 +46,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p2.png" alt="">
+                        <img src="{{ asset('client/images/p2.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -71,7 +71,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p3.png" alt="">
+                        <img src="{{ asset('client/images/p3.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -96,7 +96,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p4.png" alt="">
+                        <img src="{{ asset('client/images/p4.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -121,7 +121,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p5.png" alt="">
+                        <img src="{{ asset('client/images/p5.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -146,7 +146,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p6.png" alt="">
+                        <img src="{{ asset('client/images/p6.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -171,7 +171,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p7.png" alt="">
+                        <img src="{{ asset('client/images/p7.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -196,7 +196,7 @@ HiShoe-Store - Trang chủ
             <div class="box">
                 <a href="">
                     <div class="img-box">
-                        <img src="images/p8.png" alt="">
+                        <img src="{{ asset('client/images/p8.png') }}" alt="">
                     </div>
                     <div class="detail-box">
                         <h6>
@@ -229,14 +229,13 @@ HiShoe-Store - Trang chủ
 <!-- end shop section -->
 
 <!-- saving section -->
-
 <section class="saving_section ">
     <div class="box">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-6">
                     <div class="img-box">
-                        <img src="images/saving-img.png" alt="">
+                        <img src="{{ asset('client/images/saving-img.png') }}" alt="">
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -264,11 +263,9 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
-
 <!-- end saving section -->
 
 <!-- why section -->
-
 <section class="why_section layout_padding">
     <div class="container">
         <div class="heading_container heading_center">
@@ -515,12 +512,10 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
-
 <!-- end why section -->
 
 
 <!-- gift section -->
-
 <section class="gift_section layout_padding-bottom">
     <div class="box ">
         <div class="container-fluid">
@@ -528,7 +523,7 @@ HiShoe-Store - Trang chủ
                 <div class="col-md-5">
                     <div class="img_container">
                         <div class="img-box">
-                            <img src="images/gifts.png" alt="">
+                            <img src="{{ asset('client/images/gifts.png') }}" alt="">
                         </div>
                     </div>
                 </div>
@@ -557,13 +552,10 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
-
-
 <!-- end gift section -->
 
 
 <!-- contact section -->
-
 <section class="contact_section ">
     <div class="container px-0">
         <div class="heading_container ">
@@ -605,7 +597,6 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
-
 <!-- end contact section -->
 
 <!-- client section -->
@@ -691,7 +682,6 @@ HiShoe-Store - Trang chủ
 <!-- end client section -->
 
 <!-- info section -->
-
 <section class="info_section  layout_padding2-top">
     <div class="social_container">
         <div class="social_box">

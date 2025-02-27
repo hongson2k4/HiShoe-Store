@@ -10,10 +10,10 @@
           <span class=""></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav  ">
-            <li class="nav-item active">
-              <a class="nav-link" href="{{ route('home') }}">Trang chủ <span class="sr-only">(current)</span></a>
+        <div class="collapse navbar-collapse innerpage_navbar" id="navbarSupportedContent">
+          <ul class="navbar-nav @if(Route::currentRouteName() == 'home') active @endif">
+            <li class="nav-item ">
+              <a class="nav-link" href="{{ route('home') }}">Trang chủ</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="shop.html">
@@ -45,7 +45,7 @@
                 </span>
               </a>
               <div class="dropdown-menu" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="{{ route('home') }}">Profile</a>
+                <a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a>
                 <a class="dropdown-item" href="{{ route('logout') }}">Logout</a>
               </div>
             </div>

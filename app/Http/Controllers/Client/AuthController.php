@@ -121,7 +121,7 @@ class AuthController extends Controller
         );
 
         return $response == Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', trans($response))
+            ? redirect()->route('loginForm')->with('status', trans($response))
             : back()->withErrors(['email' => trans($response)]);
     }
     protected function validateEmail(Request $request)
@@ -139,7 +139,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function changePass(){
+    public function changePass()
+    {
         if (!Auth::check()) {
             return Redirect::route('loginForm')->with('error', 'Bạn cần đăng nhập!');
         }

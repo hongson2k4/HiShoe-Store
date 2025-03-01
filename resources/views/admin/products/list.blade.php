@@ -5,7 +5,7 @@
 @section('content')
     <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới sản phẩm</a>
     <form action="{{ route('products.list') }}" method="GET" class="form-inline mb-3 float-right">
-    <input type="text" name="search" class="form-control mr-2" placeholder="Search profucs"
+    <input type="text" name="search" class="form-control mr-2" placeholder="Search products"
     value="{{ request()->query('search') }}">
         <button type="submit" class="btn btn-success">Search</button>
     </form>

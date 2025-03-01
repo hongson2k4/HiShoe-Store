@@ -114,15 +114,30 @@ class UserController extends Controller
         return redirect()->route('users.list');
     }
 
-    public function ban(string $id)
+    public function ban(Request $request)
     {
-        $user = User::findOrFail($id); // Tìm user theo ID
+        $user = User::findOrFail($request->user_id); // Tìm user theo ID
         if ($user->role == 1) {
             return redirect()->back()->with('error', 'Không thể khóa tài khoản này!');
         }
-        $user->status = $user->status == 0 ? 1 : 0; // Đảo trạng thái
+        if ($user->status == 0) {
+            $user->status = 1; // Khóa tài khoản
+            $user->ban_reason = $request->ban_reason; // Lưu lý do khóa
+            $user->banned_at = now(); // Lưu thời gian khóa
+        }
         $user->save(); // Lưu vào database
     
-        return redirect()->back()->with('success', 'Trạng thái đã được cập nhật!');
+        return redirect()->route('users.list')->with('success', 'Trạng thái đã được cập nhật!');
+    }
+    public function unban( $id){
+        $user = User::findOrFail($id);
+        if ($user->status == 0) {
+            return redirect()->back()->with('error', 'Không thể mở khóa tài khoản này!');
+        }
+        $user->status = 0;
+        $user->ban_reason = null;
+        $user->banned_at = null;
+        $user->save();
+        return redirect()->route('users.list')->with('success', 'Trạng thái đã được cập nhật!');
     }
 }

@@ -27,6 +27,9 @@ class User extends Authenticatable
         'phone_number',
         'address',
         'role',
+        'status',
+        'ban_reason',
+        'banned_at',
     ];
 
     /**

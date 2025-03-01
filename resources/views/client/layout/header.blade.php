@@ -45,8 +45,9 @@
                 </span>
               </a>
               <div class="dropdown-menu" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a>
-                <a class="dropdown-item" href="{{ route('logout') }}">Logout</a>
+                <a class="dropdown-item" href="{{ route('user.profile') }}">Thông tin cá nhân</a>
+                <a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a>
+                <a class="dropdown-item" href="{{ route('logout') }}">Đăng xuất</a>
               </div>
             </div>
           @else

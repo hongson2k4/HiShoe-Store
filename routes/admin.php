@@ -35,5 +35,6 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::get('/', [UserController::class, 'index'])->name('list');
         Route::get('/edit/{id}', [UserController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [UserController::class, 'update'])->name('update');
-        Route::get('/ban/{id}', [UserController::class, 'ban'])->name('ban');
+        Route::post('/ban/{id}', [UserController::class, 'ban'])->name('ban');
+        Route::get('/unban/{id}', [UserController::class, 'unban'])->name('unban');
     });

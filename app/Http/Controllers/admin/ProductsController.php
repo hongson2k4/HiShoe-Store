@@ -35,24 +35,7 @@ class ProductsController extends Products
                       ->orWhere('price', 'like', "%{$search}%");
             });
         })->with('category')->with('brand')
-        // ->when($status !== null, function ($query) use ($status) {
-        //     return $query->where('status', $status);
-        // })
-        // ->when($role !== null, function ($query) use ($role) {
-        //     return $query->where('role', $role);
-        // })
-        // ->when($address, function ($query) use ($address) {
-        //     return $query->where('address', 'like', "%{$address}%");
-        // })
         ->get();
-
-        // $products = Products::all();
-        // $products = DB::table('products')
-        // ->join('categories', 'category_id', '=', 'categories.name')
-        // ->select('products.*', 'category_id')
-        // ->orderByDesc('category_id')
-        // ->get();
-        // dd($users);
         return view("admin.products.list", compact("products"));
     }
 

@@ -19,6 +19,8 @@
                 <th>Số lượng</th>
                 <th>Loại giày</th>
                 <th>Thương hiệu</th>
+                <th>Màu sắc</th>
+                <th>Kích thước</th>
                 <th>Hình ảnh</th>
                 <th>Trang thái</th>
                 <th>Hành động</th>
@@ -34,6 +36,8 @@
                 <td>{{$u->stock_quantity}}</td>
                 <td>{{$u->category->name}}</td>
                 <td>{{$u->brand->name}}</td>
+                <td></td>
+                <td></td>
                 <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
                 <td></td>
                 <td>

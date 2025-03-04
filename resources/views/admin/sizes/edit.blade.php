@@ -14,7 +14,7 @@
                     <input type="text" name="size" class="form-control" value="{{ $size->size }}" required>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('adminsizes.index') }}" class="btn btn-secondary">Quay lại</a>
+                    <a href="{{ route('sizes.index') }}" class="btn btn-secondary">Quay lại</a>
                     <button type="submit" class="btn btn-primary">Cập Nhật</button>
                 </div>
             </form>

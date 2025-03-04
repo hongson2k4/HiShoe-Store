@@ -1,9 +1,16 @@
 <?php
 
+//Link controller
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\ProductsController;
+use App\Http\Controllers\admin\Products_variantController;
+
+//link model
 use App\Models\Users;
 use App\Models\Products;
+use App\Models\Products_variant;
+
+//link quan trọng của toàn hệ thống
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -77,5 +84,13 @@ Route::middleware(['admin'])->controller(ProductsController::class)
         Route::put('/update/{id}', [ProductsController::class, 'updateProduct'])->where('id', '[0-9]+')->name('update');
         Route::delete('destroy/{id}', [ProductsController::class, 'destroyProduct'])->where('id', '[0-9]+')->name('destroy');
         Route::get('/search', [ProductsController::class, 'search']);
+    })
+;
+
+Route::middleware(['admin'])->controller(Products_variantController::class)
+    ->name('products_variant.')
+    ->prefix('admin/products_variant')
+    ->group(function () {
+        Route::get('/', [Products_variantController::class, 'index'])->name('list');
     })
 ;

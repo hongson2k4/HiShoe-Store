@@ -16,7 +16,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Description</label>
-        <input class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description', $product['description'])}}">
+        <textarea class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description', $product['description'])}}" aria-label="With textarea"></textarea>
         @error('description')
         <div class="invalid-feedback">
             {{$message}}

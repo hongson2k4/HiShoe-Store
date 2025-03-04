@@ -43,7 +43,10 @@
                 </a>
                 <div id="products" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
+                        {{-- Nút nhấn danh sách sản phẩm --}}
                         <a class="collapse-item" href="{{route('products.list')}}">List Products</a>
+                        {{-- Nút nhấn danh sách biến thể sản phẩm --}}
+                        <a class="collapse-item" href="{{route('products_variant.list')}}">Variant Products</a>
                     </div>
                 </div>
             </li>

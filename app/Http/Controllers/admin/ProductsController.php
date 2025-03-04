@@ -34,7 +34,11 @@ class ProductsController extends Products
                       ->orWhere('description', 'like', "%{$search}%")
                       ->orWhere('price', 'like', "%{$search}%");
             });
-        })->with('category')->with('brand')
+        })
+        ->with('category')
+        ->with('brand')
+        ->with('variants.color') // Nạp thêm color từ variants
+        ->with('variants.size')  // Nạp thêm size từ variants
         ->get();
         return view("admin.products.list", compact("products"));
     }

@@ -14,8 +14,8 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Description</label>
-        <input class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description')}}">
+        <label class="form-label">Description</label>   
+        <textarea class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description')}}" aria-label="With textarea"></textarea>
         @error('description')
         <div class="invalid-feedback">
             {{$message}}

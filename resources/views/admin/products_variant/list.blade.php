@@ -3,7 +3,7 @@
     danh sách
 @endsection -->
 @section('content')
-    <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới sản phẩm</a>
+    <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới biến thể sản phẩm</a>
     <form action="{{ route('products.list') }}" method="GET" class="form-inline mb-3 float-right">
     <input type="text" name="search" class="form-control mr-2" placeholder="Search products"
     value="{{ request()->query('search') }}">
@@ -13,42 +13,22 @@
         <thead>
             <tr>
                 <th>STT</th>
-                <th>Tên Giày</th>
-                <th>Ghi chú</th>
+                <th>Tên sản phẩm</th>
+                <th>Kích thước</th>
+                <th>Màu sắc</th>
                 <th>Giá</th>
                 <th>Số lượng</th>
-                <th>Loại giày</th>
-                <th>Thương hiệu</th>
-                <th>Màu sắc</th>
-                <th>Kích thước</th>
-                <th>Hình ảnh</th>
-                <th>Trang thái</th>
-                <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($products as $key=>$u)
+            @foreach ($products_variant as $key=>$u)
             <tr>
                 <td>{{$key + 1}}</td>
-                <td>{{$u->name}}</td>
-                <td>{{$u->description}}</td>
+                <td>{{$u->product->name}}</td>
+                <td>{{$u->size->size}}</td>
+                <td>{{$u->color->name}}</td>
                 <td>{{$u->price}}</td>
                 <td>{{$u->stock_quantity}}</td>
-                <td>{{$u->category->name}}</td>
-                <td>{{$u->brand->name}}</td>
-                <td>
-                    @foreach($u->variants as $variant)
-                        <span>{{$variant->color->name}}</span>@if(!$loop->last), @endif
-                    @endforeach
-                </td>
-                <td>
-                    @foreach($u->variants as $variant)
-                        <span>{{$variant->size->size}}</span>@if(!$loop->last), @endif
-                    @endforeach
-                </td>
-                
-                <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
-                <td></td>
                 <td>
                 <a class="btn btn-warning m-2" href="{{route('products.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
                     <form action="{{route('products.destroy',$u->id)}}" method="post">

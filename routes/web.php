@@ -1,11 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SizeController;
-use App\Http\Controllers\ColorController;
 
-Route::resource('admin/sizes', SizeController::class);
-Route::resource('admin/colors', ColorController::class);
 
 
 /*

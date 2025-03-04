@@ -4,7 +4,9 @@ use App\Http\Controllers\admin\UserController;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;use App\Http\Controllers\SizeController;
+use App\Http\Controllers\ColorController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -59,3 +61,5 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
     })
 ;
+Route::resource('admin/sizes', SizeController::class);
+Route::resource('admin/colors', ColorController::class);

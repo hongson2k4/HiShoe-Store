@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Products;
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Products_variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\storage;
 use Illuminate\Support\Facades\DB;
@@ -64,9 +65,11 @@ class ProductsController extends Products
      */
     public function create()
     {
-        $brands = DB::table('brands')->get();
-        $categories = DB::table('categories')->get();
-        return view("admin.products.create", compact('categories','brands'));
+        $brands = DB::table('brands')->get(); // load danh sách thương hiệu
+        $categories = DB::table('categories')->get(); // load danh sách danh mục
+        $colors = DB::table('colors')->get(); // load danh sách màu sắc
+        $sizes = DB::table('sizes')->get(); // load danh sách kích thước
+        return view("admin.products.create", compact('categories','brands','colors','sizes'));
     }
 
     /**
@@ -81,6 +84,8 @@ class ProductsController extends Products
             'stock_quantity'=>'required',
             'category_id'=>'required',
             'brand_id'=>'required',
+            'color_id' => 'required',
+            'size_id' => 'required',
             'image_url'=>'nullable|file|mimes:jpg,jpeg,png',
 
         ]);
@@ -96,6 +101,8 @@ class ProductsController extends Products
             'stock_quantity'=>$validate['stock_quantity'],
             'category_id'=>$validate['category_id'],
             'brand_id'=>$validate['brand_id'],
+            'color_id'=>$validate['color_id'],
+            'size_id'=>$validate['size_id'],
             'image_url'=>$part,
         ]);
         return redirect()->route('products.list');

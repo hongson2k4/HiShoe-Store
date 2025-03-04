@@ -37,11 +37,13 @@
                 <td>{{$u->category->name}}</td>
                 <td>{{$u->brand->name}}</td>
                 <td>
+                    {{-- Lệnh if dùng để ngăn cách các phần tử trong db bằng dấu , VD: php, laravel, mysql --}}
                     @foreach($u->variants as $variant)
                         <span>{{$variant->color->name}}</span>@if(!$loop->last), @endif
                     @endforeach
                 </td>
                 <td>
+                    {{-- Lệnh if dùng để ngăn cách các phần tử trong db bằng dấu , VD: php, laravel, mysql --}}
                     @foreach($u->variants as $variant)
                         <span>{{$variant->size->size}}</span>@if(!$loop->last), @endif
                     @endforeach

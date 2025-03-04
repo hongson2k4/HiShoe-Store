@@ -16,6 +16,7 @@
                 <th>Tên sản phẩm</th>
                 <th>Kích thước</th>
                 <th>Màu sắc</th>
+                <th>Mã màu</th>
                 <th>Giá</th>
                 <th>Số lượng</th>
             </tr>
@@ -27,6 +28,12 @@
                 <td>{{$u->product->name}}</td>
                 <td>{{$u->size->size}}</td>
                 <td>{{$u->color->name}}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2 m-2">{{$u->color->code}}</span>
+                        <div style="width: 30px; height: 30px; background-color: {{$u->color->code}}; border: 1px solid #ccc;"></div>
+                    </div>
+                </td>                
                 <td>{{$u->price}}</td>
                 <td>{{$u->stock_quantity}}</td>
                 <td>

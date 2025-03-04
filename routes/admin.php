@@ -5,8 +5,8 @@ use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SizeController;
-use App\Http\Controllers\ColorController;
+use App\Http\Controllers\admin\SizeController;
+use App\Http\Controllers\admin\ColorController;
 
 
 /*

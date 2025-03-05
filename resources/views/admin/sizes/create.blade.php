@@ -1,6 +1,14 @@
 @extends('admin.layout.main')
 @section('content')
+
 <div class="container mt-4">
+@if ($errors->any())
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h4>Thêm Size Mới</h4>

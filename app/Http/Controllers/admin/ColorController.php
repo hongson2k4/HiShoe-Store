@@ -17,19 +17,44 @@ class ColorController extends Controller
     }
 
     public function store(Request $request) {
-        $request->validate(['name' => 'required|unique:colors', 'code' => 'nullable|string']);
+        $request->validate([
+            'name' => 'required|unique:colors',
+            'code' => 'nullable|string',
+        ], [
+            'name.unique' => 'Tên màu này đã tồn tại.',
+        ]);
+    
         Color::create($request->all());
-        return redirect()->route('colors.index')->with('success', 'Màu đã thêm.');
+    
+        return redirect()->route('colors.index')->with('success', 'Màu đã được thêm.');
     }
 
     public function edit(Color $color) {
         return view('admin.colors.edit', compact('color'));
     }
 
-    public function update(Request $request, Color $color) {
-        $request->validate(['name' => 'required|unique:colors,name,' . $color->id, 'code' => 'nullable|string']);
-        $color->update($request->all());
-        return redirect()->route('colors.index')->with('success', 'Màu đã cập nhật.');
+    public function update(Request $request, $id) {
+        $color = Color::findOrFail($id);
+
+        // Kiểm tra dữ liệu đầu vào
+        $request->validate([
+            'name' => 'required|string|unique:colors,name,' . $id,
+            'code' => 'nullable|string|max:10',
+        ], [
+            'name.required' => 'Vui lòng nhập tên màu!',
+            'name.string' => 'Tên màu phải là chuỗi ký tự!',
+            'name.unique' => 'Tên màu này đã tồn tại!',
+            'code.string' => 'Mã màu phải là chuỗi!',
+          
+        ]);
+
+        // Cập nhật dữ liệu
+        $color->update([
+            'name' => $request->name,
+            'code' => $request->code,
+        ]);
+
+        return redirect()->route('colors.index')->with('success', 'Màu đã cập nhật thành công!');
     }
 
     public function destroy(Color $color) {

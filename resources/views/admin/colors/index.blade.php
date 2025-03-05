@@ -1,6 +1,22 @@
 @extends('admin.layout.main')
 @section('content')
 <div class="container mt-4">
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    
+@endif
+ {{-- Hiển thị thông báo thành công --}}
+ @if (session('success'))
+ <div class="alert alert-success">
+     {{ session('success') }}
+ </div>
+@endif
     <h2 class="mb-3">Danh Sách Màu</h2>
     <a href="{{ route('colors.create') }}" class="btn btn-primary mb-3">Thêm Màu</a>
 

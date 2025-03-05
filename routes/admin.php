@@ -64,3 +64,4 @@ Route::middleware(['admin'])->controller(UserController::class)
 ;
 Route::resource('admin/sizes', SizeController::class);
 Route::resource('admin/colors', ColorController::class);
+Route::put('/colors/{id}', [ColorController::class, 'update'])->name('colors.update');

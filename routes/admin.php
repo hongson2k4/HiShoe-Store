@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\admin\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,3 +72,11 @@ Route::middleware(['admin'])->controller(BrandController::class)
         Route::put('/{brand}', 'update')->name('update');
         Route::put('/{brand}/toggle', 'toggleStatus')->name('toggle');
     });
+
+
+Route::prefix('admin/orders')->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::put('/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+});

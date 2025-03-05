@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
+use App\Models\UserHistoryChanges;
 
 class UserController extends Controller
 {
@@ -83,53 +85,86 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $validate = $request->validate([
-            'username'=>'required',
-            'password'=> 'required',
+            'username' => 'required',
+            'password' => 'required',
             'full_name' => 'required',
-            'email'=> 'required',
-            'avatar'=>'nullable|file|mimes:jpg,jpeg,png',
-            'phone_number'=>'required',
-            'address'=>'required',
-
+            'email' => 'required',
+            'avatar' => 'nullable|file|mimes:jpg,jpeg,png',
+            'phone_number' => 'required',
+            'address' => 'required',
         ]);
+    
         $user = User::find($id);
-        if($request->hasFile('avatar')){
-            if($user->avatar){
+        $changes = [];
+    
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
-            $part = $request->file('avatar')->store('uploads/users','public');
-        }else{
+            $part = $request->file('avatar')->store('uploads/users', 'public');
+        } else {
             $part = $user->avatar;
         }
-        $user = User::create([
-            'username'=>$validate['username'],
-            'password'=>$validate['password'],
-            'full_name'=>$validate['full_name'],
-            'email'=>$validate['email'],
-            'avatar'=>$part,
-            'phone_number'=>$validate['phone_number'],
-            'address'=>$validate['address'],
-            'role'=>0,
+    
+        $fields = ['username', 'password', 'full_name', 'email', 'phone_number', 'address'];
+        foreach ($fields as $field) {
+            if ($user->$field != $validate[$field]) {
+                $changes[] = [
+                    'user_id' => $user->id,
+                    'field_name' => $field,
+                    'old_value' => $user->$field,
+                    'new_value' => $validate[$field],
+                    'change_by' => Auth::id(),
+                    'content' => "Cập nhật thông tin người dùng! ",
+                    'updated_at' => now(),
+                ];
+            }
+        }
+    
+        $user->update([
+            'username' => $validate['username'],
+            'password' => $validate['password'],
+            'full_name' => $validate['full_name'],
+            'email' => $validate['email'],
+            'avatar' => $part,
+            'phone_number' => $validate['phone_number'],
+            'address' => $validate['address'],
+            'role' => 0,
         ]);
+    
+        UserHistoryChanges::insert($changes);
+    
         return redirect()->route('users.list');
     }
-
+    
     public function ban(Request $request)
     {
-        $user = User::findOrFail($request->user_id); // Tìm user theo ID
+        $user = User::findOrFail($request->user_id);
         if ($user->role == 1) {
             return redirect()->back()->with('error', 'Không thể khóa tài khoản này!');
         }
         if ($user->status == 0) {
-            $user->status = 1; // Khóa tài khoản
-            $user->ban_reason = $request->ban_reason; // Lưu lý do khóa
-            $user->banned_at = now(); // Lưu thời gian khóa
+            $user->status = 1;
+            $user->ban_reason = $request->ban_reason;
+            $user->banned_at = now();
+    
+            UserHistoryChanges::create([
+                'user_id' => $user->id,
+                'field_name' => 'status',
+                'old_value' => 0,
+                'new_value' => 1,
+                'change_by' => Auth::id(),
+                'content' => "Người dùng bị khóa tài khoản với lí do: {$request->ban_reason}",
+                'updated_at' => now(),
+            ]);
         }
-        $user->save(); // Lưu vào database
+        $user->save();
     
         return redirect()->route('users.list')->with('success', 'Trạng thái đã được cập nhật!');
     }
-    public function unban( $id){
+    
+    public function unban($id)
+    {
         $user = User::findOrFail($id);
         if ($user->status == 0) {
             return redirect()->back()->with('error', 'Không thể mở khóa tài khoản này!');
@@ -137,6 +172,17 @@ class UserController extends Controller
         $user->status = 0;
         $user->ban_reason = null;
         $user->banned_at = null;
+    
+        UserHistoryChanges::create([
+            'user_id' => $user->id,
+            'field_name' => 'status',
+            'old_value' => 1,
+            'new_value' => 0,
+            'change_by' => Auth::id(),
+            'content' => "Gỡ khóa tài khoản người dùng!",
+            'updated_at' => now(),
+        ]);
+    
         $user->save();
         return redirect()->route('users.list')->with('success', 'Trạng thái đã được cập nhật!');
     }

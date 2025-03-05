@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class UserHistoryChanges extends Model
 {
     use HasFactory;
+    public $timestamps = false;
+    protected $hidden = ['created_at'];
+    const UPDATED_AT = 'updated_at';
+
     protected $fillable = [
         'user_id',
         'field_name',
@@ -15,10 +19,21 @@ class UserHistoryChanges extends Model
         'new_value',
         'change_by',
         'content',
-        'change_at',
+        'updated_at',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function changed_by()
+    {
+        return $this->belongsTo(User::class, 'change_by');
+    }
+
+    public function setUpdatedAt($value)
+    {
+        $this->attributes['updated_at'] = $value;
     }
 }

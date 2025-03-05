@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserHistoryChanges;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -119,6 +120,17 @@ class AuthController extends Controller
                 $user->save();
             }
         );
+        $user = User::where('email', $request->email)->first();
+
+        UserHistoryChanges::create([
+            'user_id' => $user->id,
+            'field_name' => 'password',
+            'old_value' => "*",
+            'new_value' => "*",
+            'change_by' => Auth::id(),
+            'content' => "Người dùng đặt lại mật khẩu",
+            'updated_at' => now(),
+        ]);
 
         return $response == Password::PASSWORD_RESET
             ? redirect()->route('loginForm')->with('status', trans($response))
@@ -169,6 +181,16 @@ class AuthController extends Controller
         
         $user->update([
             'password' => Hash::make($validate['new_password']),
+        ]);
+
+        UserHistoryChanges::create([
+            'user_id' => Auth::id(),
+            'field_name' => 'password',
+            'old_value' => "*",
+            'new_value' => "*",
+            'change_by' => Auth::id(),
+            'content' => "Người dùng cập nhật mật khẩu mới",
+            'updated_at' => now(),
         ]);
     
         return redirect()->back()->with('success', 'Đổi mật khẩu thành công!');

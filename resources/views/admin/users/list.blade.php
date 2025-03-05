@@ -66,11 +66,17 @@
                         </span>
                     </td>
                     <td>
+                        @if($u->role == 0)
+
                         <a class="btn btn-warning" href="{{ route('users.edit', $u->id) }}"><i class="fas fa-pencil-alt"></i></a>
                         @if($u->status == 0)
                             <button class="btn btn-info ban-user" data-toggle="modal" data-target="#banModal" data-userid="{{ $u->id }}"><i class="fas fa-lock"></i></button>
                         @else
                             <a class="btn btn-secondary" href="{{ route('users.unban', $u->id) }}"><i class="fas fa-unlock"></i></a>
+                        @endif
+                        <a class="btn btn-info" href="{{ route('users.history', $u->id) }}"><i class="fas fa-history"></i></a>
+                        @else
+                        Không khả dụng
                         @endif
                     </td>
                 </tr>

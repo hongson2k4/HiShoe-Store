@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\UserHistoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\AuthController;
@@ -37,4 +38,5 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::put('/update/{id}', [UserController::class, 'update'])->name('update');
         Route::post('/ban/{id}', [UserController::class, 'ban'])->name('ban');
         Route::get('/unban/{id}', [UserController::class, 'unban'])->name('unban');
+        Route::get('/history/{id}',[UserHistoryController::class, 'index'])->name('history');
     });

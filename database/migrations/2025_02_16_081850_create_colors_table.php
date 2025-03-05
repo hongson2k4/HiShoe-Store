@@ -16,7 +16,7 @@ return new class extends Migration {
 }
 public function down(): void
 {
-    Schema::table('colorscolors', function (Blueprint $table) {
+    Schema::table('colors', function (Blueprint $table) {
         $table->dropTimestamps(); // Xóa nếu rollback
     });
 }

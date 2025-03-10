@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Products;
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Size;
+use App\Models\Color;
 use App\Models\Products_variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\storage;
@@ -38,8 +40,8 @@ class ProductsController extends Products
         })
         ->with('category')
         ->with('brand')
-        ->with('variants.color') // Nạp thêm color từ variants
-        ->with('variants.size')  // Nạp thêm size từ variants
+        ->with('color')
+        ->with('size') 
         ->get();
         return view("admin.products.list", compact("products"));
     }
@@ -84,8 +86,8 @@ class ProductsController extends Products
             'stock_quantity'=>'required',
             'category_id'=>'required',
             'brand_id'=>'required',
-            'color_id' => 'required',
-            'size_id' => 'required',
+            'color_id' => 'nullable|exists:colors,id',
+            'size_id' => 'nullable|exists:sizes,id',
             'image_url'=>'nullable|file|mimes:jpg,jpeg,png',
 
         ]);
@@ -101,11 +103,12 @@ class ProductsController extends Products
             'stock_quantity'=>$validate['stock_quantity'],
             'category_id'=>$validate['category_id'],
             'brand_id'=>$validate['brand_id'],
-            'color_id'=>$validate['color_id'],
-            'size_id'=>$validate['size_id'],
+            'color_id' => $validate['color_id'],
+            'size_id' => $validate['size_id'],
             'image_url'=>$part,
         ]);
-        return redirect()->route('products.list');
+        // return redirect()->route('products.list');
+        return redirect()->route('products.list')->with('success', 'Thêm sản phẩm thành công!');
     }
 
     /**
@@ -124,8 +127,10 @@ class ProductsController extends Products
         $brands = DB::table('brands')->get();
         $categories = DB::table('categories')->get();
         $product = Products::find($id);
+        $colors = DB::table('colors')->get(); // load danh sách màu sắc
+        $sizes = DB::table('sizes')->get(); // load danh sách kích thước
         // dd($product);
-        return view('admin.products.edit', compact('product','categories','brands'));
+        return view('admin.products.edit', compact('product','categories','brands','colors','sizes'));
     }
 
     /**
@@ -140,6 +145,8 @@ class ProductsController extends Products
             'stock_quantity'=>'required',
             'category_id'=>'required',
             'brand_id'=>'required',
+            'color_id' => 'nullable|exists:colors,id',
+            'size_id' => 'nullable|exists:sizes,id',
             'image_url'=>'nullable|file|mimes:jpg,jpeg,png',
         ]);
         $product = Products::find($id);
@@ -160,9 +167,12 @@ class ProductsController extends Products
             'stock_quantity'=>$validate['stock_quantity'],
             'category_id'=>$validate['category_id'],
             'brand_id'=>$validate['brand_id'],
+            'color_id' => $validate['color_id'],
+            'size_id' => $validate['size_id'],
             'image_url'=>$part,
         ]);
-        return redirect()->route('products.list');
+        // return redirect()->route('products.list');
+        return redirect()->route('products.list')->with('success', 'Cập nhật sản phẩm thành công!');
     }
 
     /**

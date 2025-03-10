@@ -4,6 +4,9 @@
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\ProductsController;
 use App\Http\Controllers\admin\Products_variantController;
+use App\Http\Controllers\admin\SizeController;
+use App\Http\Controllers\admin\ColorController;
+
 
 //link model
 use App\Models\Users;
@@ -14,6 +17,7 @@ use App\Models\Products_variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -92,5 +96,10 @@ Route::middleware(['admin'])->controller(Products_variantController::class)
     ->prefix('admin/products_variant')
     ->group(function () {
         Route::get('/', [Products_variantController::class, 'index'])->name('list');
+        Route::get('/create', [Products_variantController::class, 'create'])->name('create');
+        Route::post('/store', [Products_variantController::class, 'store'])->name('store');
     })
 ;
+Route::resource('admin/sizes', SizeController::class);
+Route::resource('admin/colors', ColorController::class);
+Route::put('/colors/{id}', [ColorController::class, 'update'])->name('colors.update');

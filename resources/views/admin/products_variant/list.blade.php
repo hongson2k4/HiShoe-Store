@@ -3,17 +3,21 @@
     danh sách
 @endsection -->
 @section('content')
-    <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới biến thể sản phẩm</a>
-    <form action="{{ route('products.list') }}" method="GET" class="form-inline mb-3 float-right">
-    <input type="text" name="search" class="form-control mr-2" placeholder="Search products"
-    value="{{ request()->query('search') }}">
-        <button type="submit" class="btn btn-success">Search</button>
-    </form>
+<h2 class="text-center m-4">Danh sách và quản lý biến thể sản phẩm</h2>
+<div class="text-center m-4">
+    <a class="btn btn-success m-2" href="#">Quản lý danh mục</a>
+    <a class="btn btn-success m-2" href="#">Quản lý thương hiệu</a>
+    <a class="btn btn-success m-2" href="{{route('colors.index')}}">Quản lý màu sắc</a>
+    <a class="btn btn-success m-2" href="{{route('sizes.index')}}">Quản lý kích thước</a>
+</div>
+<a class="btn btn-primary m-2" href="{{route('products_variant.create')}}">Thêm id sản phẩm đã có</a>
     <table class="table">
         <thead>
             <tr>
                 <th>STT</th>
                 <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Thương hiệu</th>
                 <th>Kích thước</th>
                 <th>Màu sắc</th>
                 <th>Mã màu</th>
@@ -26,6 +30,8 @@
             <tr>
                 <td>{{$key + 1}}</td>
                 <td>{{$u->product->name}}</td>
+                <td>{{$u->category->name}}</td>
+                <td>{{$u->brand->name}}</td>
                 <td>{{$u->size->size}}</td>
                 <td>{{$u->color->name}}</td>
                 <td>
@@ -37,13 +43,6 @@
                 <td>{{$u->price}}</td>
                 <td>{{$u->stock_quantity}}</td>
                 <td>
-                <a class="btn btn-warning m-2" href="{{route('products.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
-                    <form action="{{route('products.destroy',$u->id)}}" method="post">
-                        @method('DELETE')
-                        @csrf
-                        <button class="btn btn-danger m-2" onclick="return confirm('Xác nhận xóa ?')"> <i class="fas fa-trash"></i></button>
-                    </form>
-                </td>
             </tr>
             @endforeach
         </tbody>

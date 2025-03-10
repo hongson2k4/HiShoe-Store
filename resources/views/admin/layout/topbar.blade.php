@@ -1,4 +1,5 @@
-                <!-- Topbar -->
+                <!-- Topbar -->    <script src="https://kit.fontawesome.com/016b4d7fb2.js" crossorigin="anonymous"></script>
+
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                     <!-- Sidebar Toggle (Topbar) -->

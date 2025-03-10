@@ -75,31 +75,32 @@
             </div>
         @enderror
     </div>
-    <div class="mb-3">
-        <label class="form-label">Màu sắc</label>
-        <select name="color_id" class="form-control @error('color_id') is-invalid @enderror" type="text" name="color_id" value="{{old('color_id')}}">
-            <option value="">-- Chọn màu sắc --</option>
-            @foreach ($colors as $color)
+    <div class="form-group">
+        <label for="color_id">Chọn Màu</label>
+        <select class="form-control" name="color_id" id="color_id">
+            <option value="">-- Chọn màu --</option>
+            @foreach($colors as $color)
                 <option value="{{ $color->id }}">{{ $color->name }}</option>
             @endforeach
         </select>
         @error('color_id')
             <div class="invalid-feedback">
-                {{ $message }}
+                {{$message}}
             </div>
         @enderror
     </div>
-    <div class="mb-3">
-        <label class="form-label">Kích thước</label>
-        <select name="size_id" class="form-control @error('size_id') is-invalid @enderror" type="text" name="size_id" value="{{old('size_id')}}">
-            <option value="">-- Chọn kích thước --</option>
-            @foreach ($sizes as $size)
+    
+    <div class="form-group">
+        <label for="size_id">Chọn Size</label>
+        <select class="form-control" name="size_id" id="size_id">
+            <option value="">-- Chọn size --</option>
+            @foreach($sizes as $size)
                 <option value="{{ $size->id }}">{{ $size->size }}</option>
             @endforeach
         </select>
         @error('size_id')
             <div class="invalid-feedback">
-                {{ $message }}
+                {{$message}}
             </div>
         @enderror
     </div>    

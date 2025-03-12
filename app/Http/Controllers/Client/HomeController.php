@@ -28,7 +28,6 @@ class HomeController extends Controller
             $sizes = collect();
             $colors = collect();
         }
-
         // Truyền dữ liệu sang view home
         return view('client.home', compact('product', 'sizes', 'colors'));
     }

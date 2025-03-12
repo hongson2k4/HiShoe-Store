@@ -36,25 +36,35 @@
           </ul>
           <div class="user_option">
 
-          @if (Auth::user())
-          <a href="{{ route('logout') }}">
+            @if (Auth::user())
+            <a href="{{ route('logout') }}">
               <i class="fa fa-user" aria-hidden="true"></i>
               <span>
                 {{ Auth::user()->username }}
               </span>
             </a>
-          @else
-          <a href="{{ route('login') }}">
+            @else
+            <a href="{{ route('login') }}">
               <i class="fa fa-user" aria-hidden="true"></i>
               <span>
                 Login
               </span>
             </a>
-          @endif
+            @endif
 
 
-            <a href="">
-              <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+            <a href="{{ route('cart.index') }}" class="nav-link position-relative">
+              <i class="fa fa-shopping-cart fa-lg"></i>
+              @if(Auth::check())
+              @php $cartCount = App\Models\Cart::where('user_id', Auth::id())->sum('quantity'); @endphp
+              @else
+              @php $cartCount = collect(Session::get('cart', []))->sum('quantity'); @endphp
+              @endif
+              @if($cartCount > 0)
+              <span class="position-absolute top-0 end-5 translate-middle badge rounded-pill bg-danger text-light">
+                {{ $cartCount }}
+              </span>
+              @endif
             </a>
             <form class="form-inline ">
               <button class="btn nav_search-btn" type="submit">

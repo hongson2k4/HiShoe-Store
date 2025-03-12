@@ -16,9 +16,24 @@ class Product extends Model
         'image_url'
     ];
 
-    public function variants()
+    public function productVariants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+    
+    /**
+     * Get the brand that owns the product.
+     */
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+    /**
+     * Get the category that owns the product.
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }
 

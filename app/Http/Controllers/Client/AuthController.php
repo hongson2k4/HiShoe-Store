@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,7 @@ class AuthController extends Controller
         }
 
         try {
-            $user = Users::create([
+            $user = User::create([
                 'username' => $validate['username'],
                 'password' => $validate['password'],
                 'full_name' => $validate['full_name'],

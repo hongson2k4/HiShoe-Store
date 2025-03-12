@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('client/home');
-})->name('home');
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
 Route::controller(AuthController::class)
 ->prefix('')
@@ -39,3 +41,11 @@ Route::controller(AuthController::class)
     Route::get('/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset');
     Route::post('/reset', [AuthController::class, 'reset'])->name('update');
 });
+
+// Cart Routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+Route::post('/cart/apply-voucher', [CartController::class, 'applyVoucher'])->name('cart.apply-voucher');

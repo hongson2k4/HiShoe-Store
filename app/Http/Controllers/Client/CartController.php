@@ -120,7 +120,6 @@ class CartController extends Controller
                     'user_id' => $user->id,
                     'product_variant_id' => $productVariant->id,
                     'quantity' => $request->quantity,
-                    'price' => $productVariant->price
                 ]);
             }
         } else {
@@ -140,7 +139,6 @@ class CartController extends Controller
                     'id' => $cartItemId,
                     'product_variant_id' => $productVariant->id,
                     'quantity' => $request->quantity,
-                    'price' => $productVariant->price
                 ];
             }
             

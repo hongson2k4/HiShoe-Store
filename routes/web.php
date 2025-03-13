@@ -6,6 +6,7 @@ use App\Http\Controllers\admin\ProductsController;
 use App\Http\Controllers\admin\Products_variantController;
 use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\ColorController;
+use App\Http\Controllers\admin\OrderController;
 
 
 //link model
@@ -103,3 +104,10 @@ Route::middleware(['admin'])->controller(Products_variantController::class)
 Route::resource('admin/sizes', SizeController::class);
 Route::resource('admin/colors', ColorController::class);
 Route::put('/colors/{id}', [ColorController::class, 'update'])->name('colors.update');
+
+Route::prefix('admin/orders')->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::put('/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+});

@@ -50,6 +50,19 @@
                     </div>
                 </div>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#order"
+                    aria-expanded="true" aria-controls="order">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Orders</span>
+                </a>
+                <div id="order" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{{route('orders.index')}}">List orders</a>
+                    </div>
+                </div>
+            </li>
             {{-- <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#attribute"
                 aria-expanded="true" aria-controls="attribute">

@@ -51,6 +51,7 @@
                             <th>Total Price</th>
                             <th>Status</th>
                             <th>Created At</th>
+                            <th>Code Check</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -68,6 +69,7 @@
                                 </div>
                             </td>
                             <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
+                            <td></td>
                             <td>
                                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info btn-sm">
                                     View Details

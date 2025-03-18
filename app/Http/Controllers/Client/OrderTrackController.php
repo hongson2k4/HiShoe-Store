@@ -11,13 +11,24 @@ class OrderTrackController extends Controller {
         return view('client.order.form'); // Đường dẫn chính xác đến file view
     }
     
+    // public function track(Request $request) {
+    //     $order = OrderCheck::where('order_check', $request->order_check  )->first();
+    //     if (!$order) {
+    //         return redirect()->back()->with('error', 'Mã đơn hàng không tồn tại!');
+    //     }
+    //     return view('client.order.form', compact('order'));
+    // }
+
     public function track(Request $request) {
-        $order = OrderCheck::where('order_check', $request->order_check  )->first();
+        $order = OrderCheck::where('order_check', $request->order_check)->first();
+        
         if (!$order) {
             return redirect()->back()->with('error', 'Mã đơn hàng không tồn tại!');
         }
+    
         return view('client.order.form', compact('order'));
     }
+    
     
 }
 

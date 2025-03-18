@@ -24,16 +24,33 @@
         @php
         $statusText = [
             1 => 'Đơn Hàng Đã Đặt',
-            2 => 'Đơn Hàng Đã Thanh Toán',
-            3 => 'Đã Giao Cho ĐVVC',
-            4 => 'Đang Giao',
-            5 => 'Giao Hàng Thành Công'
+            2 => 'Đang Đóng Gói',
+            3 => 'Đang Vận Chuyển',
+            4 => 'Đã Giao Hàng',
+            5 => 'Đã Hủy Đơn',
+            6 => 'Trả Hàng'
         ];
-        @endphp
-
-        <p>Trạng thái: {{ $statusText[$order->status] ?? 'Không xác định' }}</p>
-
-
+    
+        $statusColor = [
+            1 => 'green',
+            2 => 'green',
+            3 => 'green',
+            4 => 'green',
+            5 => 'red',
+            6 => 'gray'
+        ];
+    @endphp
+    
+    <p>Trạng thái: 
+        <span style="background-color: {{ $statusColor[$order->status] ?? 'black' }}; 
+                     color: white; 
+                     padding: 5px 10px; 
+                     border-radius: 5px; 
+                     display: inline-block;">
+            {{ $statusText[$order->status] ?? 'Không xác định' }}
+        </span>
+    </p>
+    
         {{-- Truyền $order vào status.blade.php --}}
         @include('client.order.status', ['order' => $order])
     @endisset

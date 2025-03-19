@@ -69,7 +69,10 @@
                                 </div>
                             </td>
                             <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
-                            <td>{{ $order->order_check }}</td>
+                            {{-- link javascript click copy --}}
+                            <td style="cursor: pointer" class="copyable" onclick="copyToClipboard(this)">
+                                {{ $order->order_check }}
+                            </td>                            
                             <td>
                                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info btn-sm">
                                     View Details
@@ -102,4 +105,18 @@
         </div>
     </div>
 </div>
+<script>
+    function copyToClipboard(element) {
+        // Tạo input ẩn để copy nội dung
+        var tempInput = document.createElement("input");
+        tempInput.value = element.innerText;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+
+        // Hiển thị thông báo copy
+        // alert("Đã copy:     " + element.innerText);
+    }
+</script>
 @endsection

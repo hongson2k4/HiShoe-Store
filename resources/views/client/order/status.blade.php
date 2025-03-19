@@ -75,3 +75,8 @@
         <span class="step-title">Giao hàng thành công</span>
     </div>
 @endif
+
+{{-- Hiển thị nút đánh giá khi mua hàng thành công status = 4 --}}
+@if($order->status == 4)
+<a href="#" class="mt-3 btn btn-outline-success">Đánh giá sản phẩm</a>
+@endif

@@ -9,6 +9,12 @@ class OrderCheck extends Model {
     
     protected $table = 'orders'; // Đảm bảo đúng với tên trong database
     protected $fillable = ['order_check', 'status'];
+
+        public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
 }
 
 

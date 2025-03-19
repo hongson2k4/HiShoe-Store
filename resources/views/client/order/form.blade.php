@@ -4,57 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tra Cứu Đơn Hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Nhập mã đơn hàng để kiểm tra</h2>
+<body class="m-3">
+    <h2 class="text-center">Nhập mã đơn hàng để kiểm tra</h2>
+    <div class="mt-5"></div>
     <form action="{{ route('order.track') }}" method="POST">
         @csrf
-        <input type="text" name="order_check" placeholder="Nhập mã đơn hàng">
-        <button type="submit">Kiểm tra</button>
+        <form action="{{ route('order.track') }}" method="POST" class="d-flex justify-content-center">
+            @csrf
+            <div class="input-group" style="max-width: 400px;">
+                <input type="text" name="order_check" class="form-control" placeholder="Nhập mã đơn hàng">
+                <button class="btn btn-secondary" type="submit">
+                    <i class="bi bi-search"></i> Kiểm tra
+                </button>
+            </div>
+        </form>
+        
     </form>
-
+    <div class="m-3"></div>
     @if(session('error'))
         <p style="color: red;">{{ session('error') }}</p>
     @endif
 
-    @isset($order)
-        <h3>Thông tin đơn hàng</h3>
-        <p>Mã đơn hàng: {{ $order->order_check }}</p>
-        {{-- <p>Trạng thái: {{ $order->status }}</p> --}}
-        @php
-        $statusText = [
-            1 => 'Đơn Hàng Đã Đặt',
-            2 => 'Đang Đóng Gói',
-            3 => 'Đang Vận Chuyển',
-            4 => 'Đã Giao Hàng',
-            5 => 'Đã Hủy Đơn',
-            6 => 'Trả Hàng'
-        ];
-    
-        $statusColor = [
-            1 => 'green',
-            2 => 'green',
-            3 => 'green',
-            4 => 'green',
-            5 => 'red',
-            6 => 'gray'
-        ];
-    @endphp
-    
-    <p>Trạng thái: 
-        <span style="background-color: {{ $statusColor[$order->status] ?? 'black' }}; 
-                     color: white; 
-                     padding: 5px 10px; 
-                     border-radius: 5px; 
-                     display: inline-block;">
-            {{ $statusText[$order->status] ?? 'Không xác định' }}
-        </span>
-    </p>
-    
-        {{-- Truyền $order vào status.blade.php --}}
-        @include('client.order.status', ['order' => $order])
-    @endisset
+        @isset($order)
+        {{-- <h3>Thông tin đơn hàng</h3> --}}
+        <table class="table table-hover table-bordered">
+            <tr>
+                <th style="width: 150px;">Mã đơn hàng:</th>
+                <td>{{ $order->order_check }}</td>
+            </tr>
+            <tr>
+                <th>Tên khách hàng:</th>
+                <td>{{ $order->user->full_name ?? 'Không xác định' }}</td>
+            </tr>
+            <tr>
+                <th>Địa chỉ:</th>
+                <td>{{ $order->user->address ?? 'Không xác định' }}</td>
+            </tr>
+            <tr>
+                <th>Số điện thoại:</th>
+                <td>{{ $order->user->phone_number ?? 'Không xác định' }}</td>
+            </tr>
+            <tr>
+                <th>Trạng thái:</th>
+                <td>
+                    <span class="badge text-white"
+                          style="background-color: {{ $statusColor[$order->status] ?? 'black' }};">
+                        {{ $statusText[$order->status] ?? 'Không xác định' }}
+                    </span> 
+                </td>
+                
+                
+            </tr>
+        </table>
+        
+        <div class="m-3"></div>
 
-    <a href="{{ route('home') }}" class="btn btn-primary">Back to Home</a>
+        {{-- Truyền $order vào status.blade.php --}}
+        @include('client.order.status', ['order' => $order, 'statusText' => $statusText, 'statusColor' => $statusColor])
+
+    @endisset
+    <div class="m-3"></div>
+    <div class="mt-3">
+        <a href="{{ route('home') }}" class="btn btn-success">Back to Home</a>
+    </div>
+    
 </body>
 </html>

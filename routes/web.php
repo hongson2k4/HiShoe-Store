@@ -148,7 +148,8 @@ Route::controller(AuthController::class)
         ->group(function () {
             Route::get('/', 'form')->name('form'); // Hiển thị form nhập mã đơn hàng
             Route::post('/', 'track')->name('track'); // Xử lý tra cứu đơn hàng
-        });
+            Route::get('/detail/{orderId}', 'showOrderDetails')->name('detail'); // Xem chi tiết đơn hàng
+        });    
     
 
 Route::get('/', function () {

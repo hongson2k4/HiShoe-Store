@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\UserController;
+use App\Http\Controllers\Client\ProductController;
+use App\Http\Controllers\Client\CartController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +21,14 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return view('client/home');
 })->name('home');
+
+Route::controller(ProductController::class)
+->prefix('shop/')
+->group(function(){
+    Route::get('/',[ProductController::class,'index'])->name('shop');
+    Route::get('/product/{product_id}',[ProductController::class,'detail'])->name('detail');
+});
+Route::get('/api/get-variant-price', [ProductController::class, 'getVariantPrice']);
 
 Route::controller(AuthController::class)
 ->prefix('')
@@ -47,4 +57,11 @@ Route::controller(UserController::class)
 ->prefix('user/')
 ->group(function(){
     Route::get('profile',[UserController::class,'profile'])->name('profile');
+});
+
+Route::controller(CartController::class)
+->prefix('cart/')
+->group(function(){
+    Route::get('/', [CartController::class, 'index'])->name('cart');
+    Route::patch('/update/{id}', [CartController::class, 'update'])->name('cart.update');
 });

@@ -7,8 +7,6 @@
                 <tr>
                     <th>STT</th>
                     <th>Trường thay đổi</th>
-                    <th>Giá trị cũ</th>
-                    <th>Giá trị mới</th>
                     <th>Thay đổi bởi</th>
                     <th>Nội dung</th>
                     <th>Thời gian</th>
@@ -19,8 +17,6 @@
                     <tr>
                         <td>{{ $key + 1 }}</td>
                         <td>{{ $change->field_name }}</td>
-                        <td>{{ $change->old_value }}</td>
-                        <td>{{ $change->new_value }}</td>
                         <td>{{ $change->changed_by->username }}</td>
                         <td>{{ $change->content }}</td>
                         <td>{{ $change->updated_at }}</td>

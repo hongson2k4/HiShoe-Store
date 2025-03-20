@@ -26,6 +26,7 @@ class UserController extends Controller
         $address = $request->query('address');
     
         $users = User::query()
+            ->where('role',0)
             ->when($search, function ($query) use ($search) {
                 return $query->where(function ($query) use ($search) {
                     $query->where('username', 'like', "%{$search}%")
@@ -58,9 +59,9 @@ class UserController extends Controller
         
             list($wardCode, $districtCode, $provinceCode) = $addressParts;
         
-            $wardName = $wards[$wardCode]['name_with_type'] ?? 'N/A';
-            $districtName = $districts[$districtCode]['name_with_type'] ?? 'N/A';
-            $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'N/A';
+            $wardName = $wards[$wardCode]['name_with_type'] ?? 'Không xác định';
+            $districtName = $districts[$districtCode]['name_with_type'] ?? 'Không xác định';
+            $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'Không xác định';
         
             $user->address = "$wardName, $districtName, $provinceName";
         }
@@ -72,69 +73,22 @@ class UserController extends Controller
 
     public function show(string $id)
     {
-        
-    }
-
-    public function edit(string $id)
-    {
         $user = User::find($id);
-        // dd($user);
-        return view('admin.users.edit', compact('user'));
-    }
 
-    public function update(Request $request, string $id)
-    {
-        $validate = $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-            'full_name' => 'required',
-            'email' => 'required',
-            'avatar' => 'nullable|file|mimes:jpg,jpeg,png',
-            'phone_number' => 'required',
-            'address' => 'required',
-        ]);
-    
-        $user = User::find($id);
-        $changes = [];
-    
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $part = $request->file('avatar')->store('uploads/users', 'public');
-        } else {
-            $part = $user->avatar;
-        }
-    
-        $fields = ['username', 'password', 'full_name', 'email', 'phone_number', 'address'];
-        foreach ($fields as $field) {
-            if ($user->$field != $validate[$field]) {
-                $changes[] = [
-                    'user_id' => $user->id,
-                    'field_name' => $field,
-                    'old_value' => $user->$field,
-                    'new_value' => $validate[$field],
-                    'change_by' => Auth::id(),
-                    'content' => "Cập nhật thông tin người dùng! ",
-                    'updated_at' => now(),
-                ];
-            }
-        }
-    
-        $user->update([
-            'username' => $validate['username'],
-            'password' => $validate['password'],
-            'full_name' => $validate['full_name'],
-            'email' => $validate['email'],
-            'avatar' => $part,
-            'phone_number' => $validate['phone_number'],
-            'address' => $validate['address'],
-            'role' => 0,
-        ]);
-    
-        UserHistoryChanges::insert($changes);
-    
-        return redirect()->route('users.list');
+        $provinces = json_decode(File::get(public_path('hanhchinhvn/tinh_tp.json')), true);
+        $districts = json_decode(File::get(public_path('hanhchinhvn/quan_huyen.json')), true);
+        $wards = json_decode(File::get(public_path('hanhchinhvn/xa_phuong.json')), true);
+
+        $addressParts = explode(', ', $user->address);
+        list($wardCode, $districtCode, $provinceCode) = $addressParts;
+
+        $wardName = $wards[$wardCode]['name_with_type'] ?? 'Không xác định';
+        $districtName = $districts[$districtCode]['name_with_type'] ?? 'Không xác định';
+        $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'Không xác định';
+
+        $user->address = "$wardName, $districtName, $provinceName";
+
+        return view('admin.users.show', compact('user'));   
     }
     
     public function ban(Request $request)

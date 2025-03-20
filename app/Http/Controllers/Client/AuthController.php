@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -21,48 +22,63 @@ class AuthController extends Controller
         }
         return view('client.auth.register');
     }
+
     public function register(Request $request)
     {
         if ($request->isMethod('post')) {
-        $validate = $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-            'full_name' => 'required',
-            'email' => 'required',
-            'avatar' => 'nullable|file|mimes:jpg,jpeg,png',
-            'phone_number' => 'required',
-            'province' => 'required',
-            'district' => 'required',
-            'ward' => 'required',
-        ]);
-
-        if ($request->hasFile('avatar')) {
-            $part = $request->file('avatar')->store('uploads/client/users', 'public');
-        } else {
-            $part = null;
-        }
-
-        try {
-            $user = User::create([
-                'username' => $validate['username'],
-                'password' => $validate['password'],
-                'full_name' => $validate['full_name'],
-                'email' => $validate['email'],
-                'avatar' => $part,
-                'phone_number' => $validate['phone_number'],
-                'address' => $validate['ward'] . ', ' . $validate['district'] . ', ' . $validate['province'],
-                'role' => 0,
+            $validate = $request->validate([
+                'password' => [
+                    'required', 
+                    'regex:/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/'
+                ],
+                'password_confirmation' => 'required|same:password',
+                'full_name' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'phone_number' => [
+                    'required',
+                    'unique:users,phone_number',
+                    'regex:/^(0|\+84)\d{9,10}$/',
+                ],
+                'province' => 'required',
+                'district' => 'required',
+                'ward' => 'required',
+            ], [
+                'password.required' => 'Vui lòng nhập mật khẩu.',
+                'password.regex' => 'Mật khẩu phải từ 8-20 ký tự, không có ký tự đặc biệt, ít nhất 1 chữ in hoa và 1 số.',
+                'password_confirmation.required' => 'Vui lòng xác nhận mật khẩu.',
+                'password_confirmation.same' => 'Mật khẩu xác nhận không khớp.',
+                'full_name.required' => 'Vui lòng nhập họ và tên.',
+                'email.required' => 'Vui lòng nhập email.',
+                'email.email' => 'Email không hợp lệ.',
+                'email.unique' => 'Email đã tồn tại.',
+                'phone_number.required' => 'Vui lòng nhập số điện thoại.',
+                'phone_number.unique' => 'Số điện thoại đã tồn tại.',
+                'phone_number.regex' => 'Số điện thoại phải bắt đầu bằng 0 hoặc +84 và có 10-11 chữ số.',
+                'province.required' => 'Vui lòng chọn tỉnh/thành phố.',
+                'district.required' => 'Vui lòng chọn quận/huyện.',
+                'ward.required' => 'Vui lòng chọn phường/xã.',
             ]);
 
-            return redirect()->route('loginForm');
-        } catch (\Exception $e) {
+            try {
+                $username = explode('@', $validate['email'])[0];
 
-            Log::error($e->getMessage());
+                User::create([
+                    'username' => $username,
+                    'password' => Hash::make($validate['password']),
+                    'full_name' => $validate['full_name'],
+                    'email' => $validate['email'],
+                    'phone_number' => $validate['phone_number'],
+                    'address' => $validate['ward'] . ', ' . $validate['district'] . ', ' . $validate['province'],
+                    'role' => 0,
+                ]);
 
-            return redirect()->back()->withErrors(['error' => 'Failed to register user']);
+                return redirect()->route('loginForm');
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+                return redirect()->back()->withErrors(['error' => 'Đăng ký người dùng thất bại']);
+            }
         }
-    }
-    return redirect()->back()->withErrors('error', 'Invalid request');
+        return redirect()->back()->withErrors('error', 'Yêu cầu không hợp lệ');
     }
     public function loginForm()
     {
@@ -73,7 +89,15 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        if (Auth::attempt(['username' => $request->input('username'), 'password' => $request->input('password')])) {
+        $validate = $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ], [
+            'username.required' => 'Vui lòng nhập tên đăng nhập.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+        ]);
+
+        if (Auth::attempt(['username' => $validate['username'], 'password' => $validate['password']])) {
             if (Auth::user()) {
                 return redirect()->route('home');
             }
@@ -125,8 +149,8 @@ class AuthController extends Controller
         UserHistoryChanges::create([
             'user_id' => $user->id,
             'field_name' => 'password',
-            'old_value' => "*",
-            'new_value' => "*",
+            'old_value' => "Không hiển thị",
+            'new_value' => "Không hiển thị",
             'change_by' => Auth::id(),
             'content' => "Người dùng đặt lại mật khẩu",
             'updated_at' => now(),
@@ -146,8 +170,10 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|confirmed|min:8',
+            'password' => 'required|confirmed|regex:/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/',
             'token' => 'required'
+        ], [
+            'password.regex' => 'Mật khẩu phải từ 8-20 ký tự, không có ký tự đặc biệt, ít nhất 1 chữ in hoa và 1 số.',
         ]);
     }
 
@@ -161,24 +187,24 @@ class AuthController extends Controller
     public function postChangePass(Request $request)
     {
         $validate = $request->validate([
-            'old_password'    => 'required',
-            'new_password'    => 'required|min:8|different:old_password',
-            'confirm_password'=> 'required|same:new_password',
+            'old_password' => 'required',
+            'new_password' => 'required|min:8|different:old_password',
+            'confirm_password' => 'required|same:new_password',
         ], [
-            'old_password.required'    => 'Vui lòng nhập mật khẩu cũ.',
-            'new_password.required'    => 'Vui lòng nhập mật khẩu mới.',
-            'new_password.min'         => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
-            'new_password.different'   => 'Mật khẩu mới không được trùng với mật khẩu cũ.',
-            'confirm_password.required'=> 'Vui lòng xác nhận lại mật khẩu.',
-            'confirm_password.same'    => 'Xác nhận mật khẩu không khớp với mật khẩu mới.',
+            'old_password.required' => 'Vui lòng nhập mật khẩu cũ.',
+            'new_password.required' => 'Vui lòng nhập mật khẩu mới.',
+            'new_password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
+            'new_password.different' => 'Mật khẩu mới không được trùng với mật khẩu cũ.',
+            'confirm_password.required' => 'Vui lòng xác nhận lại mật khẩu.',
+            'confirm_password.same' => 'Xác nhận mật khẩu không khớp với mật khẩu mới.',
         ]);
-    
+
         $user = User::find(Auth::id());
-    
+
         if (!Hash::check($validate['old_password'], $user->password)) {
             return redirect()->back()->withErrors(['error' => 'Sai mật khẩu cũ']);
         }
-        
+
         $user->update([
             'password' => Hash::make($validate['new_password']),
         ]);
@@ -186,13 +212,13 @@ class AuthController extends Controller
         UserHistoryChanges::create([
             'user_id' => Auth::id(),
             'field_name' => 'password',
-            'old_value' => "*",
-            'new_value' => "*",
+            'old_value' => "Không hiển thị",
+            'new_value' => "Không hiển thị",
             'change_by' => Auth::id(),
             'content' => "Người dùng cập nhật mật khẩu mới",
             'updated_at' => now(),
         ]);
-    
+
         return redirect()->back()->with('success', 'Đổi mật khẩu thành công!');
     }
 }

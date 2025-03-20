@@ -22,7 +22,7 @@ HiShoe-Store - Đăng nhập
                         @endif
                         @csrf
                         <div class="form-group">
-                            <label for="username" class="text-info">Tên người dùng:</label><br>
+                            <label for="username" class="text-info">Email hoặc tên người dùng:</label><br>
                             <input type="text" name="username" class="form-control">
                         </div>
                         <div class="form-group">

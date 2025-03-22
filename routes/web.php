@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('client/home');
-})->name('home');
+})->name('home');rtghrt

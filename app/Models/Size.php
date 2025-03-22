@@ -7,14 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Size extends Model
 {
-    use HasFactory;
-
-    protected $fillable=[
-        'name',
-        'description'
-    ];
-    public function products()
-{
-    return $this->hasMany(Product::class, 'size_id');
-}
+    protected $fillable = ['name'];
+    
+    public $timestamps = false;
 }

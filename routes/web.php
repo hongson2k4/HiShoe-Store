@@ -1,28 +1,30 @@
 <?php
-
-use App\Http\Controllers\Client\AuthController;
-use App\Http\Controllers\Client\HomeController;
-use App\Http\Controllers\Client\OrderTrackController;
+//link quan trọng của toàn hệ thống
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-
-
-//Link controller
-use App\Http\Controllers\admin\UserController;
-use App\Http\Controllers\admin\ProductsController;
-use App\Http\Controllers\admin\Products_variantController;
-use App\Http\Controllers\admin\SizeController;
-use App\Http\Controllers\admin\ColorController;
-use App\Http\Controllers\admin\OrderController;
-
+use Illuminate\Support\Facades\Auth;
 
 //link model
 use App\Models\Users;
 use App\Models\Products;
 use App\Models\Products_variant;
 
-//link quan trọng của toàn hệ thống
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+//Link admin controller
+use App\Http\Controllers\admin\ProductsController;
+use App\Http\Controllers\admin\Products_variantController;
+use App\Http\Controllers\admin\SizeController;
+use App\Http\Controllers\admin\ColorController;
+use App\Http\Controllers\admin\OrderController;
+
+//link client controller
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\OrderTrackController;
+use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\UserController;
+use App\Http\Controllers\Client\ProductController;
+use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\OrderHistoryController;
 
 
 /*
@@ -36,122 +38,70 @@ use Illuminate\Support\Facades\Hash;
 |
 */
 
-
 Route::get('/', function () {
     return view('client/home');
 })->name('home');
 
-Route::get('/admin/login', function () {
-    return view('admin.login');
-})->name('admin.login');
-
-Route::post('/admin/login', function (Request $request) {
-    $user = Users::where('username', $request->input('username'))->first();
-
-    if ($user && Hash::check($request->input('password'), $user->password)) {
-        session(['user' => $user]);
-
-        if ($user->role == 1) {
-            return redirect()->route('admin.dashboard');
-        }
-        session()->flash('error', 'Bạn không có quyền admin!');
-        return redirect('/admin/login');
-    }
-
-    session()->flash('error', 'Sai thông tin đăng nhập!');
-    return redirect()->route('admin.login');
+Route::controller(ProductController::class)
+->prefix('shop/')
+->group(function(){
+    Route::get('/',[ProductController::class,'index'])->name('shop');
+    Route::get('/product/{product_id}',[ProductController::class,'detail'])->name('detail');
 });
-
-Route::get('/admin/logout', function () {
-    session()->forget('user');
-    return redirect()->route('home');
-})->name('admin.logout');
-
-Route::middleware(['admin'])->get('/admin/dashboard', function () {
-    return view('admin/dashboard');
-})->name('admin.dashboard');
-
-Route::middleware(['admin'])->controller(UserController::class)
-    ->name('users.')
-    ->prefix('admin/users/')
-    ->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('list');
-        Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::post('store/', [UserController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-        Route::put('/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+')->name('update');
-        Route::delete('destroy/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
-    })
-;
-
-Route::middleware(['admin'])->controller(ProductsController::class)
-    ->name('products.')
-    ->prefix('admin/products/')
-    ->group(function () {
-        Route::get('/', [ProductsController::class, 'index'])->name('list');
-        Route::get('/create', [ProductsController::class, 'create'])->name('create');
-        Route::post('/store', [ProductsController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [ProductsController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-        Route::put('/update/{id}', [ProductsController::class, 'updateProduct'])->where('id', '[0-9]+')->name('update');
-        Route::delete('destroy/{id}', [ProductsController::class, 'destroyProduct'])->where('id', '[0-9]+')->name('destroy');
-        Route::get('/search', [ProductsController::class, 'search']);
-    })
-;
-
-Route::middleware(['admin'])->controller(Products_variantController::class)
-    ->name('products_variant.')
-    ->prefix('admin/products_variant')
-    ->group(function () {
-        Route::get('/', [Products_variantController::class, 'index'])->name('list');
-        Route::get('/create', [Products_variantController::class, 'create'])->name('create');
-        Route::post('/store', [Products_variantController::class, 'store'])->name('store');
-    })
-;
-Route::resource('admin/sizes', SizeController::class);
-Route::resource('admin/colors', ColorController::class);
-Route::put('/colors/{id}', [ColorController::class, 'update'])->name('colors.update');
-
-Route::prefix('admin/orders')->group(function () {
-    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
-    Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
-    Route::put('/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
-});
-
-
+Route::get('/api/get-variant-price', [ProductController::class, 'getVariantPrice']);
 
 Route::controller(AuthController::class)
 ->prefix('')
 ->group(function () {
-    Route::get('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/login-form', [AuthController::class, 'loginForm'])->name('loginForm');
-    Route::get('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/register-form', [AuthController::class, 'registerForm'])->name('registerForm');
+    Route::get('/login-form', [AuthController::class, 'loginForm'])->name('loginForm');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::get('/register-form', [AuthController::class, 'registerForm'])->name('registerForm');
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-        Route::controller(AuthController::class)
-        ->name('password.')
-        ->prefix('password/')
-        ->group(function(){
-            Route::get('change',[AuthController::class,'changePass'])->name('change');
-            Route::post('changePost',[AuthController::class,'storeChange'])->name('changeForm');
-            Route::get('/forgot', [AuthController::class, 'showForgotPasswordForm'])->name('request');
-            Route::post('/forgot', [AuthController::class, 'sendResetLinkEmail'])->name('email');
-            Route::get('/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset');
-            Route::post('/reset', [AuthController::class, 'reset'])->name('update');
-        });
+Route::controller(AuthController::class)
+->name('password.')
+->prefix('password/')
+->group(function(){
+    Route::get('change',[AuthController::class,'changePass'])->name('change');
+    Route::post('changePost',[AuthController::class,'postChangePass'])->name('changeForm');
+    Route::get('/forgot', [AuthController::class, 'forgotPass'])->name('request');
+    Route::post('/forgot', [AuthController::class, 'sendResetLinkEmail'])->name('email');
+    Route::get('/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset');
+    Route::post('/reset', [AuthController::class, 'reset'])->name('update');
+});
 
-        Route::controller(OrderTrackController::class)
-        ->name('order.')
-        ->prefix('track-order')
-        ->group(function () {
-            Route::get('/', 'form')->name('form'); // Hiển thị form nhập mã đơn hàng
-            Route::post('/', 'track')->name('track'); // Xử lý tra cứu đơn hàng
-            Route::get('/detail/{orderId}', 'showOrderDetails')->name('detail'); // Xem chi tiết đơn hàng
-        });    
-    
+Route::controller(UserController::class)
+->name('user.')
+->prefix('user/')
+->group(function(){
+    Route::get('profile',[UserController::class,'profile'])->name('profile');
+});
 
-Route::get('/', function () {
-    return view('client/home');
-})->name('home');
+Route::controller(CartController::class)
+->prefix('cart/')
+->group(function(){
+    Route::get('/', [CartController::class, 'index'])->name('cart');
+    Route::patch('/update/{id}', [CartController::class, 'update'])->name('cart.update');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    // Route::get('/order-history', [OrderHistoryController::class, 'index'])->name('order.history');
+    Route::get('/order-history', [OrderHistoryController::class, 'index'])->name('order-history')->middleware('auth');
+    Route::get('/order-history/{order}', [OrderHistoryController::class, 'show'])->name('order.history.detail');
+    Route::get('/order/{id}', [OrderHistoryController::class, 'detail'])->name('order.detail');
+
+
+});
+
+
+Route::controller(OrderTrackController::class) //route kiểm tra tình trạng đơn hàng ko cần đăng nhập
+->name('order.')
+->prefix('track-order')
+->group(function () {
+    Route::get('/', 'form')->name('form'); // Hiển thị form nhập mã đơn hàng
+    Route::post('/', 'track')->name('track'); // Xử lý tra cứu đơn hàng
+    Route::get('/detail/{orderId}', 'showOrderDetails')->name('detail'); // Xem chi tiết đơn hàng
+});

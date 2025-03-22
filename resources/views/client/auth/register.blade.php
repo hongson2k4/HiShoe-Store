@@ -9,9 +9,9 @@ HiShoe-Store - Đăng ký
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
 <!------ Include the above in your HEAD tag ---------->
-
-    <div id="login">
+<div id="login">
         <h3 class="text-center text-white pt-5">Login form</h3>
+        
         <div class="container">
             <div id="login-row" class="row justify-content-center align-items-center">
                 <div id="login-column" class="col-md-6">
@@ -22,47 +22,67 @@ HiShoe-Store - Đăng ký
                             <div class="form-group">
                                 <label for="username" class="text-info">Họ và tên:</label><br>
                                 <input type="text" name="full_name" class="form-control" value="{{old('full_name')}}">
+                                @if ($errors->has('full_name'))
+                                    <span class="text-danger">{{ $errors->first('full_name') }}</span>
+                                @endif
                             </div>
                             <div class="form-group">
-                                <label for="username" class="text-info">Tên tài khoản:</label><br>
-                                <input type="text" name="username" class="form-control" value="{{old('username')}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="password" class="text-info">Email:</label><br>
+                                <label for="email" class="text-info">Email:</label><br>
                                 <input type="text" name="email" class="form-control" value="{{old('email')}}">
+                                @if ($errors->has('email'))
+                                    <span class="text-danger">{{ $errors->first('email') }}</span>
+                                @endif
                             </div>
                             <div class="form-group">
-                                <label for="password" class="text-info">Số điện thoại:</label><br>
+                                <label for="phone_number" class="text-info">Số điện thoại:</label><br>
                                 <input type="text" name="phone_number" class="form-control" value="{{old('phone_number')}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="username" class="text-info">Ảnh đại diện:</label><br>
-                                <input type="file" name="avatar" class="form-control" value="{{old('avatar')}}">
+                                @if ($errors->has('phone_number'))
+                                    <span class="text-danger">{{ $errors->first('phone_number') }}</span>
+                                @endif
                             </div>
                             <div class="form-group">
                                 <label for="password" class="text-info">Mật khẩu:</label><br>
                                 <input type="password" name="password" class="form-control" value="{{old('password')}}">
+                                @if ($errors->has('password'))
+                                    <span class="text-danger">{{ $errors->first('password') }}</span>
+                                @endif
                             </div>
                             <div class="form-group">
-                                <label for="password" class="text-info">Tỉnh / Thành phố:</label><br>
+                                <label for="password_confirmation" class="text-info">Xác nhận mật khẩu:</label><br>
+                                <input type="password" name="password_confirmation" class="form-control" value="{{old('password_confirmation')}}">
+                                @if ($errors->has('password_confirmation'))
+                                    <span class="text-danger">{{ $errors->first('password_confirmation') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="province" class="text-info">Tỉnh / Thành phố:</label><br>
                                 <select name="province" id="province" class="form-control" value="{{old('province')}}">
                                     <option value="" disabled selected>-- Chọn tỉnh/thành phố --</option>
                                 </select>
+                                @if ($errors->has('province'))
+                                    <span class="text-danger">{{ $errors->first('province') }}</span>
+                                @endif
                             </div>
                             <div class="form-group">
-                                <label for="password" class="text-info">Quận / Huyện / Thị xã:</label><br>
+                                <label for="district" class="text-info">Quận / Huyện / Thị xã:</label><br>
                                 <select name="district" id="district" class="form-control" value="{{old('district')}}">
                                     <option value="" disabled selected>-- Chọn quận/huyện/thị xã --</option>
                                 </select>
+                                @if ($errors->has('district'))
+                                    <span class="text-danger">{{ $errors->first('district') }}</span>
+                                @endif
                             </div>
                             <div class="form-group">
-                                <label for="password" class="text-info">Xã / Phường / Thị trấn:</label><br>
+                                <label for="ward" class="text-info">Xã / Phường / Thị trấn:</label><br>
                                 <select name="ward" id="ward" class="form-control" value="{{old('ward')}}">
                                     <option value="" disabled selected>-- Chọn xã/phường/thị trấn --</option>
                                 </select>
+                                @if ($errors->has('ward'))
+                                    <span class="text-danger">{{ $errors->first('ward') }}</span>
+                                @endif
                             </div>
                             <div class="form-group">
-                                <input type="submit" name="submit" class="btn btn-info btn-md" value="submit">
+                                <input type="submit" name="submit" class="btn btn-info btn-md" value="Đăng ký">
                             </div>
                         </form>
                     </div>

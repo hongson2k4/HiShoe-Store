@@ -21,11 +21,13 @@ class ColorController extends Controller
             'name' => 'required|unique:colors',
             'code' => 'nullable|string',
         ], [
-            'name.unique' => 'Tên màu này đã tồn tại.',
+            'name.required' => 'Vui lòng nhập tên màu!',
+            'name.unique' => 'Tên màu này đã tồn tại!',
+            'code.string' => 'Mã màu phải là chuỗi!',
         ]);
-    
+
         Color::create($request->all());
-    
+
         return redirect()->route('colors.index')->with('success', 'Màu đã được thêm.');
     }
 
@@ -45,7 +47,7 @@ class ColorController extends Controller
             'name.string' => 'Tên màu phải là chuỗi ký tự!',
             'name.unique' => 'Tên màu này đã tồn tại!',
             'code.string' => 'Mã màu phải là chuỗi!',
-          
+            'code.max' => 'Mã màu không được vượt quá 10 ký tự!',
         ]);
 
         // Cập nhật dữ liệu

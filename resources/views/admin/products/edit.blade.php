@@ -5,7 +5,7 @@
     @csrf
 
     <div class="mb-3">
-        <label class="form-label">Tên sản phẩm</label>
+        <label class="form-label">Name</label>
         <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{old('name', $product['name'])}}">
         @error('name')
         <div class="invalid-feedback">
@@ -15,7 +15,7 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Ghi chú</label>
+        <label class="form-label">Ghi chú</label>   
         <textarea class="form-control @error('description') is-invalid @enderror" type="text" name="description" value="{{old('description', $product['description'])}}" aria-label="With textarea"></textarea>
         @error('description')
         <div class="invalid-feedback">
@@ -25,7 +25,7 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Giá</label>
+        <label class="form-label">Price</label>
         <input class="form-control @error('price') is-invalid @enderror" type="number" min=1 name="price" value="{{old('price', $product['price'])}}">
         @error('price')
         <div class="invalid-feedback">
@@ -35,7 +35,7 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label">Số lượng</label>
+        <label class="form-label">Stock quantity</label>
         <input class="form-control @error('stock_quantity') is-invalid @enderror" type="number" name="stock_quantity" value="{{old('stock_quantity', $product['stock_quantity'])}}">
         @error('stock_quantity')
         <div class="invalid-feedback">
@@ -45,14 +45,13 @@
         @enderror
     </div>
     <div class="mb-3">
-        <label class="form-label" class="form-control @error('category_id') is-invalid @enderror" type="text" name="category_id" value="{{old('category_id', $product['category_id'])}}">Danh mục</label>
+        <label class="form-label" class="form-control @error('category_id') is-invalid @enderror" type="text" name="category_id" value="{{old('category_id', $product['category_id'])}}">Category id</label>
         @error('category_id')
         <div class="invalid-feedback">
             {{$message}}
         </div>
         @enderror
             <select name="category_id" id="" class="form-control">
-                <option value="">-- Chọn danh mục --</option>
                 @foreach ($categories as $cate)
                     <option value="{{$cate->id}}">
                         {{$cate->name}}
@@ -61,14 +60,13 @@
             </select>
     </div>
     <div class="mb-3">
-        <label class="form-label" class="form-control @error('brand_id') is-invalid @enderror" type="text" name="brand_id" value="{{old('brand_id', $product['brand_id'])}}">Thương hiệu</label>
+        <label class="form-label" class="form-control @error('brand_id') is-invalid @enderror" type="text" name="brand_id" value="{{old('brand_id', $product['brand_id'])}}">Brand id</label>
         @error('brand_id')
         <div class="invalid-feedback">
             {{$message}}
         </div>
         @enderror
             <select name="brand_id" id="" class="form-control">
-                <option value="">-- Chọn thương hiệu --</option>
                 @foreach ($brands as $br)
                     <option value="{{$br->id}}">
                         {{$br->name}}
@@ -77,39 +75,7 @@
             </select>
     </div>
     <div class="mb-3">
-        <label class="form-label" class="form-control @error('size_id') is-invalid @enderror" type="text" name="size_id" value="{{old('size_id', $product['size_id'])}}">Kích thước</label>
-        @error('size_id')
-        <div class="invalid-feedback">
-            {{$message}}
-        </div>
-        @enderror
-            <select name="size_id" id="" class="form-control">
-                <option value="">-- Chọn kích thước --</option>
-                @foreach ($sizes as $br)
-                    <option value="{{$br->id}}">
-                        {{$br->size}}
-                    </option>
-                @endforeach
-            </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" class="form-control @error('color_id') is-invalid @enderror" type="text" name="color_id" value="{{old('color_id', $product['color_id'])}}">Màu sắc</label>
-        @error('color_id')
-        <div class="invalid-feedback">
-            {{$message}}
-        </div>
-        @enderror
-            <select name="color_id" id="" class="form-control">
-                <option value="">-- Chọn màu sắc --</option>
-                @foreach ($colors as $br)
-                    <option value="{{$br->id}}">
-                        {{$br->name}}
-                    </option>
-                @endforeach
-            </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Chọn ảnh</label>
+        <label class="form-label">Image url</label>
         <input class="form-control @error('image_url') is-invalid @enderror" type="file" name="image_url" id="imageUpload" value="{{old('image_url', $product['image_url'])}}">
         <div class="image-preview" id="imagePreview">
             <img src="{{Storage::url($product->image_url)}}" alt="" class="image-preview__image" height="100">

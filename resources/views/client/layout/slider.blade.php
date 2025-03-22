@@ -1,4 +1,4 @@
-<section class="slider_section">
+<section class="slider_section" style="margin-top: 150px;">
       <div class="slider_container">
         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
           <div class="carousel-inner">
@@ -21,7 +21,7 @@
                   </div>
                   <div class="col-md-5 ">
                     <div class="img-box">
-                      <img src="images/slider-img.png" alt="" />
+                      <img src="https://i.pinimg.com/736x/06/bb/9c/06bb9ca4b17e0cf881476be2fc1261e7.jpg" alt="" />
                     </div>
                   </div>
                 </div>
@@ -46,7 +46,7 @@
                   </div>
                   <div class="col-md-5 ">
                     <div class="img-box">
-                      <img src="images/slider-img.png" alt="" />
+                      <img src="https://i.pinimg.com/736x/a2/56/1a/a2561a2d112a36d405b7f275df439855.jpg" alt="" />
                     </div>
                   </div>
                 </div>
@@ -71,7 +71,7 @@
                   </div>
                   <div class="col-md-5 ">
                     <div class="img-box">
-                      <img src="images/slider-img.png" alt="" />
+                      <img src="https://i.pinimg.com/736x/7e/02/f3/7e02f384d47d046242e9b0155fa9e90a.jpg" alt="" />
                     </div>
                   </div>
                 </div>

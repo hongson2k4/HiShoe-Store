@@ -1,5 +1,4 @@
-                <!-- Topbar -->    <script src="https://kit.fontawesome.com/016b4d7fb2.js" crossorigin="anonymous"></script>
-
+                <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                     <!-- Sidebar Toggle (Topbar) -->
@@ -171,9 +170,9 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ session('user')->username }}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->username }}</span>
                                 <img class="img-profile rounded-circle"
-                                    src="https://i.pinimg.com/736x/65/7e/9c/657e9c89d676a72f89f89b250dbe8f14.jpg">
+                                    src="https://i.pinimg.com/736x/8a/2b/90/8a2b901109790a14ef35569adac32261.jpg">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -193,7 +192,7 @@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item"  data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
+                                    Đăng xuất
                                 </a>
                             </div>
                         </li>

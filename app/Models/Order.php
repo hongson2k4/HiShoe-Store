@@ -96,10 +96,19 @@ class Order extends Model
      *
      * @return string
      */
-    public function getStatusTextAttribute()
+    public function getStatusTextAttribute() //trả trạng thái về theo id
     {
-        return self::getStatusList()[$this->status] ?? 'Unknown';
+        $statuses = [
+            1 => 'Đơn đã đặt',
+            2 => 'Đang đóng gói',
+            3 => 'Đang vận chuyển',
+            4 => 'Đã giao hàng',
+            5 => 'Đã hủy',
+            6 => 'Đã trả hàng',
+        ];
+        return $statuses[$this->status] ?? 'Không xác định';
     }
+    
 
     public function getStatusBadgeClass()
     {
@@ -167,4 +176,30 @@ class Order extends Model
 
         return $this->total_price;
     }
+
+        public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+    }
+
+        public function orderItemHistories()
+    {
+        return $this->hasMany(OrderItemHistory::class, 'order_id', 'id');
+    }
+
+    // hiển thị màu sắc cho status
+    public function getStatusClass()
+    {
+        return match ($this->status) {
+            1 => 'bg-primary',   // Đơn đã đặt - Xanh dương
+            2 => 'bg-warning',   // Đang đóng gói - Vàng
+            3 => 'bg-info',      // Đang vận chuyển - Xanh nhạt
+            4 => 'bg-success',   // Đã giao hàng - Xanh lá
+            5 => 'bg-danger',    // Đã hủy - Đỏ
+            6 => 'bg-secondary', // Đã trả hàng - Xám
+            default => 'bg-light text-dark',
+        };
+    }
+
+
 }

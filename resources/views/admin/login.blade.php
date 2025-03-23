@@ -22,7 +22,7 @@
 
 </head>
 
-<body class="bg-gradient-primary">
+<body class="" style="background-color: #F89CAB">
 
     <div class="container">
 
@@ -35,11 +35,13 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image text-center" style="margin-top: 60px;">
+                                <img src="https://i.pinimg.com/736x/1d/fb/18/1dfb18b2e4e6188fcf325bdf99a95afc.jpg" alt="" style="width: 300px; height: auto; border-radius: 20px;">
+                            </div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Đăng nhập đê admin!!</h1>
                                     </div>
                                     @if(session()->has('error'))
                                     <p style="color: red;">{{ session('error') }}</p>
@@ -61,7 +63,7 @@
                                                 <label class="custom-control-label" for="customCheck" onclick="togglePassword()">Show Password</label>
                                             </div>
                                         </div>
-                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                        <button type="submit" class="btn btn-user btn-block" style="background-color: #F89CAB; color: white;">
                                             Login
                                         </button>
                                         <hr>

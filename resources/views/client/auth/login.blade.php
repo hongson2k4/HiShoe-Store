@@ -15,6 +15,13 @@ HiShoe-Store - Đăng nhập
             <div id="login-column" class="col-md-6">
                 <div id="login-box" class="col-md-12">
 
+                    {{-- Show thông báo Đăng nhập để xem lịch sử đơn hàng!! --}}
+                    @if(request()->has('error'))
+                        <div class="alert alert-danger">
+                            {{ request()->get('error') }}
+                        </div>
+                    @endif
+
                     <form class="form" action="{{ route('login') }}" method="post">
                         <h3 class="text-center text-info">Đăng nhập</h3>
                         @if(session()->has('error'))
@@ -27,7 +34,7 @@ HiShoe-Store - Đăng nhập
                         </div>
                         <div class="form-group">
                             <label for="password" class="text-info">Mật khẩu:</label><br>
-                            <input type="text" name="password" class="form-control">
+                            <input type="password" name="password" class="form-control">
                         </div>
                         <div class="form-group">
                             <!-- <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br> -->

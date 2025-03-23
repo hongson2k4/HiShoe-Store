@@ -40,7 +40,7 @@
         </tbody>
     </table>
     <div class="mt-3">
-        <a href="{{ route('order-history') }}" class="btn btn-success">Back to history</a>
+        <a href="{{ route('order-history') }}" class="btn text-white" style="background-color: #F89CAB;">Back to history</a>
     </div>
 </div>
 @endsection

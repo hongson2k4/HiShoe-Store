@@ -2,6 +2,7 @@
 @section('content')
 <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
+
     <div class="mb-3">
         <label class="form-label">Tên sản phẩm</label>
         <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{old('name')}}">
@@ -26,6 +27,16 @@
         <label class="form-label">Giá</label>
         <input class="form-control @error('price') is-invalid @enderror" type="number" min=1 name="price" value="{{old('price')}}">
         @error('price')
+        <div class="invalid-feedback">
+            {{$message}}
+        </div>
+
+        @enderror
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Số lượng</label>
+        <input class="form-control @error('stock_quantity') is-invalid @enderror" type="number" name="stock_quantity" value="{{old('stock_quantity')}}">
+        @error('stock_quantity')
         <div class="invalid-feedback">
             {{$message}}
         </div>
@@ -64,6 +75,35 @@
             </div>
         @enderror
     </div>
+    <div class="form-group">
+        <label for="color_id">Chọn Màu</label>
+        <select class="form-control" name="color_id" id="color_id">
+            <option value="">-- Chọn màu --</option>
+            @foreach($colors as $color)
+                <option value="{{ $color->id }}">{{ $color->name }}</option>
+            @endforeach
+        </select>
+        @error('color_id')
+            <div class="invalid-feedback">
+                {{$message}}
+            </div>
+        @enderror
+    </div>
+    
+    <div class="form-group">
+        <label for="size_id">Chọn Size</label>
+        <select class="form-control" name="size_id" id="size_id">
+            <option value="">-- Chọn size --</option>
+            @foreach($sizes as $size)
+                <option value="{{ $size->id }}">{{ $size->size }}</option>
+            @endforeach
+        </select>
+        @error('size_id')
+            <div class="invalid-feedback">
+                {{$message}}
+            </div>
+        @enderror
+    </div>    
     <div class="mb-3">
         <label class="form-label">Chọn file ảnh</label>
         <input class="form-control m-2 @error('image_url') is-invalid @enderror" type="file" name="image_url" id="imageUpload" value="{{old('image_url')}}">
@@ -75,6 +115,7 @@
         <div class="invalid-feedback">
             {{$message}}
         </div>
+
         @enderror
     </div>
     <button type="submit" class="btn btn-success">Thêm mới</button>

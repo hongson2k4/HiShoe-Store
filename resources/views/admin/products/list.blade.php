@@ -5,8 +5,8 @@
 @section('content')
     <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới sản phẩm</a>
     <form action="{{ route('products.list') }}" method="GET" class="form-inline mb-3 float-right">
-        <input type="text" name="search" class="form-control mr-2" placeholder="Search products"
-            value="{{ request()->query('search') }}">
+    <input type="text" name="search" class="form-control mr-2" placeholder="Search products"
+    value="{{ request()->query('search') }}">
         <button type="submit" class="btn btn-success">Search</button>
     </form>
     <table class="table">
@@ -19,42 +19,36 @@
                 <th>Số lượng</th>
                 <th>Loại giày</th>
                 <th>Thương hiệu</th>
+                <th>Màu sắc</th>
+                <th>Kích thước</th>
                 <th>Hình ảnh</th>
                 <th>Trang thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($products as $key => $u)
-                <tr>
-                    <td>{{$key + 1}}</td>
-                    <td>{{$u->name}}</td>
-                    <td>{{$u->description}}</td>
-                    <td>{{$u->price}}</td>
-                    <td>{{$u->stock_quantity}}</td>
-                    <td>{{$u->category->name}}</td>
-                    <td>{{$u->brand->name}}</td>
-
-                    <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
-                    <td>
-
-                    <span class="{{ $u->status == 0 ? 'bg-success text-white px-2 rounded' : 'bg-danger text-white px-2 rounded' }}">
-                            {{ $u->status == 0 ? 'Hoạt động' : 'Tạm đóng' }}
-                        </span>
-
-                    </td>
-                    <td>
-                        <a class="btn btn-warning" href="{{route('products.edit', $u->id)}}"><i
-                                class="fas fa-pencil-alt"></i></a>
-                        <form action="{{route('products.destroy', $u->id)}}" method="post">
-                            @method('DELETE')
-                            @csrf
-                            <button class="btn btn-danger" onclick="return confirm('Xác nhận xóa ?')"> <i
-                                    class="fas fa-trash"></i></button>
-                        </form>
-                        <a class="btn btn-info" href=" {{ route('products.variant.list', $u->id) }}"><i class="fas fa-tshirt"></i></a>
-                    </td>
-                </tr>
+            @foreach ($products as $key=>$u)
+            <tr>
+                <td>{{$key + 1}}</td>
+                <td>{{$u->name}}</td>
+                <td>{{$u->description}}</td>
+                <td>{{$u->price}}</td>
+                <td>{{$u->stock_quantity}}</td>
+                <td>{{$u->category->name}}</td>
+                <td>{{$u->brand->name}}</td>
+                <td>{{$u->color->name ?? 'Chưa chọn' }}</td>
+                <td>{{$u->size->size ?? 'Chưa chọn' }}</td>
+                <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
+                <td></td>
+                <td>
+                <a class="btn btn-warning m-2" href="{{route('products.edit',$u->id)}}"><i class="fas fa-pencil-alt"></i></a>
+                    <form action="{{route('products.destroy',$u->id)}}" method="post">
+                        @method('DELETE')
+                        @csrf
+                        <button class="btn btn-danger m-2" onclick="return confirm('Xác nhận xóa ?')"> <i class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>

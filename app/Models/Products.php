@@ -17,6 +17,8 @@ class Products extends Model
         'stock_quantity',
         'category_id',
         'brand_id',
+        'color_id',
+        'size_id',
         'image_url',
     ];
     public $timestamp = false;
@@ -29,10 +31,16 @@ class Products extends Model
     {
         return $this->belongsTo(Brand::class, 'brand_id');
     }
-    public function variants()
+        public function color()
     {
-        return $this->hasMany(Product_variant::class, 'product_id');
+        return $this->belongsTo(Color::class, 'color_id');
     }
+
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'size_id');
+    }
+
 
 
 }

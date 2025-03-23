@@ -5,21 +5,55 @@
     <h1 class="text-center mb-5">Lịch sử đơn hàng</h1>
 
     <form action="{{ route('order-history') }}" method="GET" class="filter-form mb-3">
-        <input type="text" name="order_id" placeholder="Mã đơn hàng">
-        <input type="text" name="day" placeholder="Ngày">
-        <input type="text" name="month" placeholder="Tháng">
-        <input type="text" name="year" placeholder="Năm">
-        <select name="status">
-            <option value="">Chọn trạng thái</option>
-            <option value="1">Đơn đã đặt</option>
-            <option value="2">Đang đóng gói</option>
-            <option value="3">Đang vận chuyển</option>
-            <option value="4">Đã giao hàng</option>
-            <option value="5">Đã hủy</option>
-            <option value="6">Đã trả hàng</option>
-        </select>
-        <button type="submit">Lọc</button>
-    </form>    
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="order_id" name="order_id" placeholder="Nhập mã đơn hàng">
+                    <label for="order_id">Mã đơn hàng</label>
+                </div>
+            </div>
+    
+            <div class="col">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="day" name="day" placeholder="Nhập ngày">
+                    <label for="day">Ngày</label>
+                </div>
+            </div>
+    
+            <div class="col">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="month" name="month" placeholder="Nhập tháng">
+                    <label for="month">Tháng</label>
+                </div>
+            </div>
+    
+            <div class="col">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="year" name="year" placeholder="Nhập năm">
+                    <label for="year">Năm</label>
+                </div>
+            </div>
+    
+            <div class="col">
+                <div class="form-floating">
+                    <select class="form-select" id="status" name="status">
+                        <option value="" selected>Chọn trạng thái</option>
+                        <option value="1">Đơn đã đặt</option>
+                        <option value="2">Đang đóng gói</option>
+                        <option value="3">Đang vận chuyển</option>
+                        <option value="4">Đã giao hàng</option>
+                        <option value="5">Đã hủy</option>
+                        <option value="6">Đã trả hàng</option>
+                    </select>
+                    <label for="status">Trạng thái</label>
+                </div>
+            </div>
+    
+            <div class="col-auto">
+                <button type="submit" class="btn text-white" style="padding: 16px; background-color: #F89CAB;">Lọc</button>
+            </div>
+        </div>
+    </form>
 
     @if ($orders->isEmpty())
         <p>Bạn chưa có đơn hàng nào.</p>
@@ -55,7 +89,7 @@
         </table>
     @endif
     <div class="mt-3">
-        <a href="{{ route('home') }}" class="btn btn-success">Back to Home</a>
+        <a href="{{ route('home') }}" class="btn text-white" style="background-color: #F89CAB;">Back to Home</a>
     </div>
 </div>
 @endsection

@@ -8,9 +8,21 @@ use App\Models\Order;
 
 class OrderHistoryController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth'); // Chặn người chưa đăng nhập
+    }
+
     public function index(Request $request)
     {
-        $query = Order::query();
+        //Hiện thông báo Đăng nhập để xem lịch sử đơn hàng!! khi chuyển trang form đăng nhập
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Đăng nhập để xem lịch sử đơn hàng!!');
+        }
+
+        // $query = Order::query(); Lấy tất cả dữ liệu từ bảng orders
+        $query = Order::where('user_id', auth()->id()); // Lọc đơn hàng theo user đang đăng nhập
 
         if ($request->filled('order_id')) {
             $query->where('order_check', $request->order_id);

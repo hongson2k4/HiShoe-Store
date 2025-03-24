@@ -88,11 +88,24 @@ Route::controller(CartController::class)
 
 
 Route::middleware(['auth'])->group(function () {
-    // Route::get('/order-history', [OrderHistoryController::class, 'index'])->name('order.history');
     Route::get('/order-history', [OrderHistoryController::class, 'index'])->name('order-history')->middleware('auth');
     Route::get('/order-history/{order}', [OrderHistoryController::class, 'show'])->name('order.history.detail');
     Route::get('/order/{id}', [OrderHistoryController::class, 'detail'])->name('order.detail');
 
+    // Thêm route mới để hủy đơn hàng
+    Route::post('/order-history/{order}/cancel', [OrderHistoryController::class, 'cancel'])->name('order.history.cancel');
+    // Thêm route để xác nhận đã nhận hàng
+    Route::post('/order-history/{order}/receive', [OrderHistoryController::class, 'receive'])->name('order.history.receive');
+    // Thêm route để đánh giá sản phẩm (tạm thời là placeholder)
+    Route::post('/order-history/{order}/review', [OrderHistoryController::class, 'review'])->name('order.history.review');
+    // Thêm route để mua lại đơn hàng
+    Route::post('/order-history/{order}/rebuy', [OrderHistoryController::class, 'rebuy'])->name('order.history.rebuy');
+    // Thêm route để xóa đơn hàng
+    Route::delete('/{order}/delete', [OrderController::class, 'delete'])->name('orders.delete');
+    // Thêm route để trả hàng/hoàn tiền
+    Route::post('/order-history/{order}/refund', [OrderHistoryController::class, 'refund'])->name('order.history.refund');
+    // Thêm route để liên hệ shop
+    Route::post('order/history/contact', [OrderHistoryController::class, 'contactShop'])->name('order.history.contact');
 
 });
 

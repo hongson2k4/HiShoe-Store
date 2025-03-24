@@ -4,23 +4,37 @@
 <div class="container-fluid mt-4">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Order Management</h2>
+            <h2 class="mb-0">Quản lý đơn hàng</h2>
         </div>
         <div class="card-body">
+            <!-- Thêm thông báo -->
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
             {{-- Search and Filter Form --}}
+            <!-- Phần còn lại của code giữ nguyên -->
             <form action="{{ route('orders.index') }}" method="GET" class="mb-4">
                 <div class="row g-3">
                     <div class="col-md-4">
                         <input type="text"
                             name="search"
                             class="form-control"
-                            placeholder="Search by customer name"
+                            placeholder="Nhập tên khách hàng"
                             value="{{ request('search') }}">
                     </div>
                     <div class="col-md-3">
                         <select name="status" class="form-select">
-                            <option value="">All Statuses</option>
+                            <option value="">Tất cả trạng thái</option>
                             @foreach(\App\Models\Order::getStatusList() as $key => $value)
                             <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>
                                 {{ $value }}
@@ -30,12 +44,12 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-outline-primary">
-                            <i class="fas fa-filter me-1"></i> Apply Filter
+                            <i class="fas fa-filter me-1"></i> Lọc
                         </button>
                     </div>
                     <div class="col-md-3 text-end">
                         <a href="{{ route('orders.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-refresh me-1"></i> Reset Filters
+                            <i class="fas fa-refresh me-1"></i> Bộ lọc mặc định
                         </a>
                     </div>
                 </div>
@@ -46,18 +60,23 @@
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Total Price</th>
-                            <th>Status</th>
-                            <th>Created At</th>
-                            <th>Actions</th>
+                            <th>STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Mã đơn hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Trị giá đơn hàng</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo đơn</th>
+                            <th>Xem đơn hàng</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($orders as $order)
+                        @forelse($orders as $key => $order)
                         <tr>
-                            <td>{{ $order->id }}</td>
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $order->product ? $order->product->name : 'Không có sản phẩm' }}</td> <!-- Hiển thị tên sản phẩm -->
+                            <td>{{ $order->order_check }}</td>
                             <td>{{ $order->user->full_name }}</td>
                             <td>{{ number_format($order->total_price) }} VND</td>
                             <td>
@@ -73,10 +92,39 @@
                                     View Details
                                 </a>
                             </td>
+                            {{-- Các tính năng thông báo đơn hàng từ client --}}
+                            <td>
+                                @if ($order->needs_support)
+                                    <span class="badge bg-warning text-dark">Cần hỗ trợ</span>
+                                    <form action="{{ route('orders.resolve-support', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn đã xử lý yêu cầu hỗ trợ này?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">Xử lý hỗ trợ</button>
+                                    </form>
+                                @endif
+                            
+                                @if ($order->status == 1)
+                                    <form action="{{ route('orders.confirm', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng này?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">Xác nhận đơn hàng</button>
+                                    </form>
+                                @elseif ($order->status == 2 || $order->status == 3)
+                                    <span class="text-muted">Đang xử lý</span>
+                                @elseif ($order->status == 7)
+                                    <span class="text-success">Khách đã nhận hàng</span>
+                                @elseif ($order->status == 5 || $order->status == 6)
+                                    <form action="{{ route('orders.delete', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Xóa đơn hàng</button>
+                                    </form>
+                                @else
+                                    <span class="text-muted">Không có hành động</span>
+                                @endif
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center">
+                            <td colspan="7" class="text-center">
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle me-2"></i>
                                     No order found!

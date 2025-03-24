@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\Client\OrderHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +80,12 @@ Route::prefix('admin/orders')->group(function () {
     Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::put('/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+
+    // route để xác nhận đơn hàng
+    Route::post('/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+    // route xử lý liên hệ shop
+    // Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('orders/resolve-support/{id}', [OrderController::class, 'resolveSupport'])->name('orders.resolve-support');
 });
 
 // Route::middleware(['admin'])->controller(BrandController::class)

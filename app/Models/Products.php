@@ -41,6 +41,11 @@ class Products extends Model
         return $this->belongsTo(Size::class, 'size_id');
     }
 
+    // Quan hệ với bảng orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'product_name_id', 'id');
+    }
 
 
 }

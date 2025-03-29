@@ -1,28 +1,12 @@
 <?php
 
-use App\Http\Controllers\admin\UserController;
-use App\Http\Controllers\admin\ProductsController;
-use App\Models\Users;
-use App\Models\Products;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\HomeController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('client/home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::controller(AuthController::class)
 ->prefix('')
@@ -44,4 +28,19 @@ Route::controller(AuthController::class)
     Route::post('/forgot', [AuthController::class, 'sendResetLinkEmail'])->name('email');
     Route::get('/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset');
     Route::post('/reset', [AuthController::class, 'reset'])->name('update');
+});
+
+// Cart Routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+Route::post('/cart/apply-voucher', [CartController::class, 'applyVoucher'])->name('cart.apply-voucher');
+
+// Checkout Routes
+Route::prefix('checkout')->group(function(){
+    Route::get('/index', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
 });

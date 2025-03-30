@@ -33,7 +33,8 @@ class OrderTrackController extends Controller {
             3 => 'Đang vận chuyển',
             4 => 'Đã giao hàng',
             5 => 'Đã hủy',
-            6 => 'Đã trả hàng'
+            6 => 'Đã trả hàng',
+            7 => 'Đã nhận hàng',
         ];
 
         $statusColor = [
@@ -42,7 +43,8 @@ class OrderTrackController extends Controller {
             3 => '#ffc107', // Vàng
             4 => '#4caf50', // Xanh lá
             5 => '#f44336', // Đỏ
-            6 => '#9e9e9e'  // Xám
+            6 => '#9e9e9e',  // Xám
+            7 => '#4caf50'  // xanh lá
         ];
 
         return view('client.order.form', compact('order', 'statusText', 'statusColor'));

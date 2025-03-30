@@ -33,6 +33,13 @@
                             value="{{ request('search') }}">
                     </div>
                     <div class="col-md-3">
+                        <input type="text"
+                               name="order_check"
+                               class="form-control"
+                               placeholder="Nhập mã đơn hàng"
+                               value="{{ request('order_check') }}">
+                    </div>
+                    <div class="col-md-3">
                         <select name="status" class="form-select">
                             <option value="">Tất cả trạng thái</option>
                             @foreach(\App\Models\Order::getStatusList() as $key => $value)
@@ -47,7 +54,7 @@
                             <i class="fas fa-filter me-1"></i> Lọc
                         </button>
                     </div>
-                    <div class="col-md-3 text-end">
+                    <div class="col-md-3 text-end m-2 mt-3">
                         <a href="{{ route('orders.index') }}" class="btn btn-secondary">
                             <i class="fas fa-refresh me-1"></i> Bộ lọc mặc định
                         </a>
@@ -66,6 +73,7 @@
                             <th>Tên khách hàng</th>
                             <th>Trị giá đơn hàng</th>
                             <th>Trạng thái</th>
+                            <th>Lý do hủy</th>
                             <th>Ngày tạo đơn</th>
                             <th>Xem đơn hàng</th>
                             <th>Hành động</th>
@@ -86,6 +94,13 @@
                                     </span>
                                 </div>
                             </td>
+                            <td>
+                                <div class="order-status-badge">
+                                    @if ($order->status == 5)
+                                        {{ $order->customer_reasons ?: 'Khác' }}
+                                    @endif
+                                </div>
+                            </td>
                             <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
                             <td>
                                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info btn-sm">
@@ -94,15 +109,19 @@
                             </td>
                             {{-- Các tính năng thông báo đơn hàng từ client --}}
                             <td>
-                                @if ($order->needs_support)
+                                @if ($order->needs_refunded)
+                                    <span class="badge bg-danger text-white">Yêu cầu trả hàng</span>
+                                    <form action="{{ route('orders.resolve-refunded', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn đã xử lý yêu cầu trả hàng này?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">Xử lý trả hàng</button>
+                                    </form>
+                                @elseif ($order->needs_support)
                                     <span class="badge bg-warning text-dark">Cần hỗ trợ</span>
                                     <form action="{{ route('orders.resolve-support', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn đã xử lý yêu cầu hỗ trợ này?');">
                                         @csrf
                                         <button type="submit" class="btn btn-success btn-sm">Xử lý hỗ trợ</button>
                                     </form>
-                                @endif
-                            
-                                @if ($order->status == 1)
+                                @elseif ($order->status == 1)
                                     <form action="{{ route('orders.confirm', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng này?');">
                                         @csrf
                                         <button type="submit" class="btn btn-success btn-sm">Xác nhận đơn hàng</button>

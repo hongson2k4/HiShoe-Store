@@ -35,6 +35,11 @@ class OrderController extends Controller
             });
         }
 
+        // Tìm kiếm theo mã đơn hàng (ko dùng like sẽ mang lại kết quả chính xác hơn)
+        if ($orderCheck = $request->input('order_check')) {
+            $query->where('order_check', $orderCheck);
+        }
+
         // Lọc theo trạng thái
         if ($status !== null && $status !== '') {
             $query->where('status', $status);
@@ -117,4 +122,22 @@ class OrderController extends Controller
         return redirect()->back()->with('success', 'Đơn hàng đã được xóa thành công!');
     }
 
+    // Tính năng xử lý yêu cầu trả hàng
+    public function resolveRefunded($id)
+    {
+        $order = Order::findOrFail($id);
+
+        // Kiểm tra nếu đơn hàng không ở trạng thái "Đã nhận hàng" hoặc không có yêu cầu trả hàng
+        if ($order->status != 7 || !$order->needs_refunded) {
+            return redirect()->back()->with('error', 'Không thể xử lý yêu cầu trả hàng! Trạng thái không hợp lệ.');
+        }
+
+        // Chuyển trạng thái sang "Đã trả hàng" (status = 6)
+        $order->status = 6;
+        $order->needs_refunded = 0;
+        $order->updated_at = now();
+        $order->save();
+
+        return redirect()->back()->with('success', 'Yêu cầu trả hàng đã được xử lý! Đơn hàng đã được chuyển sang trạng thái "Đã trả hàng".');
+    }
 }

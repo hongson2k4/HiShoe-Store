@@ -125,12 +125,12 @@ class Order extends Model
     public function getStatusBadgeClass()
     {
         $classes = [
-            1 => 'bg-secondary', // Pending
-            2 => 'bg-info',      // Processing
-            3 => 'bg-warning',   // Shipped
+            1 => 'bg-primary', // Pending
+            2 => 'bg-warning',      // Processing
+            3 => 'bg-info',   // Shipped
             4 => 'bg-success',   // Delivered
             5 => 'bg-danger',    // Cancelled
-            6 => 'bg-dark',      // Refunded
+            6 => 'bg-secondary',      // Refunded
             7 => 'bg-primary',   // Received
         ];
 

@@ -57,9 +57,11 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ route('order.form') }}">Tình trạng đơn hàng</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ route('order-history') }}">Lịch sử đơn hàng</a>
-        </li>
+        @if (auth()->check())
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('order-history') }}">LỊCH SỬ ĐƠN HÀNG</a>
+            </li>
+        @endif
       </ul>
       <div class="user_option">
 

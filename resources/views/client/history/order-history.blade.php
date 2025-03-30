@@ -60,6 +60,7 @@
                         <option value="4">Đã giao hàng</option>
                         <option value="5">Đã hủy</option>
                         <option value="6">Đã trả hàng</option>
+                        <option value="7">Đã Nhận hàng</option>
                     </select>
                     <label for="status">Trạng thái</label>
                 </div>
@@ -101,7 +102,7 @@
                         <td>
                             <a href="{{ route('order.history.detail', $order->id) }}"><i class="fa-regular fa-eye"></i></a>
                         </td>
-                        {{-- tính năng các nút hủy đơn hàng, liện hệ, đã nhận được hàng, trả hàng/ hoàn tiền. --}}
+                        {{-- tính năng các nút hủy đơn hàng, liên hệ, đã nhận được hàng, trả hàng/ hoàn tiền. --}}
                         <td>
                             @if ($order->canCancel())
                                 <form action="{{ route('order.history.cancel', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
@@ -109,9 +110,17 @@
                                     <button type="submit" class="btn btn-danger btn-sm">Hủy đơn hàng</button>
                                 </form>
                             @elseif ($order->status == 1 && $order->isOver7Days())
-                                <button type="button" class="btn btn-primary btn-sm contact-shop-btn" data-order-id="{{ $order->id }}">Liên hệ shop</button>
+                                @if ($order->needs_support)
+                                    <span class="text-muted">Shop sẽ liên lạc cho bạn! trong thời gian sớm nhất!!</span>
+                                @else
+                                    <button type="button" class="btn btn-primary btn-sm contact-shop-btn" data-order-id="{{ $order->id }}">Liên hệ shop</button>
+                                @endif
                             @elseif ($order->status == 2 || $order->status == 3)
-                                <button type="button" class="btn btn-primary btn-sm contact-shop-btn" data-order-id="{{ $order->id }}">Liên hệ shop</button>
+                                @if ($order->needs_support)
+                                    <span class="text-muted">Shop sẽ liên lạc cho bạn! trong thời gian sớm nhất!!</span>
+                                @else
+                                    <button type="button" class="btn btn-primary btn-sm contact-shop-btn" data-order-id="{{ $order->id }}">Liên hệ shop</button>
+                                @endif
                             @elseif ($order->status == 4)
                                 <form action="{{ route('order.history.receive', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn đã nhận được hàng?');">
                                     @csrf
@@ -119,13 +128,21 @@
                                 </form>
                             @elseif ($order->status == 7)
                                 <div class="d-flex gap-2">
-                                    <form action="{{ route('order.history.review', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn muốn đánh giá sản phẩm?');">
+                                    @if ($order->needs_refunded)
+                                        <span class="text-warning">Đang xem xét</span>
+                                    @elseif (($order->is_reviewed != 1) && ($order->is_refunded != 1))
+                                        <form action="{{ route('order.history.review', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn muốn đánh giá sản phẩm?');">
+                                            @csrf
+                                            <button type="submit" class="btn btn-info btn-sm">Đánh giá sản phẩm</button>
+                                        </form>
+                                        <form action="{{ route('order.history.refund', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn yêu cầu trả hàng/hoàn tiền?');">
+                                            @csrf
+                                            <button type="submit" class="btn btn-warning btn-sm">Trả hàng/Hoàn tiền</button>
+                                        </form>
+                                    @endif
+                                    <form action="{{ route('order.history.rebuy', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có muốn mua lại đơn hàng này?');">
                                         @csrf
-                                        <button type="submit" class="btn btn-info btn-sm">Đánh giá sản phẩm</button>
-                                    </form>
-                                    <form action="{{ route('order.history.refund', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn yêu cầu trả hàng/hoàn tiền?');">
-                                        @csrf
-                                        <button type="submit" class="btn btn-warning btn-sm">Trả hàng/Hoàn tiền</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm btn-rebuy">Mua lại</button>
                                     </form>
                                 </div>
                             @elseif ($order->status == 5 || $order->status == 6)
@@ -173,6 +190,8 @@
                 })
                 .then(data => {
                     if (data.success) {
+                        // Thay đổi nút thành thông báo
+                        button.outerHTML = '<span class="text-muted">Shop sẽ liên lạc cho bạn! trong thời gian sớm nhất!!</span>';
                         // Hiển thị alert thông báo thành công
                         alert('Đã báo với admin');
                     } else {
@@ -224,4 +243,3 @@
         });
     </script>
 @endpush
-

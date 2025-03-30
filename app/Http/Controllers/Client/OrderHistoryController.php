@@ -98,19 +98,27 @@ class OrderHistoryController extends Controller
         }
 
         //Placeholder cho tính năng đánh giá sản phẩm. Có thể mở rộng logic này để lưu đánh giá vào database.
-        public function review($id)
-        {
-            $order = Order::where('user_id', auth()->id())->findOrFail($id);
+    public function review($id)
+    {
+        $order = Order::where('user_id', auth()->id())->findOrFail($id);
 
-            // Kiểm tra trạng thái hiện tại
-            if ($order->status != 7) {
-                return redirect()->back()->with('error', 'Đơn hàng không thể đánh giá! Trạng thái không hợp lệ.');
-            }
-
-            // Logic đánh giá sản phẩm (tạm thời là placeholder)
-            // Bạn có thể thêm logic để lưu đánh giá vào database, ví dụ: lưu vào bảng reviews
-            return redirect()->back()->with('success', 'Cảm ơn bạn đã đánh giá sản phẩm!');
+        // Kiểm tra trạng thái hiện tại
+        if ($order->status != 7) {
+            return redirect()->back()->with('error', 'Đơn hàng không thể đánh giá! Trạng thái không hợp lệ.');
         }
+
+        // Kiểm tra nếu đã đánh giá trước đó
+        if ($order->is_reviewed) {
+            return redirect()->back()->with('error', 'Đơn hàng đã được đánh giá trước đó!');
+        }
+
+        // Cập nhật cột is_reviewed thành 1
+        $order->is_reviewed = 1;
+        $order->updated_at = now();
+        $order->save();
+
+        return redirect()->back()->with('success', 'Cảm ơn bạn đã đánh giá sản phẩm!');
+    }
 
     //Controller xử lý mua lại ở trạng thái đã hủy và đã trả hàng
     public function rebuy($id)
@@ -159,14 +167,20 @@ class OrderHistoryController extends Controller
             return redirect()->back()->with('error', 'Đơn hàng không thể trả hàng! Trạng thái không hợp lệ.');
         }
 
-        // Cập nhật trạng thái sang "Đã trả hàng" (status = 6)
-        $order->status = 6;
+        // Kiểm tra nếu đã yêu cầu trả hàng trước đó
+        if ($order->is_refunded) {
+            return redirect()->back()->with('error', 'Đơn hàng đã được yêu cầu trả hàng/hoàn tiền trước đó!');
+        }
+
+        // Cập nhật cột is_refunded thành 1
+        $order->is_refunded = 1;
+        // Đánh dấu cần xử lý trả hàng bên admin
+        $order->needs_refunded = 1;
         $order->updated_at = now();
         $order->save();
 
-        return redirect()->back()->with('success', 'Yêu cầu trả hàng/hoàn tiền đã được gửi thành công!');
+        return redirect()->back()->with('success', 'Yêu cầu trả hàng/hoàn tiền đã được gửi thành công! Đang chờ shop xem xét.');
     }
-
     //Controller xử lý liên hệ shop
     public function contactShop(Request $request)
     {
@@ -225,5 +239,21 @@ class OrderHistoryController extends Controller
             return response()->json(['success' => false, 'message' => 'Có lỗi xảy ra khi xử lý yêu cầu: ' . $e->getMessage()], 500);
         }
     }
+
+    public function cancelOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->canCancel()) {
+            $order->status = 5; // Đã hủy
+            $order->customer_reasons = $request->input('cancel_reason');
+            $order->save();
+
+            return redirect()->back()->with('success', 'Đơn hàng đã được hủy.');
+        }
+
+        return redirect()->back()->with('error', 'Không thể hủy đơn hàng này.');
+    }
+
 
 }

@@ -7,7 +7,6 @@
             <h2 class="mb-0">Quản lý đơn hàng</h2>
         </div>
         <div class="card-body">
-            <!-- Thêm thông báo -->
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
@@ -21,8 +20,6 @@
                 </div>
             @endif
 
-            {{-- Search and Filter Form --}}
-            <!-- Phần còn lại của code giữ nguyên -->
             <form action="{{ route('orders.index') }}" method="GET" class="mb-4">
                 <div class="row g-3">
                     <div class="col-md-4">
@@ -62,7 +59,6 @@
                 </div>
             </form>
 
-            {{-- Brands Table --}}
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
@@ -83,7 +79,7 @@
                         @forelse($orders as $key => $order)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $order->product ? $order->product->name : 'Không có sản phẩm' }}</td> <!-- Hiển thị tên sản phẩm -->
+                            <td>{{ $order->product ? $order->product->name : 'Không có sản phẩm' }}</td>
                             <td>{{ $order->order_check }}</td>
                             <td>{{ $order->user->full_name }}</td>
                             <td>{{ number_format($order->total_price) }} VND</td>
@@ -95,11 +91,13 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="order-status-badge">
-                                    @if ($order->status == 5)
-                                        {{ $order->customer_reasons ?: 'Khác' }}
-                                    @endif
-                                </div>
+                                @if ($order->status == 5 && $order->customer_reasons)
+                                    {{ $order->customer_reasons }}
+                                @elseif ($order->status == 5)
+                                    Khác
+                                @else
+                                    -
+                                @endif
                             </td>
                             <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
                             <td>
@@ -107,7 +105,6 @@
                                     View Details
                                 </a>
                             </td>
-                            {{-- Các tính năng thông báo đơn hàng từ client --}}
                             <td>
                                 @if ($order->needs_refunded)
                                     <span class="badge bg-danger text-white">Yêu cầu trả hàng</span>
@@ -131,7 +128,7 @@
                                 @elseif ($order->status == 7)
                                     <span class="text-success">Khách đã nhận hàng</span>
                                 @elseif ($order->status == 5 || $order->status == 6)
-                                    <form action="{{ route('orders.delete', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?');">
+                                    <form action="{{ route('orders.delete', $order->id) }}" method="POST" style="display:image.pnginline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Xóa đơn hàng</button>
@@ -154,7 +151,7 @@
                     </tbody>
                 </table>
             </div>
-            {{-- Pagination --}}
+
             <div class="d-flex justify-content-between align-items-center">
                 <div class="text-muted">
                     Showing {{ $orders->firstItem() }} to {{ $orders->lastItem() }}

@@ -93,10 +93,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/order/{id}', [OrderHistoryController::class, 'detail'])->name('order.detail');
 
     // Thêm route mới để hủy đơn hàng chuyển trang thái status = 5
-    Route::post('/order-history/{order}/cancel', [OrderHistoryController::class, 'cancel'])->name('order.history.cancel');
-    // Thêm route mới để hủy đơn hàng và nhập lý do
+    // Route::post('/order-history/{order}/cancel', [OrderHistoryController::class, 'cancel'])->name('order.history.cancel');
+    // Thêm route mới để hủy đơn hàng và nhập lý do chuyển trang thái status = 5
     Route::post('/order-history/cancel/{id}', [OrderHistoryController::class, 'cancelOrder'])->name('order.history.cancel');
-    // T // Thêm route để đánh giá sản phẩm (tạm thời là placeholder)
+    // Thêm route để xác nhận đã nhận hàng
+    Route::post('/order-history/{order}/receive', [OrderHistoryController::class, 'receive'])->name('order.history.receive');
+    // Thêm route để đánh giá sản phẩm (tạm thời là placeholder)
     Route::post('/order-history/{order}/review', [OrderHistoryController::class, 'review'])->name('order.history.review');
     // Thêm route để mua lại đơn hàng
     Route::post('/order-history/{order}/rebuy', [OrderHistoryController::class, 'rebuy'])->name('order.history.rebuy');
@@ -108,6 +110,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('order/history/contact', [OrderHistoryController::class, 'contactShop'])->name('order.history.contact');
     // Route ẩn nút trả hàng\ hoàn tiền
     Route::post('/admin/orders/{id}/resolve-refunded', [OrderController::class, 'resolveRefunded'])->name('orders.resolve-refunded');
+    Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail');
 
 });
 

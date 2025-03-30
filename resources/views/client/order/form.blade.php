@@ -9,7 +9,7 @@
                 @csrf
                 <div class="input-group" style="max-width: 400px;">
                     <input type="text" name="order_check" class="form-control" placeholder="Nhập mã đơn hàng">
-                    <button class="btn text-white" style="background-color: #F89CAB;" type="submit">
+                    <button class="btn text-white" style="background-color: #EC7FA9;" type="submit">
                         <i class="bi bi-search"></i> Kiểm tra
                     </button>
                 </div>
@@ -61,7 +61,7 @@
         @endisset
         <div class="m-3"></div>
         <div class="mt-3">
-            <a href="{{ route('home') }}" class="btn text-white" style="background-color: #F89CAB;">Back to Home</a>
+            <a href="{{ route('home') }}" class="btn text-white" style="background-color: #EC7FA9;">Back to Home</a>
         </div>
     </div>
 

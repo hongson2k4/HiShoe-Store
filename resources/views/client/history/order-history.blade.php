@@ -17,9 +17,8 @@
     @endif
 
     <h1 class="text-center mb-5">Lịch sử đơn hàng</h1>
-    <!-- Phần còn lại của code giữ nguyên -->
-    
 
+    <!-- Form lọc -->
     <form action="{{ route('order-history') }}" method="GET" class="filter-form mb-3">
         <div class="row g-2 align-items-center">
             <div class="col">
@@ -67,7 +66,7 @@
             </div>
     
             <div class="col-auto">
-                <button type="submit" class="btn text-white" style="padding: 16px; background-color: #F89CAB;">Lọc</button>
+                <button type="submit" class="btn text-white" style="background-color: #EC7FA9;">Lọc</button>
             </div>
         </div>
     </form>
@@ -75,22 +74,22 @@
     @if ($orders->isEmpty())
         <p>Bạn chưa có đơn hàng nào.</p>
     @else
-        <table class="table text-center mb-3" id="orderTable">
+        <table class="table-hover table-striped mb-3" id="orderTable">
             <thead>
                 <tr>
-                    <th>Tên sản phẩm</th>
-                    <th>Mã đơn hàng</th>
-                    <th>Ngày đặt</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th>Xem đơn hàng</th>
-                    <th>Hành động</th> <!-- Thêm cột Hành động -->
+                    <th style="background-color: #BE5985; color:white; vertical-align: middle; border-radius: 20px 0px 0px 0px; text-align: center; height: 50px">Tên sản phẩm</th>
+                    <th style="background-color: #BE5985; color:white; vertical-align: middle;">Mã đơn hàng</th>
+                    <th style="background-color: #BE5985; color:white; vertical-align: middle;">Ngày đặt</th>
+                    <th style="background-color: #BE5985; color:white; vertical-align: middle;">Tổng tiền</th>
+                    <th style="background-color: #BE5985; color:white; vertical-align: middle;">Trạng thái</th>
+                    <th style="background-color: #BE5985; color:white; vertical-align: middle;">Xem đơn hàng</th>
+                    <th style="background-color: #BE5985; color:white; vertical-align: middle; border-radius: 0px 20px 0px 0px; text-align: center; height: 50px">Hành động</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($orders as $order)
                     <tr>
-                        <td>{{ $order->product ? $order->product->name : 'Không có sản phẩm' }}</td> <!-- Hiển thị tên sản phẩm -->
+                        <td>{{ $order->product ? $order->product->name : 'Không có sản phẩm' }}</td>
                         <td>{{ $order->order_check }}</td>
                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                         <td>{{ number_format($order->total_price, 0, ',', '.') }} VNĐ</td>
@@ -102,13 +101,10 @@
                         <td>
                             <a href="{{ route('order.history.detail', $order->id) }}"><i class="fa-regular fa-eye"></i></a>
                         </td>
-                        {{-- tính năng các nút hủy đơn hàng, liên hệ, đã nhận được hàng, trả hàng/ hoàn tiền. --}}
                         <td>
                             @if ($order->canCancel())
-                                <form action="{{ route('order.history.cancel', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Hủy đơn hàng</button>
-                                </form>
+                                <!-- Nút "Hủy đơn hàng" sẽ mở modal -->
+                                <button type="button" class="btn btn-danger btn-sm cancel-order-btn" data-bs-toggle="modal" data-bs-target="#cancelOrderModal" data-order-id="{{ $order->id }}">Hủy đơn hàng</button>
                             @elseif ($order->status == 1 && $order->isOver7Days())
                                 @if ($order->needs_support)
                                     <span class="text-muted">Shop sẽ liên lạc cho bạn! trong thời gian sớm nhất!!</span>
@@ -160,19 +156,53 @@
         </table>
     @endif
     <div class="mt-3">
-        <a href="{{ route('home') }}" class="btn text-white" style="background-color: #F89CAB;">Back to Home</a>
+        <a href="{{ route('home') }}" class="btn text-white" style="background-color: #EC7FA9;">Back to Home</a>
     </div>
 </div>
 
-{{-- Script xử lý liên hệ shop --}}
+<!-- Modal để nhập lý do hủy -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelOrderModalLabel">Lý do hủy đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cancelOrderForm" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="cancel_reason" class="form-label">Vui lòng nhập lý do hủy đơn hàng:</label>
+                        <textarea class="form-control" id="cancel_reason" name="cancel_reason" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script xử lý modal và gửi form -->
+<script>
+    document.querySelectorAll('.cancel-order-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const form = document.getElementById('cancelOrderForm');
+            
+            // Cập nhật action của form với orderId
+            form.action = '{{ route("order.history.cancel", ":id") }}'.replace(':id', orderId);
+        });
+    });
+</script>
+
+<!-- Script xử lý liên hệ shop (giữ nguyên) -->
 <script>
     document.querySelectorAll('.contact-shop-btn').forEach(button => {
         button.addEventListener('click', function() {
             const orderId = this.getAttribute('data-order-id');
             
-            // Hiển thị alert xác nhận
             if (confirm('Bạn có muốn liên hệ với shop không?')) {
-                // Gửi request AJAX
                 fetch('{{ route('order.history.contact') }}', {
                     method: 'POST',
                     headers: {
@@ -182,7 +212,6 @@
                     body: JSON.stringify({ order_id: orderId })
                 })
                 .then(response => {
-                    // Kiểm tra nếu response không phải JSON
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
@@ -190,12 +219,9 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        // Thay đổi nút thành thông báo
                         button.outerHTML = '<span class="text-muted">Shop sẽ liên lạc cho bạn! trong thời gian sớm nhất!!</span>';
-                        // Hiển thị alert thông báo thành công
                         alert('Đã báo với admin');
                     } else {
-                        // Hiển thị thông báo lỗi từ server
                         alert(data.message || 'Có lỗi xảy ra, vui lòng thử lại.');
                     }
                 })
@@ -208,10 +234,8 @@
     });
 </script>
 
-
 @endsection
 
-{{-- Phần javascript để sắp xếp tăng dần, giảm dần --}}
 @push('scripts')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -220,10 +244,10 @@
     <script>
        $(document).ready(function () {
             $('#orderTable').DataTable({
-                "order": [[1, "desc"]], // Sắp xếp mặc định theo Mã đơn hàng (index 1)
+                "order": [[1, "desc"]],
                 "columnDefs": [
-                    { "orderable": false, "targets": [0, 4, 5, 6] }, // Tắt sắp xếp ở Tên sản phẩm, Trạng thái, Xem đơn hàng, Hành động
-                    { "orderable": true, "targets": [1, 2, 3] } // Chỉ bật sắp xếp ở Mã đơn hàng, Ngày đặt, Tổng tiền
+                    { "orderable": false, "targets": [0, 4, 5, 6] },
+                    { "orderable": true, "targets": [1, 2, 3] }
                 ],
                 "language": {
                     "lengthMenu": "Hiển thị _MENU_ đơn hàng",

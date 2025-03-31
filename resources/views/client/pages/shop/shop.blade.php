@@ -60,6 +60,29 @@
                             @endforeach
                         </ul>
                     </div>
+                    <div class="mb-4">
+    <label><strong>Kích thước</strong></label>
+    <select class="form-control" name="size_id">
+        <option value="">Tất cả</option>
+        @foreach($sizes as $size)
+            <option value="{{ $size->id }}" {{ request('size_id') == $size->id ? 'selected' : '' }}>
+                {{ $size->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+<div class="mb-4">
+    <label><strong>Màu sắc</strong></label>
+    <select class="form-control" name="color_id">
+        <option value="">Tất cả</option>
+        @foreach($colors as $color)
+            <option value="{{ $color->id }}" {{ request('color_id') == $color->id ? 'selected' : '' }}>
+                {{ $color->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
                     <button type="submit" class="btn btn-primary btn-block">Áp dụng</button>
                 </form>
             </div>

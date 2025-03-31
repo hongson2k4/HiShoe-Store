@@ -27,8 +27,10 @@ Route::controller(ProductController::class)
 ->group(function(){
     Route::get('/',[ProductController::class,'index'])->name('shop');
     Route::get('/product/{product_id}',[ProductController::class,'detail'])->name('detail');
+    Route::get('/category/{category_id}',[ProductController::class,'category'])->name('category');
+    Route::get('/brand/{brand_id}',[ProductController::class,'brand'])->name('brand');
 });
-Route::get('/api/get-variant-price', [ProductController::class, 'getVariantPrice']);
+// Route::get('/api/get-variant-price', [ProductController::class, 'getVariantPrice']);
 
 Route::controller(AuthController::class)
 ->prefix('')
@@ -47,7 +49,7 @@ Route::controller(AuthController::class)
     Route::get('change',[AuthController::class,'changePass'])->name('change');
     Route::post('changePost',[AuthController::class,'postChangePass'])->name('changeForm');
     Route::get('/forgot', [AuthController::class, 'forgotPass'])->name('request');
-    Route::post('/forgot', [AuthController::class, 'sendResetLinkEmail'])->name('email');
+    Route::post('/forgot', [AuthController::class, 'sendResetLink'])->name('sendResetLink'); // Định nghĩa route này
     Route::get('/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset');
     Route::post('/reset', [AuthController::class, 'reset'])->name('update');
 });

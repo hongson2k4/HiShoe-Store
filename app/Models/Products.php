@@ -33,6 +33,12 @@ class Products extends Model
     {
         return $this->hasMany(Product_variant::class, 'product_id');
     }
-
-
+    public function sizes()
+    {
+        return $this->hasManyThrough(Size::class, Product_variant::class, 'product_id', 'id', 'id', 'size_id');
+    }
+    public function colors()
+    {
+        return $this->hasManyThrough(Color::class, Product_variant::class, 'product_id', 'id', 'id', 'color_id');
+    }
 }

@@ -55,33 +55,6 @@ HiShoe-Store - Đăng ký
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="province" class="text-info">Tỉnh / Thành phố:</label><br>
-                                <select name="province" id="province" class="form-control" value="{{old('province')}}">
-                                    <option value="" disabled selected>-- Chọn tỉnh/thành phố --</option>
-                                </select>
-                                @if ($errors->has('province'))
-                                    <span class="text-danger">{{ $errors->first('province') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="district" class="text-info">Quận / Huyện / Thị xã:</label><br>
-                                <select name="district" id="district" class="form-control" value="{{old('district')}}">
-                                    <option value="" disabled selected>-- Chọn quận/huyện/thị xã --</option>
-                                </select>
-                                @if ($errors->has('district'))
-                                    <span class="text-danger">{{ $errors->first('district') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
-                                <label for="ward" class="text-info">Xã / Phường / Thị trấn:</label><br>
-                                <select name="ward" id="ward" class="form-control" value="{{old('ward')}}">
-                                    <option value="" disabled selected>-- Chọn xã/phường/thị trấn --</option>
-                                </select>
-                                @if ($errors->has('ward'))
-                                    <span class="text-danger">{{ $errors->first('ward') }}</span>
-                                @endif
-                            </div>
-                            <div class="form-group">
                                 <input type="submit" name="submit" class="btn btn-info btn-md" value="Đăng ký">
                             </div>
                         </form>
@@ -91,7 +64,7 @@ HiShoe-Store - Đăng ký
         </div>
     </div>
     
-<script src="{{ asset('client/js/jquery-3.6.0.min.js') }}"></script>
+<!-- <script src="{{ asset('client/js/jquery-3.6.0.min.js') }}"></script>
 <script>
     $(document).ready(function() {
         let provinces = [];
@@ -148,5 +121,5 @@ HiShoe-Store - Đăng ký
             }
         });
     });
-</script>
+</script> -->
 @endsection

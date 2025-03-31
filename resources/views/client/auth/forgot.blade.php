@@ -9,19 +9,18 @@
             <div id="login-row" class="row justify-content-center align-items-center">
                 <div id="login-column" class="col-md-6">
                     <div id="login-box" class="col-md-12">
-                        <form action="{{ route('password.email') }}" method="POST">
+                        <form action="{{ route('password.sendResetLink') }}" method="POST">
                             @csrf
-                            @if ($errors->has('email'))
-                                <span class="text-danger">{{ $errors->first('email') }}</span>
+                            @if ($errors->has('identifier'))
+                                <span class="text-danger">{{ $errors->first('identifier') }}</span>
                             @endif
                             <div>
-                                <label for="email">Địa chỉ Email</label>
-                                <input type="email" id="email" name="email" required autofocus>
+                                <label for="identifier">Email hoặc Số điện thoại</label>
+                                <input type="text" id="identifier" name="identifier" required autofocus>
                             </div>
                             <div>
                                 <button type="submit" class="btn btn-success">Xác nhận</button>
                             </div>
-
 
                             @if (session('status'))
                                 <div>
@@ -36,5 +35,4 @@
             </div>
         </div>
     </div>
-
 @endsection

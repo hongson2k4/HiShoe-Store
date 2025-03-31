@@ -28,11 +28,9 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="categoryDropdown">
             @foreach(App\Models\Category::all() as $category)
-        <a class="dropdown-item" href="{{ route('shop', ['category_id' => $category->id]) }}">
+        <a class="dropdown-item" href="{{ route('category', ['category_id' => $category->id]) }}">
           {{ $category->name }}
         </a>
-        <input type="checkbox" name="category_id[]" value="{{ $category->id }}" 
-       {{ in_array($category->id, (array) request('category_id', [])) ? 'checked' : '' }}>
       @endforeach
           </div>
         </li>
@@ -43,11 +41,9 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="brandDropdown">
             @foreach(App\Models\Brand::all() as $brand)
-        <a class="dropdown-item" href="{{ route('shop', ['brand_id' => $brand->id]) }}">
+        <a class="dropdown-item" href="{{ route('brand', ['brand_id' => $brand->id]) }}">
           {{ $brand->name }}
         </a>
-        <input type="checkbox" name="brand_id[]" value="{{ $brand->id }}" 
-       {{ in_array($brand->id, (array) request('brand_id', [])) ? 'checked' : '' }}>
       @endforeach
           </div>
         </li>

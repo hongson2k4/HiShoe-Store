@@ -92,14 +92,14 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-lg-6 col-md-12 text-center">
-                <img src="{{ Storage::url($product->image_url) }}" class="product-image img-fluid"
-                    alt="{{ $product->name }}">
+                <img src="{{ Storage::url($products->image_url) }}" class="product-image img-fluid"
+                    alt="{{ $products->name }}">
             </div>
             <div class="col-lg-6 col-md-12">
-                <h2 class="text-primary">{{ $product->name }}</h2>
-                <p class="text-muted">Mã sản phẩm: {{ $product->id }}</p>
-                <h4 class="text-danger" id="dynamicPrice">{{ number_format($product->price, 0, ',', '.') }} VNĐ</h4>
-                <p>{{ $product->description }}</p>
+                <h2 class="text-primary">{{ $products->name }}</h2>
+                <p class="text-muted">Mã sản phẩm: {{ $products->id }}</p>
+                <p>Giá sản phẩm: <h4 class="text-danger" id="dynamicPrice">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h4></p>
+                <p>{{ $products->description }}</p>
 
                 <div class="variant-selector">
                     <div id="sizeButtons">
@@ -123,7 +123,7 @@
                     <button id="increaseQuantity">+</button>
                 </div>
 
-                <h4 class="text-danger mt-3" id="totalPrice">{{ number_format($product->price, 0, ',', '.') }} VNĐ</h4>
+                <h4 class="text-danger mt-3" id="totalPrice">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h4>
 
                 <button class="btn btn-success mt-3">Thêm vào giỏ hàng</button>
             </div>
@@ -135,12 +135,12 @@
         <div class="carousel-container">
             <button class="carousel-control prev">&lt;</button>
             <div class="carousel">
-                @foreach($suggestedProducts as $product)
+                @foreach($products as $product)
                     <div class="carousel-item">
-                        <a href="{{ route('detail', $product->id) }}">
-                            <img src="{{ Storage::url($product->image_url) }}" alt="{{ $product->name }}" class="img-fluid">
-                            <h5 class="text-center mt-2">{{ $product->name }}</h5>
-                            <p class="text-center text-danger">{{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
+                        <a href="{{ route('detail', $products->id) }}">
+                            <img src="{{ Storage::url($products->image_url) }}" alt="{{ $products->name }}" class="img-fluid">
+                            <h5 class="text-center mt-2">{{ $products->name }}</h5>
+                            <p class="text-center text-danger">{{ number_format($products->price, 0, ',', '.') }} VNĐ</p>
                         </a>
                     </div>
                 @endforeach
@@ -160,15 +160,20 @@
             const increaseQuantityButton = document.getElementById('increaseQuantity');
             let selectedSize = null;
             let selectedColor = null;
-            let basePrice = {{ $product->price }};
+            let basePrice = {{ $products->price }};
             let quantity = 1;
 
             // Define the variants variable
             const variants = @json($variants);
 
+            // Ensure product_id is dynamically set
+            const productId = {{ $products->id }};
+
             function updatePrice() {
                 if (selectedSize && selectedColor) {
-                    fetch(`/api/get-variant-price?product_id={{ $product->id }}&size_id=${selectedSize}&color_id=${selectedColor}`)
+                    const url = `/api/get-variant-price?product_id=${productId}&size_id=${selectedSize}&color_id=${selectedColor}`;
+                    console.log('Fetching URL:', url); // Debugging log
+                    fetch(url)
                         .then(response => response.json())
                         .then(data => {
                             if (data.price) {
@@ -179,6 +184,11 @@
                                 priceDisplay.textContent = 'Không có sẵn';
                                 totalPriceDisplay.textContent = 'Không có sẵn';
                             }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching variant price:', error);
+                            priceDisplay.textContent = 'Không có sẵn';
+                            totalPriceDisplay.textContent = 'Không có sẵn';
                         });
                 }
             }
@@ -191,19 +201,13 @@
             function filterOptions() {
                 sizeButtons.forEach(button => {
                     const sizeId = button.getAttribute('data-size-id');
-                    const isAvailable = [...colorButtons].some(colorButton => {
-                        const colorId = colorButton.getAttribute('data-color-id');
-                        return variants.some(variant => variant.size_id == sizeId && variant.color_id == colorId);
-                    });
+                    const isAvailable = variants.some(variant => variant.size_id == sizeId && (!selectedColor || variant.color_id == selectedColor));
                     button.disabled = !isAvailable;
                 });
 
                 colorButtons.forEach(button => {
                     const colorId = button.getAttribute('data-color-id');
-                    const isAvailable = [...sizeButtons].some(sizeButton => {
-                        const sizeId = sizeButton.getAttribute('data-size-id');
-                        return variants.some(variant => variant.size_id == sizeId && variant.color_id == colorId);
-                    });
+                    const isAvailable = variants.some(variant => variant.color_id == colorId && (!selectedSize || variant.size_id == selectedSize));
                     button.disabled = !isAvailable;
                 });
             }
@@ -253,38 +257,6 @@
             });
 
             filterOptions();
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const carousel = document.querySelector('.carousel');
-            const prevButton = document.querySelector('.carousel-control.prev');
-            const nextButton = document.querySelector('.carousel-control.next');
-            const items = document.querySelectorAll('.carousel-item');
-            const itemWidth = items[0].offsetWidth;
-            let currentIndex = 0;
-
-            function updateCarousel() {
-                const offset = -currentIndex * itemWidth;
-                carousel.style.transform = `translateX(${offset}px)`;
-            }
-
-            prevButton.addEventListener('click', function() {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateCarousel();
-                }
-            });
-
-            nextButton.addEventListener('click', function() {
-                if (currentIndex < items.length - 4) { // Hiển thị tối đa 4 sản phẩm
-                    currentIndex++;
-                    updateCarousel();
-                }
-            });
-
-            window.addEventListener('resize', function() {
-                updateCarousel(); // Cập nhật khi thay đổi kích thước màn hình
-            });
         });
     </script>
 @endsection

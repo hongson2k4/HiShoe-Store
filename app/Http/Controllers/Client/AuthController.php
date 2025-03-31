@@ -38,10 +38,7 @@ class AuthController extends Controller
                     'required',
                     'unique:users,phone_number',
                     'regex:/^(0|\+84)\d{9,10}$/',
-                ],
-                'province' => 'required',
-                'district' => 'required',
-                'ward' => 'required',
+                ]
             ], [
                 'password.required' => 'Vui lòng nhập mật khẩu.',
                 'password.regex' => 'Mật khẩu phải từ 8-20 ký tự, không có ký tự đặc biệt, ít nhất 1 chữ in hoa và 1 số.',
@@ -54,9 +51,6 @@ class AuthController extends Controller
                 'phone_number.required' => 'Vui lòng nhập số điện thoại.',
                 'phone_number.unique' => 'Số điện thoại đã tồn tại.',
                 'phone_number.regex' => 'Số điện thoại phải bắt đầu bằng 0 hoặc +84 và có 10-11 chữ số.',
-                'province.required' => 'Vui lòng chọn tỉnh/thành phố.',
-                'district.required' => 'Vui lòng chọn quận/huyện.',
-                'ward.required' => 'Vui lòng chọn phường/xã.',
             ]);
 
             try {
@@ -68,7 +62,6 @@ class AuthController extends Controller
                     'full_name' => $validate['full_name'],
                     'email' => $validate['email'],
                     'phone_number' => $validate['phone_number'],
-                    'address' => $validate['ward'] . ', ' . $validate['district'] . ', ' . $validate['province'],
                     'role' => 0,
                 ]);
 
@@ -93,16 +86,20 @@ class AuthController extends Controller
             'username' => 'required',
             'password' => 'required',
         ], [
-            'username.required' => 'Vui lòng nhập tên đăng nhập.',
+            'username.required' => 'Vui lòng nhập tên đăng nhập hoặc email.',
             'password.required' => 'Vui lòng nhập mật khẩu.',
         ]);
-
-        if (Auth::attempt(['username' => $validate['username'], 'password' => $validate['password']])) {
+    
+        $credentials = filter_var($validate['username'], FILTER_VALIDATE_EMAIL)
+            ? ['email' => $validate['username'], 'password' => $validate['password']]
+            : ['username' => $validate['username'], 'password' => $validate['password']];
+    
+        if (Auth::attempt($credentials)) {
             if (Auth::user()) {
                 return redirect()->route('home');
             }
         }
-
+    
         session()->flash('error', 'Sai thông tin đăng nhập!');
         return redirect()->route('loginForm');
     }
@@ -135,30 +132,31 @@ class AuthController extends Controller
     }
     public function reset(Request $request)
     {
-        $this->validateReset($request);
-
-        $response = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->password = bcrypt($password);
-                $user->save();
-            }
-        );
-        $user = User::where('email', $request->email)->first();
-
-        UserHistoryChanges::create([
-            'user_id' => $user->id,
-            'field_name' => 'password',
-            'old_value' => "Không hiển thị",
-            'new_value' => "Không hiển thị",
-            'change_by' => Auth::id(),
-            'content' => "Người dùng đặt lại mật khẩu",
-            'updated_at' => now(),
+        $request->validate([
+            'email_or_phone' => 'required',
+            'otp' => 'required',
+            'password' => 'required|confirmed|regex:/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/',
+        ], [
+            'password.regex' => 'Mật khẩu phải từ 8-20 ký tự, không có ký tự đặc biệt, ít nhất 1 chữ in hoa và 1 số.',
         ]);
-
-        return $response == Password::PASSWORD_RESET
-            ? redirect()->route('loginForm')->with('status', trans($response))
-            : back()->withErrors(['email' => trans($response)]);
+    
+        $identifier = $request->input('email_or_phone');
+        $otp = $request->input('otp');
+    
+        $user = filter_var($identifier, FILTER_VALIDATE_EMAIL)
+            ? User::where('email', $identifier)->first()
+            : User::where('phone_number', $identifier)->first();
+    
+        if (!$user || $user->otp != $otp) {
+            return back()->withErrors(['otp' => 'Mã OTP không hợp lệ.']);
+        }
+    
+        $user->update([
+            'password' => bcrypt($request->input('password')),
+            'otp' => null, // Xóa OTP sau khi sử dụng
+        ]);
+    
+        return redirect()->route('loginForm')->with('status', 'Đặt lại mật khẩu thành công!');
     }
     protected function validateEmail(Request $request)
     {
@@ -220,5 +218,55 @@ class AuthController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Đổi mật khẩu thành công!');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'identifier' => 'required',
+        ], [
+            'identifier.required' => 'Vui lòng nhập email hoặc số điện thoại.',
+        ]);
+
+        $identifier = $request->input('identifier');
+
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            // Xử lý gửi liên kết qua email
+            $user = User::where('email', $identifier)->first();
+            if (!$user) {
+                return back()->withErrors(['identifier' => 'Email không tồn tại trong hệ thống.']);
+            }
+
+            $response = Password::sendResetLink(['email' => $identifier]);
+
+            return $response == Password::RESET_LINK_SENT
+                ? back()->with('status', trans($response))
+                : back()->withErrors(['identifier' => trans($response)]);
+        } else {
+            // Xử lý gửi OTP qua số điện thoại
+            $user = User::where('phone_number', $identifier)->first();
+            if (!$user) {
+                return back()->withErrors(['identifier' => 'Số điện thoại không tồn tại trong hệ thống.']);
+            }
+
+            try {
+                $otp = rand(100000, 999999); // Tạo mã OTP
+                $user->update(['otp' => $otp]); // Lưu OTP vào cơ sở dữ liệu
+
+                // Gửi OTP qua Twilio
+                $twilio = new \Twilio\Rest\Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
+                $twilio->messages->create(
+                    $identifier,
+                    [
+                        'from' => env('TWILIO_PHONE_NUMBER'),
+                        'body' => "Mã OTP đặt lại mật khẩu của bạn là: $otp",
+                    ]
+                );
+
+                return back()->with('status', 'Mã OTP đã được gửi đến số điện thoại của bạn.');
+            } catch (\Exception $e) {
+                return back()->withErrors(['identifier' => 'Không thể gửi OTP. Vui lòng thử lại sau.']);
+            }
+        }
     }
 }

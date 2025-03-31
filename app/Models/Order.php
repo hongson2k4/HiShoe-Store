@@ -14,11 +14,16 @@ class Order extends Model
         'user_id',
         'total_price',
         'status',
+        'customer_reasons',
         'shipping_address',
         'voucher_id',
-        'payment_method',
-        'shipping_method',
-        'notes'
+        'product_name_id',
+        'notes',
+        'needs_support',
+        'needs_refunded',
+        'order_check',
+        'is_refunded',
+        'is_reviewed',
     ];
 
     /**
@@ -195,7 +200,8 @@ class Order extends Model
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
-        public function orderItemHistories()
+    // Mối quan hệ với bảng order_item_histories
+    public function orderItemHistories()
     {
         return $this->hasMany(OrderItemHistory::class, 'order_id', 'id');
     }

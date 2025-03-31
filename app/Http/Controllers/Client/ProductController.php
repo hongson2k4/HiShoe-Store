@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Products;
-use App\Models\Product_variant;
+use App\Models\Product; // Sửa từ Products thành Product
+use App\Models\ProductVariant; // Sửa từ Product_variant thành ProductVariant
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Products::query();
+        $query = Product::query();
     
         // Lọc theo danh mục
         if ($request->filled('category_id')) {
@@ -33,7 +33,7 @@ class ProductController extends Controller
         $products = $query->get();
         $categories = Category::all();
         $brands = Brand::all();
-        $maxPrice = Products::max('price');
+        $maxPrice = Product::max('price');
     
         // Trả về view với các bộ lọc đã chọn
         return view('client.pages.shop.shop', compact('products', 'categories', 'brands', 'maxPrice'))
@@ -42,7 +42,7 @@ class ProductController extends Controller
 
     public function detail($product_id)
     {
-        $product = Products::findOrFail($product_id);
+        $product = Product::findOrFail($product_id);
         $variants = $product->variants;
     
         // Lấy danh sách các kích cỡ và màu sắc có sẵn cho sản phẩm này
@@ -50,7 +50,7 @@ class ProductController extends Controller
         $availableColors = $variants->pluck('color.name', 'color.id')->unique()->toArray();
     
         // Lấy danh sách sản phẩm gợi ý theo danh mục
-        $suggestedProducts = Products::where('category_id', $product->category_id)
+        $suggestedProducts = Product::where('category_id', $product->category_id)
                                     ->where('id', '!=', $product_id)
                                     ->take(8)
                                     ->get();
@@ -70,7 +70,7 @@ class ProductController extends Controller
         $size_id = $request->size_id;
         $color_id = $request->color_id;
         
-        $variant = Product_variant::where('product_id', $product_id)
+        $variant = ProductVariant::where('product_id', $product_id)
             ->when($size_id, function ($query) use ($size_id) {
                 return $query->where('size_id', $size_id);
             })
@@ -84,18 +84,25 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Products::findOrFail($id);
-        $suggestedProducts = Products::where('category_id', $product->category_id)
+        $product = Product::findOrFail($id);
+        $variants = $product->variants;
+
+        // Lấy danh sách các kích cỡ và màu sắc có sẵn cho sản phẩm này
+        $availableSizes = $variants->pluck('size.name', 'size.id')->unique()->toArray();
+        $availableColors = $variants->pluck('color.name', 'color.id')->unique()->toArray();
+
+        // Lấy danh sách sản phẩm gợi ý theo danh mục
+        $suggestedProducts = Product::where('category_id', $product->category_id)
                                     ->where('id', '!=', $id)
                                     ->take(8)
                                     ->get();
 
-        return view('client.pages.shop.detail', [
-            'product' => $product,
-            'suggestedProducts' => $suggestedProducts,
-            'availableSizes' => $product->sizes,
-            'availableColors' => $product->colors,
-            'variants' => $product->variants,
-        ]);
+        return view('client.pages.shop.detail', compact(
+            'product',
+            'variants',
+            'availableSizes',
+            'availableColors',
+            'suggestedProducts'
+        ));
     }
 }

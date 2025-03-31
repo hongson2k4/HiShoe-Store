@@ -46,14 +46,14 @@ class OrderHistoryController extends Controller
 
     public function show($id)
     {
-        // Tải đơn hàng cùng với thông tin sản phẩm
-        $order = Order::with('product')->findOrFail($id);
-    
+        // Tải đơn hàng cùng với danh sách sản phẩm trong order_item_histories
+        $order = Order::with('orderItemHistories.product')->findOrFail($id);
+
         // Kiểm tra quyền truy cập
         if ($order->user_id !== auth()->id()) {
             return redirect()->route('order-history')->with('error', 'Bạn không có quyền xem đơn hàng này!');
         }
-    
+
         return view('client.history.order-detail', compact('order'));
     }
 

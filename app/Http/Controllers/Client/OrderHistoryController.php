@@ -20,11 +20,14 @@ class OrderHistoryController extends Controller
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'Đăng nhập để xem lịch sử đơn hàng!!');
         }
-
-        $query = Order::where('user_id', auth()->id());
-
+    
+        // Query cơ bản: Lấy đơn hàng của người dùng hiện tại
+        $query = Order::where('user_id', auth()->id())
+                      ->with(['orderItemHistories.product']); // Eager load mối quan hệ
+    
+        // Áp dụng các điều kiện lọc
         if ($request->filled('order_id')) {
-            $query->where('order_check', $request->order_id);
+            $query->where('order_check', 'like', '%' . $request->order_id . '%');
         }
         if ($request->filled('day')) {
             $query->whereDay('created_at', $request->day);
@@ -38,16 +41,23 @@ class OrderHistoryController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-
-        $orders = $query->get();
-
+    
+        // Lấy danh sách đơn hàng
+        $orders = $query->orderBy('created_at', 'desc')->get();
+    
+        // Tính số lượng loại sản phẩm và tổng số lượng sản phẩm cho mỗi đơn hàng
+        foreach ($orders as $order) {
+            $order->totalItems = $order->orderItemHistories->count(); // Số lượng loại sản phẩm
+            $order->totalQuantity = $order->orderItemHistories->sum('quantity'); // Tổng số lượng sản phẩm
+        }
+    
         return view('client.history.order-history', compact('orders'));
     }
 
     public function show($id)
     {
-        // Tải đơn hàng cùng với danh sách sản phẩm trong order_item_histories
-        $order = Order::with('orderItemHistories.product')->findOrFail($id);
+        // Tải đơn hàng cùng với danh sách sản phẩm và thông tin người dùng
+        $order = Order::with(['orderItemHistories.product', 'user'])->findOrFail($id);
 
         // Kiểm tra quyền truy cập
         if ($order->user_id !== auth()->id()) {

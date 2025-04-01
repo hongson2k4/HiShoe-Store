@@ -89,7 +89,64 @@
             <tbody>
                 @foreach ($orders as $order)
                     <tr>
-                        <td>{{ $order->product ? $order->product->name : 'Không có sản phẩm' }}</td>
+                        {{-- <td>{{ $order->product ? $order->product->name : 'Không có sản phẩm' }}</td> --}}
+                        {{-- <td>
+                            @if ($order->orderItemHistories->isNotEmpty())
+                                {{ $order->orderItemHistories->map(fn($item) => $item->product->name)->implode(', ') }}
+                                <span class="total-items">(Tổng: {{ $order->totalItems }} sản phẩm)</span>
+                            @else
+                                Không có sản phẩm
+                            @endif
+                        </td> --}}
+                        <!-- Cột Tên sản phẩm -->
+                        {{-- <td>
+                            @if ($order->orderItemHistories->isNotEmpty())
+                                @if ($order->orderItemHistories->count() >= 2)
+                                    <!-- Hiển thị dropdown nếu có từ 2 sản phẩm trở lên -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-link dropdown-toggle p-0 text-decoration-none" type="button" id="dropdownMenuButton{{ $order->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            {{ $order->orderItemHistories->first()->product->name }} (Tổng: {{ $order->totalItems }} sản phẩm)
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $order->id }}">
+                                            @foreach ($order->orderItemHistories as $item)
+                                                <li class="dropdown-item">{{ $item->product->name }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @else
+                                    <!-- Hiển thị bình thường nếu chỉ có 1 sản phẩm -->
+                                    {{ $order->orderItemHistories->map(fn($item) => $item->product->name)->implode(', ') }}
+                                    <span class="total-items">(Tổng: {{ $order->totalItems }} sản phẩm)</span>
+                                @endif
+                            @else
+                                Không có sản phẩm
+                            @endif
+                        </td> --}}
+                        <td>
+                            @if ($order->orderItemHistories->isNotEmpty())
+                                @if ($order->orderItemHistories->count() >= 2)
+                                    <!-- Hiển thị dropdown nếu có từ 2 sản phẩm trở lên -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-link dropdown-toggle p-0 text-decoration-none text-black" type="button" id="dropdownMenuButton{{ $order->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            {{ $order->orderItemHistories->first()->product->name }} (Tổng: {{ $order->totalItems }} sản phẩm)
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $order->id }}">
+                                            @foreach ($order->orderItemHistories->slice(1) as $item)
+                                                <li class="dropdown-item">{{ $item->product->name }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @else
+                                    <!-- Hiển thị bình thường nếu chỉ có 1 sản phẩm -->
+                                    <span style="color: black">
+                                        {{ $order->orderItemHistories->map(fn($item) => $item->product->name)->implode(', ') }}
+                                        <span class="total-items">(Tổng: {{ $order->totalItems }} sản phẩm)</span>
+                                    </span>
+                                @endif
+                            @else
+                                Không có sản phẩm
+                            @endif
+                        </td>
                         <td>{{ $order->order_check }}</td>
                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                         <td>{{ number_format($order->total_price, 0, ',', '.') }} VNĐ</td>

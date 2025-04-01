@@ -18,6 +18,8 @@
 
     <!-- Tiêu đề -->
     <h2>Chi tiết đơn hàng #{{ $order->order_check }}</h2>
+    <p><strong>Tên khách hàng:</strong> {{ $order->user->full_name }}</p>
+    <p><strong>Địa chỉ giao hàng:</strong> {{ $order->shipping_address }}</p>
     <p><strong>Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
     <p><strong>Tổng tiền:</strong> {{ number_format($order->orderItemHistories->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }} VNĐ</p>
     <p><strong>Trạng thái:</strong>

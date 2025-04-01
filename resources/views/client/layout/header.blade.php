@@ -69,7 +69,7 @@
       <div class="dropdown">
         <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-user" aria-hidden="true"></i>
+        <img src="https://i.pinimg.com/736x/d3/9f/65/d39f65eadc2dc28cf859e77680f3fe42.jpg" alt="" style="width: 35px; height: auto; border-radius: 50%;">
         <span>
           {{ Auth::user()->username }}
         </span>

@@ -32,11 +32,11 @@ Route::controller(AuthController::class)
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     });
 
-Route::middleware(['admin'])->get('/admin/dashboard', function () {
+Route::middleware(['auth:admin', 'admin'])->get('/admin/dashboard', function () {
     return view('admin/dashboard');
 })->name('admin.dashboard');
 
-Route::middleware(['admin'])->controller(UserController::class)
+Route::middleware(['auth:admin', 'admin'])->controller(UserController::class)
     ->name('users.')
     ->prefix('admin/users/')
     ->group(function () {
@@ -47,7 +47,7 @@ Route::middleware(['admin'])->controller(UserController::class)
         Route::get('/history/{id}', [UserHistoryController::class, 'index'])->name('history');
     });
 
-Route::middleware(['admin'])->controller(BrandController::class)
+Route::middleware(['auth:admin', 'admin'])->controller(BrandController::class)
     ->prefix('admin/brands')
     ->name('brands.')
     ->group(function () {
@@ -60,7 +60,7 @@ Route::middleware(['admin'])->controller(BrandController::class)
 });
 
 
-Route::middleware(['admin'])->controller(CategoryController::class)
+Route::middleware(['auth:admin', 'admin'])->controller(CategoryController::class)
 ->name('category.')
 ->prefix('admin/category/')
 ->group(function(){
@@ -74,14 +74,14 @@ Route::middleware(['admin'])->controller(CategoryController::class)
 });
 
 
-Route::prefix('admin/orders')->group(function () {
+Route::middleware(['auth:admin', 'admin'])->prefix('admin/orders')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::put('/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 });
 
-// Route::middleware(['admin'])->controller(BrandController::class)
+// Route::middleware(['auth:admin', 'admin'])->controller(BrandController::class)
 //     ->prefix('admin/colors')
 //     ->name('colors.')
 //     ->group(function () {
@@ -94,11 +94,11 @@ Route::prefix('admin/orders')->group(function () {
 // });
 
 
-Route::resource('admin/sizes', SizeController::class);
-Route::resource('admin/colors', ColorController::class);
-Route::put('/colors/{id}', [ColorController::class, 'update'])->name('colors.update');
+Route::middleware(['auth:admin', 'admin'])->resource('admin/sizes', SizeController::class);
+Route::middleware(['auth:admin', 'admin'])->resource('admin/colors', ColorController::class);
+Route::middleware(['auth:admin', 'admin'])->put('/colors/{id}', [ColorController::class, 'update'])->name('colors.update');
 
-Route::middleware(['admin'])->controller(ProductController::class)
+Route::middleware(['auth:admin', 'admin'])->controller(ProductController::class)
     ->name('products.')
     ->prefix('admin/products/')
     ->group(function () {
@@ -112,7 +112,7 @@ Route::middleware(['admin'])->controller(ProductController::class)
     })
 ;
 
-Route::middleware(['admin'])->controller(ProductVariantController::class)
+Route::middleware(['auth:admin', 'admin'])->controller(ProductVariantController::class)
     ->name('products.variant.')
     ->prefix('admin/variant/')
     ->group(function () {

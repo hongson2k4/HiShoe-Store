@@ -16,9 +16,9 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check()) {
+        if (Auth::guard('web')->check() && Auth::guard('web')->user()->role == 0) {
             return $next($request);
         }
-        return redirect()->route('login');
+        return redirect()->route('login-form');
     }
 }

@@ -58,7 +58,7 @@ Route::controller(UserController::class)
 ->name('user.')
 ->prefix('user/')
 ->group(function(){
-    Route::get('profile',[UserController::class,'profile'])->name('profile');
+    Route::middleware(['auth:web', 'client'])->get('profile',[UserController::class,'profile'])->name('profile');
 });
 
 Route::controller(CartController::class)

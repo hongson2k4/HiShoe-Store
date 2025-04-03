@@ -17,7 +17,7 @@ class AuthController extends Controller
 {
     public function registerForm()
     {
-        if (Auth::check()) {
+        if (Auth::guard('web')->check()) {
             return Redirect::route('home')->with('error', 'Bạn đã đăng nhập!');
         }
         return view('client.auth.register');
@@ -75,7 +75,7 @@ class AuthController extends Controller
     }
     public function loginForm()
     {
-        if (Auth::check()) {
+        if (Auth::guard('web')->check()) {
             return Redirect::route('home')->with('error', 'Bạn đã đăng nhập!');
         }
         return view('client.auth.login');
@@ -94,8 +94,8 @@ class AuthController extends Controller
             ? ['email' => $validate['username'], 'password' => $validate['password']]
             : ['username' => $validate['username'], 'password' => $validate['password']];
     
-        if (Auth::attempt($credentials)) {
-            if (Auth::user()) {
+        if (Auth::guard('web')->attempt($credentials)) {
+            if (Auth::guard('web')->user()) {
                 return redirect()->route('home');
             }
         }
@@ -105,7 +105,7 @@ class AuthController extends Controller
     }
     public function logout()
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
         return redirect()->route('home');
     }
 
@@ -177,7 +177,7 @@ class AuthController extends Controller
 
     public function changePass()
     {
-        if (!Auth::check()) {
+        if (!Auth::guard('web')->user()) {
             return Redirect::route('loginForm')->with('error', 'Bạn cần đăng nhập!');
         }
         return view("client.pages.user.change");
@@ -197,7 +197,7 @@ class AuthController extends Controller
             'confirm_password.same' => 'Xác nhận mật khẩu không khớp với mật khẩu mới.',
         ]);
 
-        $user = User::find(Auth::id());
+        $user = User::find(Auth::guard('web')->id());
 
         if (!Hash::check($validate['old_password'], $user->password)) {
             return redirect()->back()->withErrors(['error' => 'Sai mật khẩu cũ']);
@@ -208,11 +208,11 @@ class AuthController extends Controller
         ]);
 
         UserHistoryChanges::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::guard('web')->id(),
             'field_name' => 'password',
             'old_value' => "Không hiển thị",
             'new_value' => "Không hiển thị",
-            'change_by' => Auth::id(),
+            'change_by' => Auth::guard('web')->id(),
             'content' => "Người dùng cập nhật mật khẩu mới",
             'updated_at' => now(),
         ]);

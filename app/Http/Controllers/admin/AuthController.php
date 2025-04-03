@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Redirect;
 class AuthController extends Controller
 {
     public function loginForm(){
-        if (Auth::check() && Auth::user()->role == 1) {
+        if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role == 1) {
             return Redirect::route('admin.dashboard')->with('error', 'Bạn đã đăng nhập!');
         }
         return view('admin.login');
     }
     public function login(Request $request){
-        if (Auth::attempt(['username'=>$request->input('username'), 'password'=>$request->input('password')]) ){
-            if (Auth::user()) {
+        if (Auth::guard('admin')->attempt(['username'=>$request->input('username'), 'password'=>$request->input('password')]) ){
+            if (Auth::guard('admin')->user()->role == 1) {
                
                 return redirect()->route('admin.dashboard');
             }
@@ -29,7 +29,7 @@ class AuthController extends Controller
         return redirect()->route('admin.loginForm');
     }
     public function logout(){
-        Auth::logout();
+        Auth::guard('admin')->logout();
         return redirect()->route('home');
     }
 }

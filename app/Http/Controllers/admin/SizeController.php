@@ -19,18 +19,18 @@ class SizeController extends Controller
     public function store(Request $request) {
         // Kiểm tra xem size đã tồn tại chưa
         $request->validate([
-            'size' => 'required|integer|unique:sizes,size',
+            'name' => 'required|integer|unique:sizes,name',
         ], [
-            'size.required' => 'Vui lòng nhập kích thước!',
-            'size.integer' => 'Kích thước phải là số nguyên!',
-            'size.unique' => 'Kích thước này đã tồn tại!',
+            'name.required' => 'Vui lòng nhập kích thước!',
+            'name.integer' => 'Kích thước phải là số nguyên!',
+            'name.unique' => 'Kích thước này đã tồn tại!',
         ]);
-    
+
         // Thêm size mới
         Size::create([
-            'size' => $request->size
+            'name' => $request->name
         ]);
-    
+
         return redirect()->route('sizes.index')->with('success', 'Size đã thêm thành công!');
     }
     
@@ -45,16 +45,16 @@ class SizeController extends Controller
 
     // Kiểm tra dữ liệu đầu vào
     $request->validate([
-        'size' => 'required|integer|unique:sizes,size,' . $id,
+        'name' => 'required|integer|unique:sizes,name,' . $id,
     ], [
-        'size.required' => 'Vui lòng nhập kích thước!',
-        'size.integer' => 'Kích thước phải là số nguyên!',
-        'size.unique' => 'Kích thước này đã tồn tại!',
+        'name.required' => 'Vui lòng nhập kích thước!',
+        'name.integer' => 'Kích thước phải là số nguyên!',
+        'name.unique' => 'Kích thước này đã tồn tại!',
     ]);
 
     // Cập nhật dữ liệu
     $size->update([
-        'size' => $request->size
+        'name' => $request->name
     ]);
 
     return redirect()->route('sizes.index')->with('success', 'Size đã cập nhật thành công!');

@@ -1,12 +1,6 @@
 @extends('admin.layout.main')
 @section('content')
 <div class="container mt-4">
-    @if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
     <h2 class="mb-3">Danh sách Sizes</h2>
     <a href="{{ route('sizes.create') }}" class="btn btn-primary mb-3">Thêm Size</a>
 
@@ -22,7 +16,7 @@
             @foreach ($sizes as $size)
             <tr>
                 <td>{{ $size->id }}</td>
-                <td>{{ $size->size }}</td>
+                <td>{{ $size->name }}</td>
                 <td>
                     <a href="{{ route('sizes.edit', $size->id) }}" class="btn btn-warning btn-sm">Sửa</a>
                     <form action="{{ route('sizes.destroy', $size->id) }}" method="POST" style="display:inline;">

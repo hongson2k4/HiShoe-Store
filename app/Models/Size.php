@@ -7,5 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Size extends Model
 {
-    protected $fillable = ['size'];
+    protected $fillable = ['name'];
+    
+    public $timestamps = false;
 }

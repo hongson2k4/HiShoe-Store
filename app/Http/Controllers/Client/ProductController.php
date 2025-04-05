@@ -61,25 +61,28 @@ class ProductController extends Controller
     public function detail($product_id)
     {
         $products = Products::findOrFail($product_id);
-        // dd($product->id);
         $variants = $products->variants;
-
+    
         // Lấy danh sách các kích cỡ và màu sắc có sẵn cho sản phẩm này
         $availableSizes = $variants->pluck('size.name', 'size.id')->unique()->toArray();
         $availableColors = $variants->pluck('color.name', 'color.id')->unique()->toArray();
-
+    
         // Lấy danh sách sản phẩm gợi ý theo danh mục
         $suggestedProducts = Products::where('category_id', $products->category_id)
             ->where('id', '!=', $product_id)
             ->take(8)
             ->get();
-
+    
+        // Lấy danh sách bình luận
+        $comments = $products->comments()->with('user')->latest()->get();
+    
         return view('client.pages.shop.detail', compact(
             'products',
             'variants',
             'availableSizes',
             'availableColors',
-            'suggestedProducts'
+            'suggestedProducts',
+            'comments'
         ));
     }
 

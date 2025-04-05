@@ -17,206 +17,88 @@ HiShoe-Store - Trang chủ
     </div>
 
     <div class="row">
+        @foreach($products as $product)
         <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
+            <div class="box position-relative" style="height: 380px">
+                <button class="btn btn-none like-btn {{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? 'liked' : '' }}" 
+                    data-id="{{ $product->id }}">
+                    <span class="heart">{{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? '❤️' : '🤍' }}</span> 
+                    <span class="text">{{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? 'Đã thích' : 'Thích' }}</span>
+                </button>
+    
                 <a href="">
                     <div class="img-box">
-                        <img src="{{ asset('client/images/p1.png') }}" alt="">
+                        <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}" alt="{{ $product->name }}">
                     </div>
                     <div class="detail-box">
-                        <h6>
-                            Ring
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $200
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
+                        <h6>{{ $product->name }}</h6>
+                        <h6>Giá: <span>{{ number_format($product->price) }} VND</span></h6>
                     </div>
                 </a>
             </div>
         </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="{{ asset('client/images/p2.png') }}" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Watch
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $300
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
+        @endforeach
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".like-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    let productId = this.dataset.id;
+                    let heart = this.querySelector(".heart");
+                    let text = this.querySelector(".text");
+                    let isLoggedIn = {{ auth()->check() ? 'true' : 'false' }}; // Check login status
+
+                    if (!isLoggedIn) {
+                        // Show login modal
+                        $('#loginModal').modal('show');
+                        return;
+                    }
+
+                    fetch(`/products/${productId}/like`, {  
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"  
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Lỗi khi gửi yêu cầu.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.liked !== undefined) {
+                            // Update emoji and text based on server response
+                            heart.textContent = data.liked ? '❤️' : '🤍';
+                            text.innerText = data.liked ? "Đã thích" : "Thích";
+                        }
+                    })
+                    .catch(error => console.error("Lỗi:", error));
+                });
+            });
+        });
+    </script>
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Thông báo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Bạn cần đăng nhập để thích sản phẩm!
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ route('loginForm') }}" class="btn btn-primary">Đăng nhập</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
             </div>
         </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="{{ asset('client/images/p3.png') }}" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Teddy Bear
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $110
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="{{ asset('client/images/p4.png') }}" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Flower Bouquet
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $45
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="{{ asset('client/images/p5.png') }}" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Teddy Bear
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $95
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="{{ asset('client/images/p6.png') }}" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Flower Bouquet
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $70
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="{{ asset('client/images/p7.png') }}" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Watch
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $400
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="{{ asset('client/images/p8.png') }}" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Ring
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $450
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
+    </div>
     </div>
     <div class="btn-box">
         <a href="">

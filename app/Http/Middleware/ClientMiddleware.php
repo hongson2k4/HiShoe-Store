@@ -19,6 +19,6 @@ class ClientMiddleware
         if (Auth::guard('web')->check() && Auth::guard('web')->user()->role == 0) {
             return $next($request);
         }
-        return redirect()->route('login-form');
+        return redirect()->route('loginForm');
     }
 }

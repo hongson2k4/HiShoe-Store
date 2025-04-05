@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-md-6">
                     <h4>Order Information</h4>
-                    <p><strong>Order Date:</strong> {{ $order->created_at->format('d M Y H:i') }}</p>
+                    <p><strong>Order Date:</strong> {{ $order->created_at ? $order->created_at->format('d:M:Y H:i:s') : 'N/A' }}</p>
                     <p><strong>Total Price:</strong> ${{ number_format($order->total_price, 2) }}</p>
                     <p><strong>Shipping Address:</strong> {{ $order->shipping_address }}</p>
                 </div>

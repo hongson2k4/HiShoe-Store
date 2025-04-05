@@ -1,11 +1,13 @@
 @extends('admin.layout.main')
 @section('content')
+    <h1>Danh sách biến thể sản phẩm</h1>
+    <h3>Tên sản phẩm: {{ $product->name }}</h3>
     <a class="btn btn-success m-2" href="{{ route('products.variant.create', ['product_id' => $product_id]) }}">Thêm mới biến thể</a>
     <table class="table">
         <thead>
             <tr>
                 <th>STT</th>
-                <th>Tên sản phẩm</th>
+                <th>Ảnh biến thể</th>
                 <th>Kích thước</th>
                 <th>Màu sắc</th>
                 <th>Mã màu</th>
@@ -18,7 +20,12 @@
             @foreach ($products_variant as $key => $variant)
                 <tr>
                     <td>{{ $key + 1 }}</td>
-                    <td>{{ $variant->product->name }}</td>
+                    <td>
+                        @if ($variant->image_url)
+                            <img src="{{ asset('storage/' . $variant->image_url) }}" alt="Variant Image" style="width: 100px; height: 100px;">
+                        @else
+                            <span>Chưa có ảnh</span>
+                        @endif
                     <td>{{ $variant->size->name }}</td>
                     <td>{{ $variant->color->name }}</td>
                     <td>

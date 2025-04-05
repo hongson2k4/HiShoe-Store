@@ -6,6 +6,7 @@ use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\UserHistoryController;
+use App\Http\Controllers\admin\VoucherController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\AuthController;
@@ -32,9 +33,7 @@ Route::controller(AuthController::class)
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     });
 
-Route::middleware(['auth:admin', 'admin'])->get('/admin/dashboard', function () {
-    return view('admin/dashboard');
-})->name('admin.dashboard');
+Route::middleware(['auth:admin', 'admin'])->get('/admin/dashboard', [AuthController::class,'dashboard'])->name('admin.dashboard');
 
 Route::middleware(['auth:admin', 'admin'])->controller(UserController::class)
     ->name('users.')
@@ -123,3 +122,16 @@ Route::middleware(['auth:admin', 'admin'])->controller(ProductVariantController:
         Route::put('products/{product_id}/update/{id}', [ProductVariantController::class, 'update'])->where('id', '[0-9]+')->name('update');
         Route::delete('products/{product_id}/delete/{id}', [ProductVariantController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
     });
+
+Route::middleware(['auth:admin', 'admin'])->controller(VoucherController::class)
+->name('vouchers.')
+->prefix('admin/vouchers/')
+->group(function(){
+    Route::get('/', [VoucherController::class, 'index'])->name('list');
+    Route::get('create', [VoucherController::class, 'create'])->name('create');
+    Route::post('create', [VoucherController::class, 'store'])->name('store');
+    Route::delete('delete/{id}', [VoucherController::class, 'delete'])->name('delete');
+    Route::get('edit/{id}', [VoucherController::class, 'edit'])->name('edit');
+    Route::put('update/{id}', [VoucherController::class, 'update'])->name('update');
+
+});

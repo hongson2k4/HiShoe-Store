@@ -67,7 +67,9 @@
                                     </span>
                                 </div>
                             </td>
-                            <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
+                            <td>
+                                {{ $order->created_at ? $order->created_at->format('d-m-Y H:i:s') : 'N/A' }}
+                            </td>
                             <td>
                                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info btn-sm">
                                     View Details

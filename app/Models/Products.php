@@ -41,4 +41,21 @@ class Products extends Model
     {
         return $this->hasManyThrough(Color::class, Product_variant::class, 'product_id', 'id', 'id', 'color_id');
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'product_id'); // đảm bảo đúng tên cột
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'product_name_id', 'id');
+    }
+    public function likes() {
+        return $this->hasMany(Like::class, 'product_id'); // Explicitly specify the foreign key
+    }
+    // Quan hệ với bảng orders
+   
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

@@ -88,6 +88,18 @@
             </div>
         </div>
     </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#vouchers" aria-expanded="true"
+            aria-controls="vouchers">
+            <i class="fas fa-solid fa-tag"></i>
+            <span>Quản lý mã giảm giá</span>
+        </a>
+        <div id="vouchers" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
 
+                <a class="collapse-item" href="{{route('vouchers.list')}}">Danh sách mã giảm giá</a>
+            </div>
+        </div>
+    </li>
 </ul>
 <!-- End of Sidebar -->

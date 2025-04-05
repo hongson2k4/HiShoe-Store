@@ -38,8 +38,8 @@
                     <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
                     <td>
 
-                    <span class="{{ $u->status == 0 ? 'bg-success text-white px-2 rounded' : 'bg-danger text-white px-2 rounded' }}">
-                            {{ $u->status == 0 ? 'Hoạt động' : 'Tạm đóng' }}
+                    <span class="{{ $u->status == 0 ? 'badge bg-success text-white px-2 rounded' : 'badge bg-danger text-white px-2 rounded' }}">
+                            {{ $u->status == 0 ? 'Còn hàng' : 'Hết hàng' }}
                         </span>
 
                     </td>

@@ -16,6 +16,7 @@ class Product_variant extends Model
         'color_id',
         'price',
         'stock_quantity',
+        'image_url',
     ];
     public $timestamp = false;
 

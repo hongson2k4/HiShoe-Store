@@ -14,11 +14,16 @@ class Order extends Model
         'user_id',
         'total_price',
         'status',
+        'customer_reasons',
         'shipping_address',
         'voucher_id',
-        'payment_method',
-        'shipping_method',
-        'notes'
+        'product_name_id',
+        'notes',
+        'needs_support',
+        'needs_refunded',
+        'order_check',
+        'is_refunded',
+        'is_reviewed',
     ];
 
     /**
@@ -28,19 +33,24 @@ class Order extends Model
      */
     public function canCancel()
     {
-        // Only pending and processing orders can be cancelled
-        $cancelableStatuses = [1, 2]; // Pending and Processing
-
-        // Check if order is in cancelable status
+        // Chỉ cho phép hủy khi trạng thái là "Đơn đã đặt" (status = 1)
+        $cancelableStatuses = [1]; // Chỉ Pending
+    
         if (!in_array($this->status, $cancelableStatuses)) {
             return false;
         }
+    
+        // Kiểm tra thời gian 7 ngày (7 * 24 = 168 giờ)
+        $createdWithin7Days = Carbon::parse($this->created_at)->diffInHours(Carbon::now()) <= 168;
+    
+        return $createdWithin7Days;
+    }
 
-        // Optional: Add time-based cancellation restriction
-        // For example, can only cancel within 24 hours of order creation
-        $createdWithin24Hours = Carbon::parse($this->created_at)->diffInHours(Carbon::now()) <= 24;
-
-        return $createdWithin24Hours;
+    //Kiểm tra tạo đơn đã quá 7 ngày
+    public function isOver7Days()
+    {
+        // Kiểm tra xem đơn hàng đã quá 7 ngày (7 * 24 = 168 giờ) hay chưa
+        return Carbon::parse($this->created_at)->diffInHours(Carbon::now()) > 168;
     }
 
     /**
@@ -51,12 +61,13 @@ class Order extends Model
     public static function getStatusList()
     {
         return [
-            1 => 'Pending',
-            2 => 'Processing',
-            3 => 'Shipped',
-            4 => 'Delivered',
-            5 => 'Cancelled',
-            6 => 'Refunded'
+            1 => 'Đơn đã đặt',
+            2 => 'Đang đóng gói',
+            3 => 'Đang vận chuyển',
+            4 => 'Đã giao hàng',
+            5 => 'Đã hủy',
+            6 => 'Đã trả hàng',
+            7 => 'Đã nhận hàng', // Thêm trạng thái dã nhận được hàng
         ];
     }
 
@@ -74,7 +85,7 @@ class Order extends Model
 
     /**
      * Get allowed next statuses
-     * 
+     *
      * @return array
      */
     public function getAllowedNextStatuses()
@@ -83,9 +94,10 @@ class Order extends Model
             1 => [2, 5], // Pending can go to Processing or Cancelled
             2 => [3, 5], // Processing can go to Shipped or Cancelled
             3 => [4, 5], // Shipped can go to Delivered or Cancelled
-            4 => [6],    // Delivered can go to Refunded
+            4 => [6, 7], // Delivered can go to Refunded or Received
             5 => [],     // Cancelled cannot change
-            6 => []      // Refunded cannot change
+            6 => [],     // Refunded cannot change
+            7 => [],     // Received cannot change
         ];
 
         return $statusTransitions[$this->status] ?? [];
@@ -98,18 +110,33 @@ class Order extends Model
      */
     public function getStatusTextAttribute()
     {
-        return self::getStatusList()[$this->status] ?? 'Unknown';
+        $statuses = [
+            1 => 'Đơn đã đặt',
+            2 => 'Đang đóng gói',
+            3 => 'Đang vận chuyển',
+            4 => 'Đã giao hàng',
+            5 => 'Đã hủy',
+            6 => 'Đã trả hàng',
+            7 => 'Đã nhận hàng', // Thêm trạng thái mới
+        ];
+        return $statuses[$this->status] ?? 'Không xác định';
     }
-
+    
+    /**
+     * Get status badge class
+     *
+     * @return string
+     */
     public function getStatusBadgeClass()
     {
         $classes = [
-            1 => 'bg-secondary', // Pending
-            2 => 'bg-info',      // Processing
-            3 => 'bg-warning',   // Shipped
+            1 => 'bg-primary', // Pending
+            2 => 'bg-warning',      // Processing
+            3 => 'bg-info',   // Shipped
             4 => 'bg-success',   // Delivered
             5 => 'bg-danger',    // Cancelled
-            6 => 'bg-dark'       // Refunded
+            6 => 'bg-secondary',      // Refunded
+            7 => 'bg-primary',   // Received
         ];
 
         return $classes[$this->status] ?? 'bg-secondary';
@@ -167,4 +194,40 @@ class Order extends Model
 
         return $this->total_price;
     }
+
+     
+
+    // Mối quan hệ với bảng order_item_histories
+    public function orderItemHistories()
+    {
+        return $this->hasMany(OrderItemHistory::class, 'order_id', 'id');
+    }
+
+    // Quan hệ với bảng products
+    public function product()
+    {
+        return $this->belongsTo(Products::class, 'product_name_id', 'id');
+    }
+
+    // hiển thị màu sắc cho status client
+    /**
+     * Get status class for client
+     *
+     * @return string
+     */
+    public function getStatusClass()
+    {
+        return match ($this->status) {
+            1 => 'bg-primary',   // Đơn đã đặt - Xanh dương
+            2 => 'bg-warning',   // Đang đóng gói - Vàng
+            3 => 'bg-info',      // Đang vận chuyển - Xanh nhạt
+            4 => 'bg-success',   // Đã giao hàng - Xanh lá
+            5 => 'bg-danger',    // Đã hủy - Đỏ
+            6 => 'bg-secondary', // Đã trả hàng - Xám
+            7 => 'bg-primary',   // Đã nhận hàng - Xanh dương
+            default => 'bg-light text-dark',
+        };
+    }
+
+
 }

@@ -40,7 +40,9 @@
         @include('client.layout.footer')
     </section>
     <!-- end info section -->
-
+    <div>
+        @include('client.layout.modal')
+    </div>
 </body>
 @include('client.asset.script')
 

@@ -95,9 +95,16 @@ class AuthController extends Controller
             : ['username' => $validate['username'], 'password' => $validate['password']];
     
         if (Auth::guard('web')->attempt($credentials)) {
-            if (Auth::guard('web')->user()) {
-                return redirect()->route('home');
+            $user = Auth::guard('web')->user();
+            if ($user->status == 1) {
+                Auth::guard('web')->logout();
+                session()->flash('locked', [
+                    'ban_reason' => $user->ban_reason,
+                    'banned_at' => $user->banned_at,
+                ]);
+                return redirect()->route('loginForm');
             }
+            return redirect()->route('home');
         }
     
         session()->flash('error', 'Sai thông tin đăng nhập!');

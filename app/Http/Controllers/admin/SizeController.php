@@ -60,11 +60,15 @@ class SizeController extends Controller
     return redirect()->route('sizes.index')->with('success', 'Size đã cập nhật thành công!');
 }
 
-
-    public function destroy(Size $size) {
-        $size->delete();
-        return redirect()->route('sizes.index')->with('success', 'Size đã xóa.');
+public function destroy(Size $size) {
+    // Kiểm tra nếu size đang được liên kết với bảng khác
+    if ($size->products()->exists()) { // Giả sử bảng products có cột size_id
+        return redirect()->route('sizes.index')->with('error', 'Không thể xóa kích thước vì đang được sử dụng.');
     }
+
+    $size->delete();
+    return redirect()->route('sizes.index')->with('success', 'Size đã xóa.');
+}
 }
 
 

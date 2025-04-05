@@ -61,7 +61,7 @@
                     <td>{{ $u->address }}</td>
                     <td>{{ $u->role == 0 ? 'Users' : 'Admin' }}</td>
                     <td>
-                        <span class="{{ $u->status == 0 ? 'bg-success text-white px-2 rounded' : 'bg-danger text-white px-2 rounded' }}">
+                        <span class="{{ $u->status == 0 ? 'badge bg-success text-white px-2 rounded' : 'badge bg-danger text-white px-2 rounded' }}">
                             {{ $u->status == 0 ? 'Hoạt động' : 'Bị khóa' }}
                         </span>
                     </td>

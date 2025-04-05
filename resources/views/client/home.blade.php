@@ -27,10 +27,12 @@ HiShoe-Store - Trang chủ
                 </button>
     
                 <a href="">
-                    <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}" class="card-img-top" alt="{{ $product->name }}">
+                    <div class="img-box">
+                        <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}" alt="{{ $product->name }}">
+                    </div>
                     <div class="detail-box">
                         <h6>{{ $product->name }}</h6>
-                        <h6>Price <span>{{ number_format($product->price) }} VND</span></h6>
+                        <h6>Giá: <span>{{ number_format($product->price) }} VND</span></h6>
                     </div>
                 </a>
             </div>

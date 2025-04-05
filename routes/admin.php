@@ -13,6 +13,7 @@ use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\Client\OrderHistoryController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes

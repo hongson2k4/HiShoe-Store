@@ -33,9 +33,7 @@ Route::controller(AuthController::class)
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     });
 
-Route::middleware(['admin'])->get('/admin/dashboard', function () {
-    return view('admin/dashboard');
-})->name('admin.dashboard');
+Route::middleware(['admin'])->get('/admin/dashboard', [AuthController::class,'dashboard'])->name('admin.dashboard');
 
 Route::middleware(['admin'])->controller(UserController::class)
     ->name('users.')

@@ -83,7 +83,45 @@
             </div>
         </div>
     </div>
-
+    <div class="card bg-white p-3 mb-4 mt-4 ">
+        <h4 class="fw-semibold">Bình luận</h4>
+        @foreach ($comments as $cmt)
+        <div class="d-flex align-items-start">
+            <!-- Kiểm tra nếu user có avatar, nếu không thì sử dụng ảnh mặc định -->
+            <img alt="Avatar of {{ $cmt->user->avatar }}" class="rounded-circle me-3" width="50" height="50" src="{{ $cmt->user->avatar ?? 'https://cdn.kona-blue.com/upload/kona-blue_com/post/images/2024/09/19/465/avatar-trang-1.jpg' }}">
+    
+            <div class="flex-grow-1">
+                <div class="bg-light p-3 rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0 fw-semibold">
+                            {{ $cmt->user->full_name }}
+                        </h5>
+                        <small class="text-muted">Lúc {{ $cmt->created_at->format('d/m/Y H:i') }}</small> <!-- Hiển thị thời gian bình luận -->
+                    </div>
+                    <p class="mb-0 text-dark">
+                        {{ $cmt->content }} <!-- Nội dung bình luận -->
+                    </p>
+                </div>
+                <a href="#" class="text-primary text-decoration-none small mt-2 d-inline-block">
+                    <i class="fas fa-reply me-1"></i>
+                    Trả lời
+                </a>
+            </div>
+        </div>
+    @endforeach
+    
+        <div class="mt-4">
+          <form action="{{URL('comment/send')}}" method="POST">
+            @csrf
+            <input type="hidden" name="product_id" value="{{ $product->id }}">
+            <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+            <textarea class="form-control mb-3" rows="4" name="content" placeholder="Nhập nội dung bình luận..."></textarea>
+            <button class="btn btn-success w-100 py-2 fw-semibold">
+                GỬI BÌNH LUẬN
+            </button>
+          </form>
+        </div>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sizeButtons = document.querySelectorAll('#sizeButtons .variant-button');

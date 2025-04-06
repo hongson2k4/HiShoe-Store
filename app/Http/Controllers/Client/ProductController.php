@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Products;
 use App\Models\Product_variant;
 use Illuminate\Http\Request;
@@ -39,12 +40,16 @@ class ProductController extends Controller
     {
         $product = Products::findOrFail($product_id);
         $variants = $product->variants;
-    
+        $comments = Comment::where('product_id', $product_id)
+            ->with('user') 
+            ->get();
+
+        $user= 
         // Lấy danh sách các kích cỡ và màu sắc có sẵn cho sản phẩm này
         $availableSizes = $variants->pluck('size.name', 'size.id')->unique()->toArray();
         $availableColors = $variants->pluck('color.name', 'color.id')->unique()->toArray();
     
-        return view('client.pages.shop.detail', compact('product', 'variants', 'availableSizes', 'availableColors'));
+        return view('client.pages.shop.detail', compact('product', 'variants', 'availableSizes', 'availableColors','comments'));
     }
     
     public function getVariantPrice(Request $request)

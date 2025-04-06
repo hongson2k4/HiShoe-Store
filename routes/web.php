@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\UserController;
 use App\Http\Controllers\Client\ProductController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,6 +59,7 @@ Route::controller(UserController::class)
 ->group(function(){
     Route::get('profile',[UserController::class,'profile'])->name('profile');
 });
+Route::post('comment/send', [CommentController::class, 'store']);
 
 Route::controller(CartController::class)
 ->prefix('cart/')

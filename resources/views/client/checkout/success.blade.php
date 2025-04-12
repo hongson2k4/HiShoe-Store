@@ -1,4 +1,3 @@
-<!-- filepath: c:\laragon\www\HiShoe-5\resources\views\client\checkout\success.blade.php -->
 @extends('client.layout.main')
 @section('title')
 HiShoe-Store - Thanh toán thành công
@@ -20,7 +19,19 @@ HiShoe-Store - Thanh toán thành công
                 <p class="font-semibold">Mã đơn hàng: <span class="text-red-500">{{ $order->id }}</span></p>
                 <p>Số tiền thanh toán: <span class="font-bold text-lg text-green-600">{{ number_format($order->total_price) }} VNĐ</span></p>
                 @if ($payment)
-                    <p>Phương thức thanh toán: <span class="font-semibold">{{ $payment->payment_method }}</span></p>
+                    <p>Phương thức thanh toán:
+                        <span class="font-semibold">
+                            @if ($payment->payment_method == 'cod')
+                                Thanh toán khi nhận hàng (COD)
+                            @elseif ($payment->payment_method == 'bank-transfer')
+                                Chuyển khoản ngân hàng
+                            @elseif ($payment->payment_method == 'vnpay')
+                                Thanh toán qua VNPAY
+                            @else
+                                Không xác định
+                            @endif
+                        </span>
+                    </p>
                 @else
                     <p>Phương thức thanh toán: <span class="font-semibold">Không có thông tin thanh toán</span></p>
                 @endif

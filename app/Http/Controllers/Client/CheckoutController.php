@@ -73,44 +73,81 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         $request->validate([
-            'fullname' => 'required|string|max:255',
+            'fullname' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
             'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
+            'phone' => 'required|string|regex:/^\d{10,15}$/',
             'payment_method' => 'required|string|in:vnpay,bank-transfer,cod',
             'total' => 'required|numeric',
+            'voucher_code' => 'nullable|string',
             'bank_code' => 'nullable|string',
             'card_number' => 'nullable|string',
             'card_holder' => 'nullable|string',
             'card_expiry' => 'nullable|string',
         ]);
 
-        // Tạo đơn hàng
+        $voucherCode = $request->voucher_code;
+        $discount = 0;
+
+        if ($voucherCode) {
+            $voucher = Voucher::where('code', $voucherCode)
+                ->where('status', 1)
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->first();
+
+            if ($voucher) {
+                $subtotal = $request->total;
+                if ($subtotal >= $voucher->min_order_value) {
+                    if ($voucher->discount_type == 'percentage') {
+                        $discount = min($subtotal * ($voucher->discount_value / 100), $voucher->max_discount_value);
+                    } else {
+                        $discount = min($voucher->discount_value, $voucher->max_discount_value);
+                    }
+
+                    // Giảm giá từ voucher
+                    $request->merge(['total' => $subtotal - $discount]);
+
+                    // Giảm số lượng sử dụng voucher
+                    $voucher->usage_limit -= 1;
+                    if ($voucher->usage_limit <= 0) {
+                        $voucher->status = 0;
+                    }
+                    $voucher->save();
+                } else {
+                    return back()->withErrors(['voucher_code' => 'Giá trị đơn hàng không đủ để áp dụng mã giảm giá.']);
+                }
+            } else {
+                return back()->withErrors(['voucher_code' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn.']);
+            }
+        }
+
+
         $order = new Order();
         $order->user_id = Auth::id();
         $order->total_price = $request->total;
-        $order->status = 0; // 0: Chưa thanh toán
+        $order->status = 0;
         $order->shipping_address = $request->address;
         $order->voucher_id = Session::get('applied_voucher') ?? null;
         $order->save();
 
-        // Lưu thông tin thanh toán
+
         $payment = new Payment();
         $payment->order_id = $order->id;
         $payment->payment_method = $request->payment_method;
         $payment->amount = $request->total;
-        $payment->payment_status = 0; // 0: Chưa thanh toán
+        $payment->payment_status = 0;
         $payment->save();
 
-        // Xử lý thanh toán bằng VNPAY
+
         if ($request->payment_method == 'vnpay') {
-            $vnp_TmnCode = env('VNPAY_TMN_CODE'); // Mã website tại VNPAY
-            $vnp_HashSecret = env('VNPAY_HASH_SECRET'); // Chuỗi bí mật
+            $vnp_TmnCode = env('VNPAY_TMN_CODE');
+            $vnp_HashSecret = env('VNPAY_HASH_SECRET');
             $vnp_Url = env('VNPAY_URL');
             $vnp_Returnurl = env('VNPAY_RETURN_URL');
-            $vnp_TxnRef = $order->id; // Mã đơn hàng
+            $vnp_TxnRef = $order->id;
             $vnp_OrderInfo = "Thanh toán đơn hàng " . $order->id;
             $vnp_OrderType = "billpayment";
-            $vnp_Amount = $request->total * 100; // Số tiền thanh toán (đơn vị: VND)
+            $vnp_Amount = $request->total * 100;
             $vnp_Locale = "vn";
             $vnp_BankCode = $request->bank_code;
             $vnp_IpAddr = request()->ip();
@@ -134,104 +171,98 @@ class CheckoutController extends Controller
                 $inputData['vnp_BankCode'] = $vnp_BankCode;
             }
             ksort($inputData);
-            $query = "";
-            $i = 0;
-            $hashdata = "";
+            $hashdata = '';
             foreach ($inputData as $key => $value) {
-                if ($i == 1) {
-                    $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
-                } else {
-                    $hashdata .= urlencode($key) . "=" . urlencode($value);
-                    $i = 1;
-                }
-                $query .= urlencode($key) . "=" . urlencode($value) . '&';
+                $hashdata .= '&' . urlencode($key) . '=' . urlencode($value);
             }
+            $hashdata = ltrim($hashdata, '&');
 
-            $vnp_Url = $vnp_Url . "?" . $query;
-            if (isset($vnp_HashSecret)) {
-                $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-                $vnp_Url .= 'vnp_SecureHashType=HMACSHA512&vnp_SecureHash=' . $vnpSecureHash;
-            }
+            $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+            $vnp_Url = $vnp_Url . "?" . http_build_query($inputData) . '&vnp_SecureHashType=HMACSHA512&vnp_SecureHash=' . $vnpSecureHash;
 
             return redirect($vnp_Url);
         }
 
-        // Cập nhật trạng thái thanh toán cho COD và bank-transfer
+
         if ($request->payment_method == 'cod' || $request->payment_method == 'bank-transfer') {
-            $payment->payment_status = 1; // 1: Đã thanh toán
+            $payment->payment_status = 1;
+            $payment->save();
+
+
+            $user = Auth::user();
+            if ($user) {
+                Cart::where('user_id', $user->id)->delete();
+            } else {
+                Session::forget('cart');
+            }
+            Session::forget('applied_voucher');
+
+
+            return redirect()->route('checkout.success', ['order_id' => $order->id]);
         }
-
-        $payment->save();
-
-        // Sau khi xử lý thanh toán thành công, xóa giỏ hàng và voucher
-        $user = Auth::user();
-        if ($user) {
-            Cart::where('user_id', $user->id)->delete();
-        } else {
-            Session::forget('cart');
-        }
-        Session::forget('applied_voucher');
-
-        return redirect()->route('checkout.success', ['order_id' => $order->id]);
     }
 
 
 
-public function success(Request $request)
-{
-    // Lấy các tham số từ VNPAY
-    $vnp_ResponseCode = $request->input('vnp_ResponseCode');
-    $vnp_TxnRef = $request->input('vnp_TxnRef');
-    $vnp_TransactionNo = $request->input('vnp_TransactionNo');
-    $vnp_Amount = $request->input('vnp_Amount');
-    $vnp_BankCode = $request->input('vnp_BankCode');
-    $vnp_PayDate = $request->input('vnp_PayDate');
-    $vnp_OrderInfo = $request->input('vnp_OrderInfo');
-    $vnp_SecureHash = $request->input('vnp_SecureHash');
+    public function success(Request $request)
+    {
 
-    // Kiểm tra mã hash để đảm bảo tính toàn vẹn của dữ liệu
-    $vnp_HashSecret = env('VNPAY_HASH_SECRET');
-    $inputData = $request->except('vnp_SecureHash');
-    ksort($inputData);
-    $hashData = '';
-    foreach ($inputData as $key => $value) {
-        $hashData .= '&' . urlencode($key) . '=' . urlencode($value);
-    }
-    $hashData = ltrim($hashData, '&');
-    $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+        $orderId = $request->input('order_id');
+        if ($orderId) {
+            $order = Order::find($orderId);
+            $payment = Payment::where('order_id', $orderId)->first();
 
-    if ($secureHash === $vnp_SecureHash) {
-        if ($vnp_ResponseCode == '00') {
-            // Thanh toán thành công
-            $order = Order::find($vnp_TxnRef);
             if ($order) {
-                $order->status = 1; // Cập nhật trạng thái đơn hàng
-                $order->save();
-
-                $payment = Payment::where('order_id', $order->id)->first();
-                if ($payment) {
-                    $payment->payment_status = 1; // Cập nhật trạng thái thanh toán
-                    $payment->save();
-                }
-
-                // Xóa giỏ hàng sau khi thanh toán thành công
-                $user = Auth::user();
-                if ($user) {
-                    Cart::where('user_id', $user->id)->delete();
-                } else {
-                    Session::forget('cart');
-                }
-                Session::forget('applied_voucher');
-
                 return view('client.checkout.success', compact('order', 'payment'));
             }
-        } else {
-            // Thanh toán thất bại
+
+            return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
+        }
+
+
+        $vnp_ResponseCode = $request->input('vnp_ResponseCode');
+        $vnp_TxnRef = $request->input('vnp_TxnRef');
+        $vnp_SecureHash = $request->input('vnp_SecureHash');
+
+        if ($vnp_ResponseCode && $vnp_TxnRef && $vnp_SecureHash) {
+            $vnp_HashSecret = env('VNPAY_HASH_SECRET');
+            $inputData = $request->except('vnp_SecureHash');
+            ksort($inputData);
+            $hashData = '';
+            foreach ($inputData as $key => $value) {
+                $hashData .= '&' . urlencode($key) . '=' . urlencode($value);
+            }
+            $hashData = ltrim($hashData, '&');
+            $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+
+            if ($secureHash === $vnp_SecureHash && $vnp_ResponseCode == '00') {
+                $order = Order::find($vnp_TxnRef);
+                if ($order) {
+                    $order->status = 1;
+                    $order->save();
+
+                    $payment = Payment::where('order_id', $order->id)->first();
+                    if ($payment) {
+                        $payment->payment_status = 1;
+                        $payment->save();
+                    }
+
+
+                    $user = Auth::user();
+                    if ($user) {
+                        Cart::where('user_id', $user->id)->delete();
+                    } else {
+                        Session::forget('cart');
+                    }
+                    Session::forget('applied_voucher');
+
+                    return view('client.checkout.success', compact('order', 'payment'));
+                }
+            }
+
             return redirect()->route('home')->with('error', 'Thanh toán thất bại.');
         }
-    } else {
-        // Mã hash không hợp lệ
+
         return redirect()->route('home')->with('error', 'Dữ liệu không hợp lệ.');
     }
-}
 }

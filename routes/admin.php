@@ -73,6 +73,19 @@ Route::middleware(['admin'])->controller(CategoryController::class)
 });
 
 
+// Route::middleware(['admin'])->controller(VoucherController::class)
+// ->name('vouchers.')
+// ->prefix('admin/vouchers/')
+// ->group(function(){
+//     Route::get('/', [VoucherController::class, 'index'])->name('list');
+//     Route::get('create', [VoucherController::class, 'create'])->name('create');
+//     Route::post('create', [VoucherController::class, 'store'])->name('store');
+//     Route::delete('delete/{id}', [VoucherController::class, 'delete'])->name('delete');
+//     Route::get('edit/{id}', [VoucherController::class, 'edit'])->name('edit');
+//     Route::put('update/{id}', [VoucherController::class, 'update'])->name('update');
+
+// });
+
 Route::middleware(['admin'])->controller(VoucherController::class)
 ->name('vouchers.')
 ->prefix('admin/vouchers/')
@@ -85,7 +98,6 @@ Route::middleware(['admin'])->controller(VoucherController::class)
     Route::put('update/{id}', [VoucherController::class, 'update'])->name('update');
 
 });
-
 
 Route::prefix('admin/orders')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('orders.index');

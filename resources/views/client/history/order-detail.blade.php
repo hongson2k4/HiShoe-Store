@@ -18,6 +18,7 @@
 
     <!-- Tiêu đề -->
     <h2>Chi tiết đơn hàng #{{ $order->order_check }}</h2>
+    <p><strong>Mã đơn hàng:</strong> {{ $order->order_check }}</p>
     <p><strong>Tên khách hàng:</strong> {{ $order->user->full_name }}</p>
     <p><strong>Địa chỉ giao hàng:</strong> {{ $order->shipping_address }}</p>
     <p><strong>Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>

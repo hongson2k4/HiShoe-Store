@@ -90,7 +90,7 @@ Route::controller(CartController::class)
 });
 
 
-Route::middleware(['auth:web', 'client'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/order-history', [OrderHistoryController::class, 'index'])->name('order-history')->middleware('auth');
     Route::get('/order-history/{order}', [OrderHistoryController::class, 'show'])->name('order.history.detail');
     Route::get('/order/{id}', [OrderHistoryController::class, 'detail'])->name('order.detail');

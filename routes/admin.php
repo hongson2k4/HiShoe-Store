@@ -73,11 +73,17 @@ Route::middleware(['auth:admin', 'admin'])->controller(CategoryController::class
 });
 
 
-Route::middleware(['auth:admin', 'admin'])->prefix('admin/orders')->group(function () {
+Route::prefix('admin/orders')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::put('/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+
+    // route để xác nhận đơn hàng
+    Route::post('/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+    // route xử lý liên hệ shop
+    // Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('orders/resolve-support/{id}', [OrderController::class, 'resolveSupport'])->name('orders.resolve-support');
 });
 
 // Route::middleware(['auth:admin', 'admin'])->controller(BrandController::class)

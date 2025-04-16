@@ -1,7 +1,7 @@
 @extends('client.layout.main')
 
 @section('content')
-<div class="container" style="margin-top: 100px;">
+<div class="container">
     <!-- Thêm thông báo -->
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <h1 class="text-center mb-5">Lịch sử đơn hàng</h1>
+    {{-- <h1 class="text-center mb-5">Lịch sử đơn hàng</h1> --}}
 
     <!-- Form lọc -->
     <form action="{{ route('order-history') }}" method="GET" class="filter-form mb-3">

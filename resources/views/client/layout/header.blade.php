@@ -16,7 +16,7 @@
   z-index: 1020;
 }
 </style>
-<header class="header_section">
+<header class="header_section fixed-top bg-white">
   <nav class="navbar navbar-expand-lg custom_nav-container ">
     <a class="navbar-brand" href="index.html">
       <span>

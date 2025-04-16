@@ -13,6 +13,7 @@
     <meta name="author" content="" />
     <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 
+
     <title>
         @yield('title')
     </title>
@@ -47,6 +48,7 @@
     
         {{-- Chèn script từ các file con --}}
         @stack('scripts')
+
 
     
 </body>

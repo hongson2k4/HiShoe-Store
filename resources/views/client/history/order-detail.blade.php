@@ -1,7 +1,7 @@
 @extends('client.layout.main')
 
 @section('content')
-<div class="container" style="margin-top: 150px;">
+<div class="container">
     <!-- Thông báo -->
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">

@@ -65,7 +65,7 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="contact.html">Contact Us</a>
+          <a class="nav-link" href="{{ route('order.form') }}">Tình trạng đơn hàng</a>
         </li>
       </ul>
       <div class="user_option">

@@ -12,6 +12,7 @@ class Products extends Model
     protected $fillable = [
         'id',
         'name',
+        'sku_code',
         'description',
         'price',
         'stock_quantity',
@@ -49,13 +50,35 @@ class Products extends Model
     {
         return $this->hasMany(Order::class, 'product_name_id', 'id');
     }
-    public function likes() {
+    public function likes()
+    {
         return $this->hasMany(Like::class, 'product_id'); // Explicitly specify the foreign key
     }
     // Quan hệ với bảng orders
-   
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
+    public function product_categories()
+    {
+        return $this->hasMany(Product_categories::class, 'product_id');
+    }
+    public function productDetails()
+    {
+        return $this->hasMany(Product_details::class, 'product_id');
+    }
+    function generateSku($length = 12)
+    {
+        $length = max(12, min($length, 15)); // Giới hạn độ dài từ 12 đến 15
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $randomCode = '';
+    
+        for ($i = 0; $i < $length; $i++) {
+            $randomCode .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+    
+        return $randomCode;
+    }
+    
 }

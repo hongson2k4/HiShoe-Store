@@ -99,7 +99,7 @@ class CartController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Sản phẩm đã được thêm vào giỏ hàng.']);
         } catch (\Exception $e) {
-            \Log::error('Error adding to cart: ' . $e->getMessage(), [
+            \Illuminate\Support\Facades\Log::error('Error adding to cart: ' . $e->getMessage(), [
                 'user_id' => $user->id,
                 'product_id' => $validated['product_id'],
                 'size_id' => $validated['size_id'],
@@ -109,4 +109,29 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Đã xảy ra lỗi khi thêm vào giỏ hàng.'], 500);
         }
     }
+    public function apiUpdate(Request $request, $id)
+    {
+        $item = Cart::findOrFail($id);
+
+        if ($request->action === 'increase') {
+            $item->quantity += 1;
+        } elseif ($request->action === 'decrease' && $item->quantity > 1) {
+            $item->quantity -= 1;
+        }
+
+        $item->save();
+
+        // Tổng tiền toàn bộ giỏ hàng (giả sử là của user hiện tại)
+        $grandTotal = Cart::all()->sum(fn($i) => $i->variant->price * $i->quantity);
+
+        return response()->json([
+            'success' => true,
+            'item' => [
+                'quantity' => $item->quantity,
+                'price' => $item->variant->price,
+            ],
+            'grandTotal' => $grandTotal
+        ]);
+    }
+
 }

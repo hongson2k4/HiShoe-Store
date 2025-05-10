@@ -59,9 +59,11 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $brands = DB::table('brands')->get(); // load danh sách thương hiệu
-        $categories = DB::table('categories')->get(); // load danh sách danh mục
-        return view("admin.products.create", compact('categories','brands'));
+        $brands = DB::table('brands')->get();
+        $categories = DB::table('categories')->get();
+        // Use old('sku_code') if available, otherwise generate a new one
+        $skuCode = old('sku_code') ?? (new Products())->generateSku();
+        return view("admin.products.create", compact('categories', 'brands', 'skuCode'));
     }
 
     /**
@@ -71,31 +73,45 @@ class ProductController extends Controller
     {
         try {
             $validate = $request->validate([
-                'name'=> 'required',
-                'description' => 'required',
-                'price'=> 'required',
-                'category_id'=>'required',
-                'brand_id'=>'required',
-                'image_url' => 'nullable'
+                'name' => 'required|string|max:255',
+                'price' => 'required|numeric|min:0',
+                'category_id' => 'required',
+                'category_id.*' => 'exists:categories,id',
+                'brand_id' => 'required|exists:brands,id',
+                'image_url' => 'nullable',
+                'sku_code' => 'required|string|unique:products,sku_code',
+                'description_title' => 'required|string|max:255',
+                'description_content' => 'required|string',
+                'description_image' => 'nullable',
             ]);
     
-            if($request->hasFile('image_url')){
-                $file = $request->file('image_url');
-                Log::info('File extension: ' . $file->getClientOriginalExtension());
-                Log::info('File mime type: ' . $file->getMimeType());
-    
-                $part = $file->store('uploads/image_url','public');
-            } else {
-                $part = null;
+            $imagePath = null;
+            if ($request->hasFile('image_url')) {
+                $imagePath = $request->file('image_url')->store('products', 'public');
             }
     
-            Products::create([
-                'name'=>$validate['name'],
-                'description'=>$validate['description'],
-                'price'=>$validate['price'],
-                'category_id'=>$validate['category_id'],
-                'brand_id'=>$validate['brand_id'],
-                'image_url'=>$part,
+            $product = Products::create([
+                'name' => $validate['name'],
+                'price' => $validate['price'],
+                'brand_id' => $validate['brand_id'],
+                'category_id' => $validate['category_id'],
+                'sku_code' => $validate['sku_code'],
+                'image_url' => $imagePath,
+            ]);
+    
+            // // Attach categories
+            // $product->categories()->sync($validate['category_id']);
+    
+            // Lưu thông tin mô tả sản phẩm
+            $descriptionImagePath = null;
+            if ($request->hasFile('description_image')) {
+                $descriptionImagePath = $request->file('description_image')->store('product_details', 'public');
+            }
+    
+            $product->productDetails()->create([
+                'detail_title' => $validate['description_title'],
+                'detail_content' => $validate['description_content'],
+                'detail_image' => $descriptionImagePath,
             ]);
     
             return redirect()->route('products.list')->with('success', 'Thêm sản phẩm thành công!');
@@ -104,6 +120,7 @@ class ProductController extends Controller
             return redirect()->back()->withErrors('Error creating product: ' . $e->getMessage());
         }
     }
+
     /**
      * Display the specified resource.
      */

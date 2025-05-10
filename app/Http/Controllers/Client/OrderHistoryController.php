@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\Products;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -23,7 +24,7 @@ class OrderHistoryController extends Controller
     
         // Query cơ bản: Lấy đơn hàng của người dùng hiện tại
         $query = Order::where('user_id', auth()->id())
-                      ->with(['orderItemHistories.product']); // Eager load mối quan hệ
+                      ->with(['orderItemHistories.product']);
     
         // Áp dụng các điều kiện lọc
         if ($request->filled('order_id')) {
@@ -49,16 +50,15 @@ class OrderHistoryController extends Controller
         foreach ($orders as $order) {
             $order->totalItems = $order->orderItemHistories->count(); // Số lượng loại sản phẩm
             $order->totalQuantity = $order->orderItemHistories->sum('quantity'); // Tổng số lượng sản phẩm
-        }
-    
+        }        
         return view('client.history.order-history', compact('orders'));
     }
 
     public function show($id)
     {
         // Tải đơn hàng cùng với danh sách sản phẩm và thông tin người dùng
-        $order = Order::with(['orderItemHistories.product', 'user'])->findOrFail($id);
-
+        $order = Order::with(['orderItemHistories.product'])->findOrFail($id);
+        $product = Products::with('productVariants')->findOrFail($order->product_id);
         // Kiểm tra quyền truy cập
         if ($order->user_id !== auth()->id()) {
             return redirect()->route('order-history')->with('error', 'Bạn không có quyền xem đơn hàng này!');
@@ -89,7 +89,7 @@ class OrderHistoryController extends Controller
         // Cộng lại số lượng sản phẩm vào kho
         $orderItems = $order->orderItemHistories;
         foreach ($orderItems as $item) {
-            $variant = \App\Models\ProductVariant::find($item->variant_id);
+            $variant = \App\Models\Product_variant::find($item->variant_id);
             if ($variant) {
                 $variant->stock += $item->quantity;
                 $variant->save();

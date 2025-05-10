@@ -17,51 +17,52 @@ class VoucherController extends Controller
     {
         return view('admin/vouchers/add');
     }
-    public function store(Request $request){
+    public function store(Request $request)
+{
+    $data = $request->validate([
+        'code' => 'required',
+        'discount_type' => 'required|in:0,1',
+        'discount_value' => 'required|numeric|min:0', // Kiểm tra giá trị giảm giá
+        'min_order_value' => 'nullable|numeric|min:0',
+        'max_discount_value' => 'nullable|numeric|min:0',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after:start_date',
+        'usage_limit' => 'required|integer|min:1',
+    ]);
 
-        $data = $request->validate([
-            'code' => 'required',
-            'discount_type' => 'required',
-            'discount_value' => 'required',
-            'min_order_value' => 'nullable',
-            'max_discount_value' => 'nullable',
-            'start_date' => 'required',
-            'end_date' => 'required',
-            'usage_limit' => 'required',
-        ]);
-        $data['status'] = 1;
-        Voucher::create($data);
-        return redirect()->route('vouchers.list');
-    }
+    $data['status'] = 1;
+    Voucher::create($data);
+
+    return redirect()->route('vouchers.list');
+}
     public function edit($id)
     {
         $voucher = Voucher::find($id);
         return view('admin/vouchers/edit', compact('voucher'));
     }
     public function update(Request $request, $id)
-    {
-        $voucher = Voucher::find($id);
-        if(!$voucher){
-            return redirect()->route('vouchers.list')->with('error', 'Voucher not found');
-        }
-        $data = $request->validate([
-            'code' => 'required',
-            'discount_type' => 'required',
-            'discount_value' => 'required',
-            'min_order_value' => 'nullable',
-            'max_discount_value' => 'nullable',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'usage_limit' => 'required',
-        ]);
-        if($request->has('status')){
-            $data['status'] = 1;
-        }else{
-            $data['status'] = 0;
-        }
-        $voucher->update($data);
-        return redirect()->route('vouchers.list');
+{
+    $voucher = Voucher::find($id);
+    if (!$voucher) {
+        return redirect()->route('vouchers.list')->with('error', 'Voucher not found');
     }
+
+    $data = $request->validate([
+        'code' => 'required',
+        'discount_type' => 'required|in:0,1',
+        'discount_value' => 'required|numeric|min:0', // Kiểm tra giá trị giảm giá
+        'min_order_value' => 'nullable|numeric|min:0',
+        'max_discount_value' => 'nullable|numeric|min:0',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after:start_date',
+        'usage_limit' => 'required|integer|min:1',
+    ]);
+
+    $data['status'] = $request->has('status') ? 1 : 0;
+    $voucher->update($data);
+
+    return redirect()->route('vouchers.list');
+}
     public function delete($id)
     {
         $voucher = voucher::find($id);
@@ -76,4 +77,3 @@ class VoucherController extends Controller
     }
 
 }
-

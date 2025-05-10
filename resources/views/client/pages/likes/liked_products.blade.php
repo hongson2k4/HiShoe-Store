@@ -21,11 +21,13 @@
 
                     <a href="">
                         <div class="img-box">
+                            <a href="{{ route('detail', $product->id) }}">    <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}" alt="{{ $product->name }}">
+                            </a>
                             <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}" alt="{{ $product->name }}">
                         </div>
                         <div class="detail-box">
-                            <h6>{{ $product->name }}</h6>
-                            <h6>Giá: <span>{{ number_format($product->price) }} VND</span></h6>
+                        <a class="card-title" href="{{ route('detail', $product->id) }}">{{ $product->name }}</a>
+                        <h6>Giá: <span>{{ number_format($product->price) }} VND</span></h6>
                         </div>
                     </a>
                 </div>

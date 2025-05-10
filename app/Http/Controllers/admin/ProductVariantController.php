@@ -43,8 +43,9 @@ class ProductVariantController extends Controller
         $request->validate([
             'size_id' => 'required|exists:sizes,id',
             'color_id' => 'required|exists:colors,id',
-            'price' => 'required|numeric',
-            'stock_quantity' => 'required|integer',
+            'price' => 'required|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'image' => 'nullable|image|max:2048',
         ], [
             'size_id.required' => 'Vui lòng chọn kích thước!',
             'size_id.exists' => 'Kích thước không hợp lệ!',
@@ -54,7 +55,14 @@ class ProductVariantController extends Controller
             'price.numeric' => 'Giá phải là số!',
             'stock_quantity.required' => 'Vui lòng nhập số lượng!',
             'stock_quantity.integer' => 'Số lượng phải là số nguyên!',
+            'image.image' => 'Tệp phải là hình ảnh!',
+            'image.max' => 'Dung lượng ảnh không được vượt quá 2MB!',
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('product_variants', 'public');
+        }
 
         Product_variant::create([
             'product_id' => $product_id,
@@ -62,6 +70,7 @@ class ProductVariantController extends Controller
             'color_id' => $request->color_id,
             'price' => $request->price,
             'stock_quantity' => $request->stock_quantity,
+            'image_url' => $imagePath,
         ]);
 
         return redirect()->route('products.variant.list', $product_id)->with('success', 'Biến thể sản phẩm đã được tạo thành công.');

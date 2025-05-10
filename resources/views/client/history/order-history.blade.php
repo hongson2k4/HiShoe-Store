@@ -104,7 +104,7 @@
                                             <div class="product-item d-flex align-items-center mb-2">
                                                 <!-- Ảnh sản phẩm -->
                                                 @if (!empty($item->product->image_url))
-                                                    <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="product-image me-2" style="height: 100px; width: auto;">
+                                                    <img src="{{ Storage::url($item->product->image_url) }}" alt="{{ $item->product->name }}" class="product-image me-2" style="height: 100px; width: auto;">
                                                 @else
                                                     <img src="https://via.placeholder.com/40" alt="Placeholder" class="product-image me-2">
                                                 @endif
@@ -256,7 +256,7 @@
             const orderId = this.getAttribute('data-order-id');
             
             if (confirm('Bạn có muốn liên hệ với shop không?')) {
-                fetch('{{ route('order.history.contact') }}', {
+                fetch('{{ route("order.history.contact") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -283,6 +283,56 @@
                     alert('Có lỗi xảy ra khi gửi yêu cầu: ' + error.message);
                 });
             }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const orderCards = document.querySelectorAll('.order-card');
+
+        // Hàm cập nhật trạng thái đơn hàng
+        const updateOrderStatus = (orderId, statusElement) => {
+            fetch(`/api/orders/${orderId}/status`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Cập nhật trạng thái trên giao diện
+                    statusElement.textContent = data.status_text;
+                    statusElement.className = `badge ${getStatusClass(data.status)} text-white p-2 fs-6 rounded-pill fw-normal`;
+                })
+                .catch(error => {
+                    console.error('Error fetching order status:', error);
+                });
+        };
+
+        // Lấy class CSS tương ứng với trạng thái
+        const getStatusClass = (status) => {
+            switch (status) {
+                case 1: return 'badge-primary'; // Đơn đã đặt
+                case 2: return 'badge-warning'; // Đang đóng gói
+                case 3: return 'badge-info';    // Đang vận chuyển
+                case 4: return 'badge-success'; // Đã giao hàng
+                case 5: return 'badge-danger';  // Đã hủy
+                case 6: return 'badge-secondary'; // Đã trả hàng
+                case 7: return 'badge-success';    // Đã nhận hàng
+                default: return 'badge-secondary';  // Trạng thái không xác định
+            }
+        };
+
+        // Lặp qua từng đơn hàng và thiết lập cập nhật tự động
+        orderCards.forEach(card => {
+            const orderId = card.getAttribute('data-url').split('/').pop(); // Lấy ID đơn hàng từ URL
+            const statusElement = card.querySelector('.badge');
+
+            // Cập nhật trạng thái mỗi 30 giây
+            setInterval(() => {
+                updateOrderStatus(orderId, statusElement);
+            }, 3000); // 30 giây
         });
     });
 </script>

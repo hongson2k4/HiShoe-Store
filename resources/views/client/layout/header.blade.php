@@ -16,7 +16,7 @@
   z-index: 1020;
 }
 </style>
-<header class="header_section fixed-top bg-white">
+<header class="header_section">
   <nav class="navbar navbar-expand-lg custom_nav-container ">
     <a class="navbar-brand" href="index.html">
       <span>
@@ -65,7 +65,7 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ route('order.form') }}">Tình trạng đơn hàng</a>
+          <a class="nav-link" href="contact.html">Contact Us</a>
         </li>
       </ul>
       <div class="user_option">
@@ -80,7 +80,7 @@
         </span>
         </a>
         <div class="dropdown-menu" aria-labelledby="userDropdown">
-        <a class="dropdown-item" href="{{ route('user.profile') }}">Thông tin cá nhân</a>
+        <!-- <a class="dropdown-item" href="{{ route('user.profile') }}">Thông tin cá nhân</a> -->
         <a class="dropdown-item" href="{{ route('order-history') }}">Đơn hàng của tôi</a>
         <a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a>
         <a class="dropdown-item" href="{{ route('logout') }}">Đăng xuất</a>
@@ -97,9 +97,9 @@
         <a href="{{ route('cart') }}" class="nav-link position-relative">
           <i class="fa fa-shopping-cart fa-lg"></i>
           @if(Auth::guard('web')->check())
-        @php $cartCount = App\Models\Cart::where('user_id', Auth::id())->sum('quantity'); @endphp
+        @php $cartCount = $cartCount = \App\Models\Cart::where('user_id', auth()->id())->count(); @endphp
       @else
-      @php $cartCount = collect(Session::get('cart', []))->sum('quantity'); @endphp
+      @php  $cartCount = count(session('cart', [])); @endphp
     @endif
           @if($cartCount > 0)
         <span class="position-absolute top-0 end-5 translate-middle badge rounded-pill bg-danger text-light">

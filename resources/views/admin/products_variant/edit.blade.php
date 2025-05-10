@@ -1,10 +1,36 @@
 @extends('admin.layout.main')
 @section('content')
 <div class="container">
-    <h2>Cập nhật biến thể cho: {{ $products->name }}</h2>
+    <h1>Update Product Variant</h1>
     <form action="{{ route('products.variant.update', ['product_id' => $product_id, 'id' => $product_variant->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
+        <div class="form-group">
+            <label for="size_id">Kích thước</label>
+            <select name="size_id" id="size_id" class="form-control">
+                @foreach($sizes as $size)
+                    <option value="{{ $size->id }}" {{ $size->id == $product_variant->size_id ? 'selected' : '' }}>
+                        {{ $size->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('size_id')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
+        <div class="form-group">
+            <label for="color_id">Màu sắc</label>
+            <select name="color_id" id="color_id" class="form-control">
+                @foreach($colors as $color)
+                    <option value="{{ $color->id }}" {{ $color->id == $product_variant->color_id ? 'selected' : '' }}>
+                        {{ $color->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('color_id')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
         <div class="form-group">
             <label for="price">Giá</label>
             <input type="text" name="price" id="price" class="form-control" value="{{ old('price', $product_variant->price) }}">
@@ -12,18 +38,6 @@
                 <small class="text-danger">{{ $message }}</small>
             @enderror
         </div>
-        @if($product_variant->color)
-        <div class="mb-3">
-            <label class="form-label">Color</label>
-            <input class="form-control" type="text" value="{{ $product_variant->color->name }}" readonly>
-        </div>
-        @endif
-        @if($product_variant->size)
-        <div class="mb-3">
-            <label class="form-label">Size</label>
-            <input class="form-control" type="text" value="{{ $product_variant->size->name }}" readonly>
-        </div>
-        @endif
         <div class="form-group">
             <label for="stock_quantity">Số lượng</label>
             <input type="text" name="stock_quantity" id="stock_quantity" class="form-control" value="{{ old('stock_quantity', $product_variant->stock_quantity) }}">
@@ -35,11 +49,8 @@
             <label for="image_url">Ảnh biến thể</label>
             <input type="file" name="image_url" id="image_url" class="form-control-file">
             <div class="image-preview" id="imagePreview">
-                @if($product_variant->image_url)
-                    <img src="{{ asset('storage/' . $product_variant->image_url) }}" alt="Current Image" class="image-preview__image" height="100">
-                @else
-                    <span class="image-preview__default-text">Chưa có ảnh</span>
-                @endif
+                <img src="{{ asset($product_variant->image_url) }}" alt="Current Image" class="image-preview__image" height="100">
+                <span class="image-preview__default-text"></span>
             </div>
             @error('image_url')
                 <small class="text-danger">{{ $message }}</small>
@@ -75,5 +86,4 @@
         }
     });
 </script>
-
 @endsection

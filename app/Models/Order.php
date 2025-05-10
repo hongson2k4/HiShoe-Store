@@ -206,7 +206,12 @@ class Order extends Model
     // Quan hệ với bảng products
     public function product()
     {
-        return $this->belongsTo(Products::class, 'product_name_id', 'id');
+        return $this->belongsTo(Products::class, 'product_id');
+    }
+    
+    public function variant()
+    {
+        return $this->belongsTo(Product_variant::class, 'variant_id');
     }
 
     // hiển thị màu sắc cho status client

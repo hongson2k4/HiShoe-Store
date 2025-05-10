@@ -1,9 +1,6 @@
 @extends('admin.layout.main')
-<!-- @section('title')
-    danh sách
-@endsection -->
 @section('content')
-    <a class="btn btn-success m-2" href="{{route('products.create')}}">Thêm mới sản phẩm</a>
+    <a class="btn btn-success m-2" href="{{ route('products.create') }}">Thêm mới sản phẩm</a>
     <form action="{{ route('products.list') }}" method="GET" class="form-inline mb-3 float-right">
         <input type="text" name="search" class="form-control mr-2" placeholder="Search products"
             value="{{ request()->query('search') }}">
@@ -14,45 +11,73 @@
             <tr>
                 <th>STT</th>
                 <th>Tên Giày</th>
-                <th>Ghi chú</th>
+                <th>Mô tả</th>
+                <th>Hình ảnh mô tả</th>
                 <th>Giá</th>
                 <th>Số lượng</th>
                 <th>Loại giày</th>
                 <th>Thương hiệu</th>
-                <th>Hình ảnh</th>
-                <th>Trang thái</th>
+                <th>Hình ảnh chính</th>
+                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($products as $key => $u)
+            @foreach ($products as $key => $product)
                 <tr>
-                    <td>{{$key + 1}}</td>
-                    <td>{{$u->name}}</td>
-                    <td>{{$u->description}}</td>
-                    <td>{{$u->price}}</td>
-                    <td>{{$u->stock_quantity}}</td>
-                    <td>{{$u->category->name}}</td>
-                    <td>{{$u->brand->name}}</td>
-
-                    <td><img src="{{Storage::url($u->image_url)}}" width="100" alt=""></td>
+                    <td>{{ $key + 1 }}</td>
+                    <td>{{ $product->name }}</td>
                     <td>
-
-                    <span class="{{ $u->status == 0 ? 'badge bg-success text-white px-2 rounded' : 'badge bg-danger text-white px-2 rounded' }}">
-                            {{ $u->status == 0 ? 'Còn hàng' : 'Hết hàng' }}
-                        </span>
-
+                        @php
+                            $description = json_decode($product->description, true);
+                        @endphp
+                        @if ($description)
+                            <strong>{{ $description['title'] ?? '' }}</strong><br>
+                            {{ $description['content'] ?? '' }}
+                        @else
+                            N/A
+                        @endif
                     </td>
                     <td>
-                        <a class="btn btn-warning" href="{{route('products.edit', $u->id)}}"><i
-                                class="fas fa-pencil-alt"></i></a>
-                        <form action="{{route('products.destroy', $u->id)}}" method="post">
+                        @if ($description && isset($description['image']) && $description['image'])
+                            <img src="{{ Storage::url($description['image']) }}" width="100" alt="Description Image">
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                    <td>{{ number_format($product->price, 0, ',', '.') }} VND</td>
+                    <td>{{ $product->stock_quantity }}</td>
+                    <td>
+                        @php
+                            $categories = \App\Models\Product_categories::where('product_id', $product->id)
+                                ->with('category')
+                                ->get()
+                                ->pluck('category.name')
+                                ->toArray();
+                        @endphp
+                        {{ implode(', ', $categories) ?: 'N/A' }}
+                    </td>
+                    <td>{{ $product->brand->name ?? 'N/A' }}</td>
+                    <td>
+                        @if ($product->image_url)
+                            <img src="{{ Storage::url($product->image_url) }}" width="100" alt="Main Image">
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                    <td>
+    <span class="{{ $product->status == 0 ? 'badge badge-success text-white px-2 rounded' : 'badge badge-danger text-white px-2 rounded' }}">
+        {{ $product->status == 0 ? 'Còn hàng' : 'Hết hàng' }}
+    </span>
+</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ route('products.edit', $product->id) }}"><i class="fas fa-pencil-alt"></i></a>
+                        <form action="{{ route('products.destroy', $product->id) }}" method="post" style="display:inline;">
                             @method('DELETE')
                             @csrf
-                            <button class="btn btn-danger" onclick="return confirm('Xác nhận xóa ?')"> <i
-                                    class="fas fa-trash"></i></button>
+                            <button class="btn btn-danger" onclick="return confirm('Xác nhận xóa ?')"><i class="fas fa-trash"></i></button>
                         </form>
-                        <a class="btn btn-info" href=" {{ route('products.variant.list', $u->id) }}"><i class="fas fa-tshirt"></i></a>
+                        <a class="btn btn-info" href="{{ route('products.variant.list', $product->id) }}"><i class="fas fa-tshirt"></i></a>
                     </td>
                 </tr>
             @endforeach

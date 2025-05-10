@@ -3,6 +3,7 @@
 use App\Http\Controllers\Client\ProductController;
 use App\Http\Controllers\Client\LikeController;
 use App\Http\Controllers\Client\CartController;
+use App\Models\Order;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -45,3 +46,19 @@ Route::middleware(['auth:web'])->post('/cart/add', [CartController::class, 'addT
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::post('/products/{product}/like', [LikeController::class, 'toggleLike']);
 // });
+
+Route::patch('/cart/{id}', [CartController::class, 'apiUpdate']);
+
+Route::get('/orders/{id}/status', function ($id) {
+    $order = Order::find($id);
+
+    if (!$order) {
+        return response()->json(['error' => 'Order not found'], 404);
+    }
+
+    return response()->json([
+        'status' => $order->status,
+        'status_text' => $order->status_text,
+        'updated_at' => $order->updated_at->toDateTimeString(),
+    ]);
+});

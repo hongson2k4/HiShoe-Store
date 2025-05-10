@@ -98,11 +98,9 @@
             <div class="col-lg-6 col-md-12">
                 <h2 class="text-primary">{{ $products->name }}</h2>
                 <p class="text-muted">Mã sản phẩm: {{ $products->id }}</p>
-                <p>Giá sản phẩm: <h4 class="text-danger" id="dynamicPrice">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h4></p>
+                <p>Giá sản phẩm: <h5 class="text-danger" id="dynamicPrice">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h5></p>
                 <p>Thương hiệu: {{ $products->brand->name }}</p>
                 <p>Danh mục: {{ $products->category->name }}</p>
-                <h3>Thông tin sản phẩm</h3>
-                <p>{{ $products->description }}</p>
 
                 <div class="variant-selector">
                     <div id="sizeButtons">
@@ -132,6 +130,23 @@
             </div>
         </div>
     </div>
+    <div class="product-description mt-5 px-3">
+    <div class="container">
+        <h3 class="text-center mb-4">{{ $products->productDetails->first()->detail_title }}</h3>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                <p class="text-justify">{{ $products->productDetails->first()->detail_content }}</p>
+            </div>
+        </div>
+        @if ($products->productDetails->first()->detail_image)
+            <div class="row justify-content-center mt-4">
+                <div class="col-12 col-md-10 text-center">
+                    <img src="{{ Storage::url($products->productDetails->first()->detail_image) }}" alt="Description Image" class="img-fluid rounded shadow-sm">
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
 
     <div class="card bg-white p-3 mb-4 mt-4 ">
         <h4 class="fw-semibold">Bình luận</h4>

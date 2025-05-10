@@ -51,19 +51,18 @@ class UserController extends Controller
         $wards = json_decode(File::get(public_path('hanhchinhvn/xa_phuong.json')), true);
     
         foreach ($users as $user) {
-            $addressParts = explode(', ', $user->address);
-            
-            if (count($addressParts) !== 3) {
-                continue;
+            if($user->address) {
+                $addressParts = explode(', ', $user->address);
+                list($wardCode, $districtCode, $provinceCode) = $addressParts;
+    
+                $wardName = $wards[$wardCode]['name_with_type'] ?? 'Không xác định';
+                $districtName = $districts[$districtCode]['name_with_type'] ?? 'Không xác định';
+                $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'Không xác định';
+    
+                $user->address = "$wardName, $districtName, $provinceName";
+            } else {
+                $user->address = 'Chưa cập nhật địa chỉ';
             }
-        
-            list($wardCode, $districtCode, $provinceCode) = $addressParts;
-        
-            $wardName = $wards[$wardCode]['name_with_type'] ?? 'Không xác định';
-            $districtName = $districts[$districtCode]['name_with_type'] ?? 'Không xác định';
-            $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'Không xác định';
-        
-            $user->address = "$wardName, $districtName, $provinceName";
         }
     
         $addresses = $users->pluck('address')->unique();
@@ -79,14 +78,18 @@ class UserController extends Controller
         $districts = json_decode(File::get(public_path('hanhchinhvn/quan_huyen.json')), true);
         $wards = json_decode(File::get(public_path('hanhchinhvn/xa_phuong.json')), true);
 
-        $addressParts = explode(', ', $user->address);
-        list($wardCode, $districtCode, $provinceCode) = $addressParts;
+        if($user->address) {
+            $addressParts = explode(', ', $user->address);
+            list($wardCode, $districtCode, $provinceCode) = $addressParts;
 
-        $wardName = $wards[$wardCode]['name_with_type'] ?? 'Không xác định';
-        $districtName = $districts[$districtCode]['name_with_type'] ?? 'Không xác định';
-        $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'Không xác định';
+            $wardName = $wards[$wardCode]['name_with_type'] ?? 'Không xác định';
+            $districtName = $districts[$districtCode]['name_with_type'] ?? 'Không xác định';
+            $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'Không xác định';
 
-        $user->address = "$wardName, $districtName, $provinceName";
+            $user->address = "$wardName, $districtName, $provinceName";
+        } else {
+            $user->address = 'Chưa cập nhật địa chỉ';
+        }
 
         return view('admin.users.show', compact('user'));   
     }

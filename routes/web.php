@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\CommentController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\LikeController;
@@ -90,7 +91,7 @@ Route::controller(CartController::class)
 });
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web', 'client'])->group(function () {
     Route::get('/order-history', [OrderHistoryController::class, 'index'])->name('order-history')->middleware('auth');
     Route::get('/order-history/{order}', [OrderHistoryController::class, 'show'])->name('order.history.detail');
     Route::get('/order/{id}', [OrderHistoryController::class, 'detail'])->name('order.detail');
@@ -139,4 +140,11 @@ Route::post('/orders/{order_id}/review/{product_id}', [ReviewController::class, 
 // HIỂN THỊ đánh giá
 Route::get('/orders/{order_id}/review/{product_id}/show', [ReviewController::class, 'show'])
     ->name('orders.review.show');
+});
+
+Route::prefix('checkout')->group(function(){
+    Route::get('/index', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::post('/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('apply.voucher');
 });

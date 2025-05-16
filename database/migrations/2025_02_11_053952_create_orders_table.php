@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('total_price');
             $table->integer('status');
             $table->string('shipping_address');
-            $table->foreignId('voucher_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('voucher_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

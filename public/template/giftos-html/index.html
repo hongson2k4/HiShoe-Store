@@ -74,9 +74,16 @@
                 Login
               </span>
             </a>
-            <a href="">
+            <a href="javascript:void(0);" id="shoppingBagIcon">
               <i class="fa fa-shopping-bag" aria-hidden="true"></i>
             </a>
+            <div id="cartItems" style="display: none;">
+              <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+              </ul>
+            </div>
             <form class="form-inline ">
               <button class="btn nav_search-btn" type="submit">
                 <i class="fa fa-search" aria-hidden="true"></i>
@@ -965,6 +972,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js">
   </script>
   <script src="js/custom.js"></script>
+  <script>
+    document.getElementById('shoppingBagIcon').addEventListener('click', function() {
+      var cartItems = document.getElementById('cartItems');
+      if (cartItems.style.display === 'none') {
+        cartItems.style.display = 'block';
+      } else {
+        cartItems.style.display = 'none';
+      }
+    });
+  </script>
 
 </body>
 

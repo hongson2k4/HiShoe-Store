@@ -4,9 +4,9 @@
 <div class="container-fluid mt-4">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Brand Management</h2>
+            <h2 class="mb-0">Quản lý nhãn hàng</h2>
             <a class="btn btn-primary" href="{{ route('brands.create') }}">
-                <i class="fas fa-plus-circle me-1"></i> Add New Brand
+                <i class="fas fa-plus-circle me-1"></i> Thêm mới
             </a>
         </div>
         <div class="card-body">
@@ -49,22 +49,22 @@
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th class="text-center">Actions</th>
+                            <th>STT</th>
+                            <th>Tên nhãn hàng</th>
+                            <th>Mô tả</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($brands as $brand)
+                        @forelse($brands as $key => $brand)
                         <tr>
-                            <td>{{ $brand->id }}</td>
+                            <td>{{ $key + 1 }}</td>
                             <td>{{ $brand->name }}</td>
                             <td>{{ Str::limit($brand->description, 50) }}</td>
                             <td>
                                 <span class="badge {{ $brand->status ? 'bg-success text-dark' : 'bg-secondary text-light' }}">
-                                    {{ $brand->status ? 'Active' : 'Inactive' }}
+                                    {{ $brand->status ? 'Active' : 'Deactivate' }}
                                 </span>
                             </td>
                             <td class="text-center">

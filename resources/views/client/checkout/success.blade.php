@@ -23,8 +23,6 @@ HiShoe-Store - Thanh toán thành công
                         <span class="font-semibold">
                             @if ($payment->payment_method == 'cod')
                                 Thanh toán khi nhận hàng (COD)
-                            @elseif ($payment->payment_method == 'bank-transfer')
-                                Chuyển khoản ngân hàng
                             @elseif ($payment->payment_method == 'vnpay')
                                 Thanh toán qua VNPAY
                             @else

@@ -34,10 +34,17 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate input
+            // Validate input with custom messages
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:brands,name',
                 'description' => 'nullable|string|max:1000'
+            ], [
+                'name.required' => 'Tên thương hiệu là bắt buộc.',
+                'name.string' => 'Tên thương hiệu phải là chuỗi ký tự.',
+                'name.max' => 'Tên thương hiệu không được vượt quá 255 ký tự.',
+                'name.unique' => 'Tên thương hiệu đã tồn tại.',
+                'description.string' => 'Mô tả phải là chuỗi ký tự.',
+                'description.max' => 'Mô tả không được vượt quá 1000 ký tự.'
             ]);
 
             // Create brand
@@ -48,7 +55,7 @@ class BrandController extends Controller
             ]);
 
             return redirect()->route('brands.index')
-                ->with('success', "Brand '{$brand->name}' added successfully!");
+                ->with('success', "Thương hiệu '{$brand->name}' đã được thêm thành công!");
         } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         }
@@ -64,10 +71,17 @@ class BrandController extends Controller
     public function update(Request $request, Brand $brand)
     {
         try {
-            // Validate input
+            // Validate input with custom messages
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:brands,name,' . $brand->id,
                 'description' => 'nullable|string|max:1000'
+            ], [
+                'name.required' => 'Tên thương hiệu là bắt buộc.',
+                'name.string' => 'Tên thương hiệu phải là chuỗi ký tự.',
+                'name.max' => 'Tên thương hiệu không được vượt quá 255 ký tự.',
+                'name.unique' => 'Tên thương hiệu đã tồn tại.',
+                'description.string' => 'Mô tả phải là chuỗi ký tự.',
+                'description.max' => 'Mô tả không được vượt quá 1000 ký tự.'
             ]);
 
             // Update brand
@@ -77,7 +91,7 @@ class BrandController extends Controller
             ]);
 
             return redirect()->route('brands.index')
-                ->with('success', "Brand '{$brand->name}' updated successfully!");
+                ->with('success', "Thương hiệu '{$brand->name}' đã được cập nhật thành công!");
         } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         }

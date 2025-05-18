@@ -13,8 +13,9 @@
     <meta name="author" content="" />
     <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 
+
     <title>
-    @yield('title')
+        @yield('title')
     </title>
 
     @include('client.asset.style')
@@ -22,26 +23,33 @@
 </head>
 
 <body>
-    <div class="hero_area">
-        @include('client.layout.header')
-    </div>
-    <!-- end hero area -->
 
-    <!-- slider section -->
-    @if (Request::routeIs('home'))
-    @include('client.layout.slider')
-    @endif
-
-    <!-- end slider section -->
-
-    <!-- shop section -->
-    <section class="shop_section layout_padding">
-        @yield('content')
+        <div class="hero_area">
+            @include('client.layout.header')
+        </div>
+        <!-- end hero area -->
+    
+        <!-- slider section -->
+        @if (Request::routeIs('home'))
+            @include('client.layout.slider')
+        @endif
+        <!-- end slider section -->
+    
+        <!-- shop section -->
+        <section class="shop_section layout_padding">
+            @yield('content')
+        </section>
+        <!-- end shop section -->
+    
         @include('client.layout.footer')
-    </section>
-    <!-- end info section -->
+    
+        {{-- Scripts của từng trang --}}
+        @include('client.asset.script')
+    
+        {{-- Chèn script từ các file con --}}
+        @stack('scripts')
 
+
+    
 </body>
-@include('client.asset.script')
-
 </html>

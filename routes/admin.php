@@ -142,5 +142,5 @@ Route::middleware(['auth:admin', 'admin'])->controller(VoucherController::class)
     Route::delete('delete/{id}', [VoucherController::class, 'delete'])->name('delete');
     Route::get('edit/{id}', [VoucherController::class, 'edit'])->name('edit');
     Route::put('update/{id}', [VoucherController::class, 'update'])->name('update');
-
+    Route::delete('/admin/vouchers/delete-expired', [VoucherController::class, 'deleteExpired'])->name('deleteExpired');
 });

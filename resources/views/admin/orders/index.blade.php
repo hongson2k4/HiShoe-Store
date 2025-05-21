@@ -159,16 +159,19 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="d-flex justify-content-between align-items-center">
+            
+            {{-- Pagination --}}
+            @if ($orders->hasPages())
+            <div class="d-flex justify-content-between align-items-center mt-4">
                 <div class="text-muted">
-                    Showing {{ $orders->firstItem() }} to {{ $orders->lastItem() }}
-                    of {{ $orders->total() }} entries
+                    Hiển thị từ {{ $orders->firstItem() }} đến {{ $orders->lastItem() }}
+                    trong số {{ $orders->total() }} mục
                 </div>
                 <div>
-                    {{ $orders->appends(request()->query())->links() }}
+                    {{ $orders->appends(request()->query())->links('pagination::bootstrap-5') }}
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </div>

@@ -98,7 +98,7 @@
             <div class="col-lg-6 col-md-12">
                 <h2 class="text-primary">{{ $products->name }}</h2>
                 <p class="text-muted">Mã sản phẩm: {{ $products->id }}</p>
-                <p>Giá sản phẩm: <h5 class="text-danger" id="dynamicPrice">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h5></p>
+                <p>Giá sản phẩm: <h5 class="text-danger">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h5></p>
                 <p>Thương hiệu: {{ $products->brand->name }}</p>
                 <p>Danh mục: {{ $products->category->name }}</p>
 
@@ -117,6 +117,8 @@
                         @endforeach
                     </div>
                 </div>
+
+                <p id="stockInfo" class="text-muted">Chọn kích cỡ và màu sắc để xem số lượng hàng trong kho</p>
 
                 <div class="quantity-selector">
                     <button id="decreaseQuantity">-</button>
@@ -211,64 +213,52 @@
         document.addEventListener('DOMContentLoaded', function() {
             const sizeButtons = document.querySelectorAll('#sizeButtons .variant-button');
             const colorButtons = document.querySelectorAll('#colorButtons .variant-button');
-            const priceDisplay = document.getElementById('dynamicPrice');
-            const totalPriceDisplay = document.getElementById('totalPrice');
             const quantityInput = document.getElementById('quantityInput');
             const decreaseQuantityButton = document.getElementById('decreaseQuantity');
             const increaseQuantityButton = document.getElementById('increaseQuantity');
             const addToCartButton = document.getElementById('addToCartButton');
+            const stockInfo = document.getElementById('stockInfo');
+            const totalPrice = document.getElementById('totalPrice');
             let selectedSize = null;
             let selectedColor = null;
-            let basePrice = {{ $products->price }};
             let quantity = 1;
+
+
 
             // Define the variants variable
             const variants = @json($variants);
 
-            // Ensure product_id is dynamically set
-            const productId = {{ $products->id }};
+            function updateStockInfo() {
+                const selectedSizeId = selectedSize;
+                const selectedColorId = selectedColor;
 
-            function updatePrice() {
-                if (selectedSize && selectedColor) {
-                    const url = `/api/get-variant-price?product_id=${productId}&size_id=${selectedSize}&color_id=${selectedColor}`;
-                    console.log('Fetching URL:', url); // Debugging log
-                    fetch(url)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.price) {
-                                basePrice = data.price;
-                                priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(basePrice) + 'đ';
-                                updateTotalPrice();
-                            } else {
-                                priceDisplay.textContent = 'Không có sẵn';
-                                totalPriceDisplay.textContent = 'Không có sẵn';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching variant price:', error);
-                            priceDisplay.textContent = 'Không có sẵn';
-                            totalPriceDisplay.textContent = 'Không có sẵn';
-                        });
+                let stockInfoText = 'Không có sẵn';
+                let maxStock = 0;
+
+                if (selectedSizeId && selectedColorId) {
+                    const matchingVariant = variants.find(variant =>
+                        variant.size_id == selectedSizeId && variant.color_id == selectedColorId
+                    );
+
+                    if (matchingVariant) {
+                        maxStock = matchingVariant.stock_quantity;
+                        totalPrice.textContent = matchingVariant.price;
+                        stockInfoText = `Còn ${maxStock} sản phẩm`;
+                    }
                 }
+
+                stockInfo.textContent = stockInfoText;
+                quantityInput.max = maxStock; // Set the max attribute for the input
+                return maxStock;
             }
 
-            function updateTotalPrice() {
-                const totalPrice = basePrice * quantity;
-                totalPriceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(totalPrice) + 'đ';
-            }
-
-            function filterOptions() {
-                sizeButtons.forEach(button => {
-                    const sizeId = button.getAttribute('data-size-id');
-                    const isAvailable = variants.some(variant => variant.size_id == sizeId && (!selectedColor || variant.color_id == selectedColor));
-                    button.disabled = !isAvailable;
-                });
-
-                colorButtons.forEach(button => {
-                    const colorId = button.getAttribute('data-color-id');
-                    const isAvailable = variants.some(variant => variant.color_id == colorId && (!selectedSize || variant.size_id == selectedSize));
-                    button.disabled = !isAvailable;
-                });
+            function validateQuantity() {
+                const maxStock = updateStockInfo();
+                if (quantity > maxStock) {
+                    alert(`Số lượng bạn chọn vượt quá số lượng hàng trong kho (${maxStock} sản phẩm).`);
+                    quantity = maxStock;
+                    quantityInput.value = quantity;
+                }
             }
 
             sizeButtons.forEach(button => {
@@ -276,8 +266,7 @@
                     sizeButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     selectedSize = this.getAttribute('data-size-id');
-                    filterOptions();
-                    updatePrice();
+                    updateStockInfo();
                 });
             });
 
@@ -286,8 +275,7 @@
                     colorButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     selectedColor = this.getAttribute('data-color-id');
-                    filterOptions();
-                    updatePrice();
+                    updateStockInfo();
                 });
             });
 
@@ -295,35 +283,39 @@
                 if (quantity > 1) {
                     quantity--;
                     quantityInput.value = quantity;
-                    updateTotalPrice();
                 }
             });
 
             increaseQuantityButton.addEventListener('click', function() {
                 quantity++;
-                quantityInput.value = quantity;
-                updateTotalPrice();
+                validateQuantity();
             });
 
             quantityInput.addEventListener('input', function() {
                 const value = parseInt(this.value);
                 if (value >= 1) {
                     quantity = value;
-                    updateTotalPrice();
+                    validateQuantity();
                 } else {
                     this.value = quantity;
                 }
             });
 
             addToCartButton.addEventListener('click', function() {
+                const maxStock = updateStockInfo();
                 if (!selectedSize || !selectedColor) {
                     alert('Vui lòng chọn kích cỡ và màu sắc trước khi thêm vào giỏ hàng.');
                     return;
                 }
 
+                if (quantity > maxStock) {
+                    alert(`Số lượng bạn chọn vượt quá số lượng hàng trong kho (${maxStock} sản phẩm).`);
+                    return;
+                }
+
                 const url = '/cart/add';
                 const payload = {
-                    product_id: productId,
+                    product_id: {{ $products->id }},
                     size_id: selectedSize,
                     color_id: selectedColor,
                     quantity: quantity
@@ -340,7 +332,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showNotification('Sản phẩm đã được thêm vào giỏ hàng.');
+                        alert('Sản phẩm đã được thêm vào giỏ hàng.');
                     } else {
                         alert(data.message || 'Đã xảy ra lỗi khi thêm vào giỏ hàng.');
                     }
@@ -350,26 +342,6 @@
                     alert('Đã xảy ra lỗi khi thêm vào giỏ hàng.');
                 });
             });
-
-            function showNotification(message) {
-                const notification = document.createElement('div');
-                notification.textContent = message;
-                notification.style.position = 'fixed';
-                notification.style.bottom = '20px';
-                notification.style.right = '20px';
-                notification.style.backgroundColor = '#28a745';
-                notification.style.color = 'white';
-                notification.style.padding = '10px 20px';
-                notification.style.borderRadius = '5px';
-                notification.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }
-
-            filterOptions();
         });
     </script>
 @endsection

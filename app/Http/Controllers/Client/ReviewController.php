@@ -20,11 +20,16 @@ class ReviewController extends Controller
         ->where('user_id', auth()->id())
         ->firstOrFail();
 
-    // Tìm sản phẩm cần đánh giá (hoặc kiểm tra xem sản phẩm có trong đơn hàng không nếu cần)
+    // Tìm sản phẩm cần đánh giá
     $product = Products::findOrFail($product_id);
 
-    // Truyền cả order và product sang view
-    return view('reviews.create', compact('order', 'product'));
+    // Lấy danh sách đánh giá, tổng số, trung bình
+    $reviews = Review::with('user')->where('product_id', $product->id)->latest()->get();
+    $totalReviews = $reviews->count();
+    $averageRating = $totalReviews > 0 ? round($reviews->avg('rating'), 1) : 0;
+
+    // Truyền đủ biến sang view
+    return view('client.reviews.review', compact('order', 'product', 'reviews', 'totalReviews', 'averageRating'));
 }
 
 public function store(Request $request, $order_id, $product_id)
@@ -59,7 +64,8 @@ public function store(Request $request, $order_id, $product_id)
         'comment'    => $request->comment,
     ]);
 
-    return redirect()->back()->with('success', 'Đánh giá của bạn đã được ghi nhận!');
+    return redirect()->route('order-history')
+        ->with('success', 'Đánh giá của bạn đã được ghi nhận!');
 }
 
 public function show($order_id, $product_id)

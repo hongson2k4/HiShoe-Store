@@ -46,7 +46,7 @@ class OrderController extends Controller
         }
 
         // Phân trang
-        $orders = $query->paginate(10);
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.orders.index', compact('orders'));
     }

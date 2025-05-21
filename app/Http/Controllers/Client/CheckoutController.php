@@ -172,7 +172,9 @@ class CheckoutController extends Controller
         $order->status = 0;
         $order->shipping_address = $request->address;
         $order->voucher_id = Session::get('applied_voucher_id');
-        $order->order_check = Order::generateOrderCheck(); // Sử dụng order_check
+        $order->order_check = Order::generateOrderCheck();
+        $order->user_receiver = $request->first_name . ' ' . $request->last_name;
+        $order->phone_receiver = $request->phone;
         $order->save();
 
         $payment = new Payment();

@@ -189,6 +189,13 @@
                                                 <button type="submit" class="btn btn-success btn-sm">Đã nhận được hàng</button>
                                             </form>
                                         @elseif ($order->status == 7)
+                                            @if ($order->is_reviewed != 1)
+                                                @foreach ($order->orderItemHistories as $item)
+                                                    <a href="{{ route('orders.review.create', [$order->id, $item->product_id]) }}" class="btn btn-info btn-sm mb-1">
+                                                        Đánh giá {{ $item->product->name }}
+                                                    </a>
+                                                @endforeach
+                                            @endif
                                             <div class="d-flex gap-2">
                                                 @if ($order->needs_refunded)
                                                     <span class="text-warning">Đang xem xét</span>

@@ -70,7 +70,6 @@ class OrderHistoryController extends Controller
     public function cancelOrder(Request $request, $id)
     {
         $order = Order::where('user_id', auth()->id())->findOrFail($id);
-
         // Kiểm tra xem đơn hàng có thể hủy không
         if (!$order->canCancel()) {
             return redirect()->back()->with('error', 'Đơn hàng không thể hủy! Chỉ có thể hủy đơn hàng trong vòng 24 giờ và khi trạng thái là "Đơn đã đặt" hoặc "Đang đóng gói".');
@@ -81,21 +80,20 @@ class OrderHistoryController extends Controller
             'cancel_reason' => 'required|string|max:255',
         ]);
 
-        // Cập nhật trạng thái và lưu lý do hủy
-        $order->status = 5; // Đã hủy
-        $order->customer_reasons = $request->input('cancel_reason');
-        $order->updated_at = now();
-
-        // Cộng lại số lượng sản phẩm vào kho
-        $orderItems = $order->orderItemHistories;
-        foreach ($orderItems as $item) {
-            $variant = \App\Models\Product_variant::find($item->variant_id);
+        // Lấy danh sách chi tiết đơn hàng
+        $orderDetails = $order->orderDetails;
+        foreach ($orderDetails as $item) {
+            $variant = \App\Models\Product_variant::find($item->product_variant_id);
             if ($variant) {
-                $variant->stock += $item->quantity;
+                $variant->stock_quantity += $item->quantity;
                 $variant->save();
             }
         }
 
+        // Cập nhật trạng thái và lưu lý do hủy
+        $order->status = 5; // Đã hủy
+        $order->customer_reasons = $request->input('cancel_reason');
+        $order->updated_at = now();
         $order->save();
 
         return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công!');

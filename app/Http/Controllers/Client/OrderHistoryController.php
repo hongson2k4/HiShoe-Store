@@ -179,7 +179,7 @@ class OrderHistoryController extends Controller
         ]);
 
         foreach ($orderItems as $item) {
-            \App\Models\OrderItem::create([
+            \App\Models\OrderItemHistory::create([
                 'order_id' => $newOrder->id,
                 'product_id' => $item->product_id,
                 'variant_id' => $item->variant_id,

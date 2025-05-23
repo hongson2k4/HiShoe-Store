@@ -107,6 +107,44 @@ HiShoe-Store - Trang chủ
 </div>
 </section>
 
+{{-- Block hiển thị voucher của cửa hàng --}}
+@if(isset($vouchers) && count($vouchers))
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fa fa-gift"></i> Mã giảm giá của cửa hàng</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach($vouchers as $voucher)
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="border rounded p-3 h-100 bg-light">
+                        <h6 class="text-primary font-weight-bold">{{ $voucher->code }}</h6>
+                        <p class="mb-1">
+                            <strong>Giảm:</strong>
+                            @if($voucher->discount_type == 0)
+                                {{ $voucher->discount_value }}%
+                                @if($voucher->max_discount_value)
+                                    (Tối đa {{ number_format($voucher->max_discount_value, 0, ',', '.') }}đ)
+                                @endif
+                            @else
+                                {{ number_format($voucher->discount_value, 0, ',', '.') }}đ
+                            @endif
+                        </p>
+                        <p class="mb-1"><strong>Đơn tối thiểu:</strong> {{ number_format($voucher->min_order_value, 0, ',', '.') }}đ</p>
+                        <p class="mb-1"><strong>HSD:</strong> {{ \Carbon\Carbon::parse($voucher->end_date)->format('d/m/Y') }}</p>
+                        <span class="badge badge-{{ $voucher->status == 1 ? 'success' : 'secondary' }}">
+                            {{ $voucher->status == 1 ? 'Còn hiệu lực' : 'Không hiệu lực' }}
+                        </span>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- Phần khuyến mãi -->
 <section class="saving_section ">
     <div class="box">

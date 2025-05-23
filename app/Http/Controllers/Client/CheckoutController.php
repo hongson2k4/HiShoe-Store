@@ -19,26 +19,37 @@ use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('web')->user();
         $cartItems = [];
         $subtotal = 0;
         $discount = 0;
         $total = 0;
 
+        // Lấy danh sách ID sản phẩm được chọn (nếu có)
+        $selectedIds = [];
+        if ($request->has('cart_ids')) {
+            $selectedIds = explode(',', $request->input('cart_ids'));
+        }
+
         if ($user) {
-            $cartItems = Cart::where('user_id', $user->id)
-                ->with(['productVariant.product.brand', 'productVariant.size', 'productVariant.color'])
-                ->get();
+            $query = Cart::where('user_id', $user->id)
+                ->with(['productVariant.product.brand', 'productVariant.size', 'productVariant.color']);
+            if (!empty($selectedIds)) {
+
+                $query->whereIn('id', $selectedIds);
+            }
+            $cartItems = $query->get();
         } else {
             $sessionCart = Session::get('cart', []);
-
             if (!empty($sessionCart)) {
                 foreach ($sessionCart as $item) {
+                    if (!empty($selectedIds) && !in_array($item['id'], $selectedIds)) {
+                        continue;
+                    }
                     $productVariant = Product_variant::with(['product.brand', 'size', 'color'])
                         ->find($item['product_variant_id']);
-
                     if ($productVariant) {
                         $cartItem = new \stdClass();
                         $cartItem->id = $item['id'];
@@ -46,7 +57,6 @@ class CheckoutController extends Controller
                         $cartItem->price = $productVariant->price;
                         $cartItem->productVariant = $productVariant;
                         $cartItem->product = $productVariant->product;
-
                         $cartItems[] = $cartItem;
                     }
                 }

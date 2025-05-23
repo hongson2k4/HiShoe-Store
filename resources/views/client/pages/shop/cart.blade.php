@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     updateGrandTotal();
                 } else {
-                    alert(data.message || 'Đã xảy ra lỗi.');
+                    alert(data.message || 'Đã xảy ra lỗi. Số lượng quá chỉ định.');
                 }
             })
             .catch(() => alert('Lỗi khi gửi yêu cầu đến máy chủ.'));
@@ -177,10 +177,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ngăn checkout nếu chưa chọn sản phẩm
     document.querySelector('.proceed-checkout').addEventListener('click', function (e) {
-        if (document.querySelectorAll('.item-checkbox:checked').length === 0) {
+        const checked = Array.from(document.querySelectorAll('.item-checkbox:checked'));
+        if (checked.length === 0) {
             e.preventDefault();
             alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+            return;
         }
+
+        // Lấy danh sách id sản phẩm đã chọn
+        const ids = checked.map(cb => cb.dataset.id).join(',');
+        // Điều hướng sang trang checkout với danh sách id
+        window.location.href = `{{ route('checkout.index') }}?cart_ids=${ids}`;
     });
 
     // Xóa các sản phẩm đã chọn (AJAX, không reload từng form)

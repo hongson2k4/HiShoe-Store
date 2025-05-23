@@ -1,6 +1,6 @@
 @extends('client.layout.main')
 
-@section('title', 'Chi tiết sản phẩm')
+@section('title', 'Chi tiết sản phẩm - ' . $products->name)
 
 @section('content')
 
@@ -111,6 +111,31 @@
 
         .related-products {
             margin-top: 50px;
+        }
+    </style>
+
+    <style>
+        .variant-button.active {
+            background-color: #007bff !important;
+            color: #fff !important;
+            border-color: #007bff !important;
+        }
+        .variant-button {
+            border-color: #007bff !important;
+            color: #007bff !important;
+            background-color: #fff !important;
+            transition: background 0.2s, color 0.2s;
+        }
+        .variant-button:hover:not(:disabled):not(.active) {
+            background-color: #e6f0ff !important;
+            color: #0056b3 !important;
+            border-color: #007bff !important;
+        }
+        .variant-button:disabled {
+            background-color: #e0e0e0 !important;
+            color: #a0a0a0 !important;
+            border-color: #ccc !important;
+            cursor: not-allowed;
         }
     </style>
 
@@ -302,21 +327,72 @@
 
             sizeButtons.forEach(button => {
                 button.addEventListener('click', function () {
+                    // Nếu đã chọn, nhấn lại sẽ hủy chọn
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        selectedSize = null;
+                        resetVariantButtons();
+                        updateStockInfo();
+                        return;
+                    }
                     sizeButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     selectedSize = this.getAttribute('data-size-id');
                     updateStockInfo();
+                    updateColorButtonStates();
                 });
             });
 
             colorButtons.forEach(button => {
                 button.addEventListener('click', function () {
+                    // Nếu đã chọn, nhấn lại sẽ hủy chọn
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        selectedColor = null;
+                        resetVariantButtons();
+                        updateStockInfo();
+                        return;
+                    }
                     colorButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     selectedColor = this.getAttribute('data-color-id');
                     updateStockInfo();
+                    updateSizeButtonStates();
                 });
             });
+
+            // Disable color buttons if no variant exists for selected size
+            function updateColorButtonStates() {
+                colorButtons.forEach(button => {
+                    const colorId = button.getAttribute('data-color-id');
+                    const exists = variants.some(variant =>
+                        variant.size_id == selectedSize && variant.color_id == colorId
+                    );
+                    button.disabled = !exists;
+                    if (!exists) button.classList.remove('active');
+                });
+            }
+
+            // Disable size buttons if no variant exists for selected color
+            function updateSizeButtonStates() {
+                sizeButtons.forEach(button => {
+                    const sizeId = button.getAttribute('data-size-id');
+                    const exists = variants.some(variant =>
+                        variant.size_id == sizeId && variant.color_id == selectedColor
+                    );
+                    button.disabled = !exists;
+                    if (!exists) button.classList.remove('active');
+                });
+            }
+
+            // Khi chưa chọn gì, enable tất cả
+            function resetVariantButtons() {
+                sizeButtons.forEach(btn => btn.disabled = false);
+                colorButtons.forEach(btn => btn.disabled = false);
+            }
+
+            // Gọi reset khi load trang
+            resetVariantButtons();
 
             decreaseQuantityButton.addEventListener('click', function () {
                 if (quantity > 1) {
@@ -341,6 +417,13 @@
             });
 
             addToCartButton.addEventListener('click', function () {
+                // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
+                @if (!Auth::check())
+                    alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');
+                    window.location.href = "{{ route('loginForm') }}";
+                    return;
+                @endif
+
                 const maxStock = updateStockInfo();
                 if (!selectedSize || !selectedColor) {
                     alert('Vui lòng chọn kích cỡ và màu sắc trước khi thêm vào giỏ hàng.');

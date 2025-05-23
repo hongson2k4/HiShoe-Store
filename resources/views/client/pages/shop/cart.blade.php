@@ -90,9 +90,9 @@
                             Tổng cộng:
                             <strong class="grand-total">{{ number_format($grandTotal, 0, ',', '.') }} VNĐ</strong>
                         </h5>
-                        <a href="{{ route('checkout.index') }}" class="btn btn-success btn-sm w-100 proceed-checkout">
+                        <button type="button" class="btn btn-success btn-sm w-100 proceed-checkout">
                             Tiến hành thanh toán
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>

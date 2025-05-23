@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Mail\OrderSuccessMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -31,6 +32,7 @@ class CheckoutController extends Controller
         $selectedIds = [];
         if ($request->has('cart_ids')) {
             $selectedIds = explode(',', $request->input('cart_ids'));
+            Log::info('cart_ids:', $selectedIds); // Xem log trong storage/logs/laravel.log
         }
 
         if ($user) {
@@ -176,6 +178,10 @@ class CheckoutController extends Controller
             'total.numeric' => 'Tổng tiền phải là số.',
         ]);
 
+        // Lấy danh sách cart_ids từ request
+        $cartIds = $request->input('cart_ids');
+        $cartIdArr = $cartIds ? explode(',', $cartIds) : [];
+
         $order = new Order();
         $order->user_id = Auth::id();
         $order->total_price = $request->total;
@@ -193,6 +199,9 @@ class CheckoutController extends Controller
         $payment->amount = $request->total;
         $payment->payment_status = 0;
         $payment->save();
+
+        // Lưu cart_ids vào session để success dùng lại
+        Session::put('checkout_cart_ids', $cartIdArr);
 
         if ($request->payment_method == 'vnpay') {
             $vnp_TmnCode = env('VNPAY_TMN_CODE');
@@ -248,6 +257,9 @@ class CheckoutController extends Controller
     {
         $orderId = $request->input('order_id');
 
+        // Lấy lại cart_ids từ session
+        $cartIdArr = Session::get('checkout_cart_ids', []);
+
         if ($orderId) {
             $order = Order::find($orderId);
             $payment = Payment::where('order_id', $orderId)->first();
@@ -255,7 +267,9 @@ class CheckoutController extends Controller
             if ($order) {
                 $order->status = 1;
                 $order->save();
+                // Chỉ lấy các cart item được chọn
                 $cartItems = Cart::where('user_id', Auth::guard('web')->id())
+                    ->whereIn('id', $cartIdArr)
                     ->with(['productVariant.product'])
                     ->get();
 
@@ -282,7 +296,8 @@ class CheckoutController extends Controller
 
                 $user = Auth::user();
                 if ($user) {
-                    Cart::where('user_id', $user->id)->delete();
+                    // Chỉ xóa các cart item đã đặt hàng
+                    Cart::where('user_id', $user->id)->whereIn('id', $cartIdArr)->delete();
                 } else {
                     Session::forget('cart');
                 }
@@ -290,6 +305,9 @@ class CheckoutController extends Controller
                 if ($user && $user->email) {
                     Mail::to($user->email)->send(new OrderSuccessMail($order, $cartItems));
                 }
+
+                // Xóa cart_ids khỏi session
+                Session::forget('checkout_cart_ids');
 
                 return view('client.checkout.success', compact('order', 'payment'));
             }
@@ -323,7 +341,9 @@ class CheckoutController extends Controller
                         $payment->payment_status = 1;
                         $payment->save();
                     }
+                    // Chỉ lấy các cart item được chọn
                     $cartItems = Cart::where('user_id', Auth::guard('web')->id())
+                        ->whereIn('id', $cartIdArr)
                         ->with(['productVariant.product'])
                         ->get();
 
@@ -349,11 +369,12 @@ class CheckoutController extends Controller
                     }
                     $user = Auth::user();
                     if ($user) {
-                        Cart::where('user_id', $user->id)->delete();
+                        Cart::where('user_id', $user->id)->whereIn('id', $cartIdArr)->delete();
                     } else {
                         Session::forget('cart');
                     }
                     Session::forget('applied_voucher_id');
+                    Session::forget('checkout_cart_ids');
 
                     return view('client.checkout.success', compact('order', 'payment'));
                 }

@@ -10,6 +10,7 @@
                 <h5 class="fw-bold mb-3">Thông tin khách hàng</h5>
                 <form id="payment-form" method="POST" action="{{ route('checkout.process') }}">
                     @csrf
+                    <input type="hidden" name="cart_ids" value="{{ request('cart_ids') }}">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Họ và tên</label>
                         <div class="row">

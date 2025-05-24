@@ -15,7 +15,7 @@
         <select name="status" class="form-control mr-2">
             <option value="">Tất cả trạng thái</option>
             <option value="0" {{ request()->query('status') == '0' ? 'selected' : '' }}>Hoạt động</option>
-            <option value="1" {{ request()->query('status') == '1' ? 'selected' : '' }}>Bị khóakhóa</option>
+            <option value="1" {{ request()->query('status') == '1' ? 'selected' : '' }}>Bị khóa</option>
         </select>
 
         <select name="role" class="form-control mr-2">

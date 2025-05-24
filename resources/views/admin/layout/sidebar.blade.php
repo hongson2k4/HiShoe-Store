@@ -31,7 +31,7 @@
         <div id="user" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{route('users.list')}}">Danh sách người dùng</a>
-                <a class="collapse-item" href="cards.html">Cards</a>
+              
             </div>
         </div>
     </li>

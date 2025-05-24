@@ -155,7 +155,7 @@
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" name="email adjective" id="email" class="form-control" value="{{ old('email') }}" required>
+                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
                     @if ($errors->has('email'))
                         <span class="text-danger">{{ $errors->first('email') }}</span>
                     @endif

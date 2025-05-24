@@ -26,7 +26,7 @@
                             <div class="form-group">
                                 <label for="productName">Tên sản phẩm</label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror" id="productName"
-                                    name="name" value="{{ old('name') }}" placeholder="Enter product name" required>
+                                    name="name" value="{{ old('name') }}" placeholder="Tên sản phẩm" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -37,7 +37,7 @@
                             <div class="form-group">
                                 <label for="productPrice">Giá tiền (VND)</label>
                                 <input type="number" class="form-control @error('price') is-invalid @enderror"
-                                    id="productPrice" name="price" value="{{ old('price') }}" placeholder="Enter price"
+                                    id="productPrice" name="price" value="{{ old('price') }}" placeholder="Giá"
                                     required>
                                 @error('price')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -115,7 +115,7 @@
                                 <label for="returnPolicy">Chính sách hoàn trả</label>
                                 <input type="text" class="form-control @error('return_policy') is-invalid @enderror"
                                     id="returnPolicy" name="return_policy" value="{{ old('return_policy') }}"
-                                    placeholder="Enter return policy">
+                                    placeholder="Nhập">
                                 @error('return_policy')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -142,7 +142,7 @@
                             <label for="descriptionTitle">Tiêu đề mô tả</label>
                             <input type="text" class="form-control @error('description_title') is-invalid @enderror"
                                 id="descriptionTitle" name="description_title" value="{{ old('description_title') }}"
-                                placeholder="Enter description title" required>
+                                placeholder="Mô tả" required>
                             @error('description_title')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -153,7 +153,7 @@
                             <label for="descriptionContent">Nội dung mô tả</label>
                             <textarea class="form-control @error('description_content') is-invalid @enderror"
                                 id="descriptionContent" name="description_content" rows="5"
-                                placeholder="Enter detailed description of the product"
+                                placeholder="Nội dung mô tả"
                                 required>{{ old('description_content') }}</textarea>
                             @error('description_content')
                                 <div class="invalid-feedback">{{ $message }}</div>

@@ -76,8 +76,11 @@
     @else
         <!-- Table Header -->
         <div class="order-header row align-items-center mb-3">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <h6 class="mb-0" style="color: white;">Tên sản phẩm</h6>
+            </div>
+            <div class="col-md-2">
+                <h6 class="mb-0" style="color: white;">Người nhận</h6>
             </div>
             <div class="col-md-2">
                 <h6 class="mb-0" style="color: white;">Mã đơn hàng</h6>
@@ -96,7 +99,7 @@
                     <div class="card-body p-3">
                         <!-- Main info row -->
                         <div class="row align-items-center mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="product-info">
                                     @if ($order->orderItemHistories->isNotEmpty())
                                         <!-- Hiển thị danh sách sản phẩm -->
@@ -126,7 +129,13 @@
                                     @endif
                                 </div>
                             </div>
-                            
+                            <div class="col-md-2">
+                                <div>
+                                    <div><strong>{{ $order->receiver_name ?? $order->user->full_name ?? '' }}</strong></div>
+                                    <div>{{ $order->receiver_phone ?? $order->user->phone ?? '' }}</div>
+                                    <div class="small text-muted">{{ $order->shipping_address }}</div>
+                                </div>
+                            </div>
                             <div class="col-md-2">
                                 <div class="order-id">
                                     <span class="order-id-text">{{ $order->order_check }}</span>
@@ -170,11 +179,23 @@
                                                 <button type="button" class="btn btn-primary btn-sm contact-shop-btn" data-order-id="{{ $order->id }}">Liên hệ shop</button>
                                             @endif
                                         @elseif ($order->status == 4)
+                                            @foreach ($order->orderItemHistories as $item)
+                                                <a href="{{ route('orders.review.create', [$order->id, $item->product_id]) }}" class="btn btn-info btn-sm mb-1">
+                                                    Đánh giá {{ $item->product->name }}
+                                                </a>
+                                            @endforeach
                                             <form action="{{ route('order.history.receive', $order->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn đã nhận được hàng?');">
                                                 @csrf
                                                 <button type="submit" class="btn btn-success btn-sm">Đã nhận được hàng</button>
                                             </form>
                                         @elseif ($order->status == 7)
+                                            @if ($order->is_reviewed != 1)
+                                                @foreach ($order->orderItemHistories as $item)
+                                                    <a href="{{ route('orders.review.create', [$order->id, $item->product_id]) }}" class="btn btn-info btn-sm mb-1">
+                                                        Đánh giá {{ $item->product->name }}
+                                                    </a>
+                                                @endforeach
+                                            @endif
                                             <div class="d-flex gap-2">
                                                 @if ($order->needs_refunded)
                                                     <span class="text-warning">Đang xem xét</span>
@@ -211,7 +232,7 @@
         </div>
     @endif
     <div class="mt-3">
-        <a href="{{ route('home') }}" class="btn text-white" style="background-color: #EC7FA9;">Back to Home</a>
+        <a href="{{ route('home') }}" class="btn text-white" style="background-color: #EC7FA9;">Quay về trang chủ</a>
     </div>
 </div>
 

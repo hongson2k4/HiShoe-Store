@@ -44,7 +44,7 @@
                         <!-- Hình ảnh sản phẩm -->
                         @if ($item->product && $item->product->image_url)
                             <div class="col-md-2">
-                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="img-fluid" style="max-width: 100px;">
+                                <img src="{{ Storage::url($item->product->image_url) }}" alt="{{ $item->product->name }}" class="product-image me-2" style="height: 200px; width: auto;">
                             </div>
                         @else
                             <div class="col-md-2">
@@ -71,7 +71,7 @@
                 <!-- Tổng giá tiền phải thanh toán -->
                 <div class="row mt-4">
                     <div class="col-md-12 text-end">
-                        <h4><strong>Tổng giá tiền phải thanh toán: {{ number_format($order->orderItemHistories->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }} VNĐ</strong></h4>
+                        <h4><strong>Tổng tiền của đơn hàng: {{ number_format($order->orderItemHistories->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }} VNĐ</strong></h4>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@
 
     <!-- Nút quay lại -->
     <div class="mt-3">
-        <a href="{{ route('order-history') }}" class="btn text-white" style="background-color: #F89CAB;">Back to history</a>
+        <a href="{{ route('order-history') }}" class="btn text-white" style="background-color: #F89CAB;">Quay về trang đơn hàng</a>
     </div>
 </div>
 @endsection

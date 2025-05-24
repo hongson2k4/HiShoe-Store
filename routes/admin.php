@@ -80,11 +80,13 @@ Route::middleware(['auth:admin', 'admin'])->prefix('admin/orders')->group(functi
     Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::put('/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
-        // route để xác nhận đơn hàng
-        Route::post('/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
-        // route xử lý liên hệ shop
-        // Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
-        Route::post('orders/resolve-support/{id}', [OrderController::class, 'resolveSupport'])->name('orders.resolve-support');
+    // route để xác nhận đơn hàng
+    Route::post('/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+    // route xử lý liên hệ shop
+    // Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('orders/resolve-support/{id}', [OrderController::class, 'resolveSupport'])->name('orders.resolve-support');
+    //Route xóa đơn với trang thái không xác định
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.delete');
 });
 
 // Route::middleware(['auth:admin', 'admin'])->controller(BrandController::class)
@@ -140,5 +142,5 @@ Route::middleware(['auth:admin', 'admin'])->controller(VoucherController::class)
     Route::delete('delete/{id}', [VoucherController::class, 'delete'])->name('delete');
     Route::get('edit/{id}', [VoucherController::class, 'edit'])->name('edit');
     Route::put('update/{id}', [VoucherController::class, 'update'])->name('update');
-
+    Route::delete('/admin/vouchers/delete-expired', [VoucherController::class, 'deleteExpired'])->name('deleteExpired');
 });

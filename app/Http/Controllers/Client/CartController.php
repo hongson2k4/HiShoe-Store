@@ -70,6 +70,23 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Biến thể sản phẩm không tồn tại.'], 404);
         }
 
+        // Lấy số lượng đã có trong giỏ hàng
+        $cartItem = Cart::where([
+            'user_id' => $user->id,
+            'product_id' => $variant->product_id,
+            'product_variant_id' => $variant->id
+        ])->first();
+
+        $cartQuantity = $cartItem ? $cartItem->quantity : 0;
+        $totalQuantity = $cartQuantity + $validated['quantity'];
+
+        if ($totalQuantity > $variant->stock_quantity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tổng số lượng trong giỏ hàng vượt quá số lượng tồn kho (' . $variant->stock_quantity . ').'
+            ], 400);
+        }
+
         if ($variant->stock_quantity < $validated['quantity']) {
             return response()->json(['success' => false, 'message' => 'Số lượng yêu cầu vượt quá số lượng tồn kho.'], 400);
         }
@@ -109,11 +126,20 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Đã xảy ra lỗi khi thêm vào giỏ hàng.'], 500);
         }
     }
+
     public function apiUpdate(Request $request, $id)
     {
         $item = Cart::findOrFail($id);
+        $variant = $item->variant;
 
+        // Kiểm tra tồn kho trước khi tăng số lượng
         if ($request->action === 'increase') {
+            if ($item->quantity + 1 > $variant->stock_quantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Số lượng mua vượt quá số lượng tồn kho (' . $variant->stock_quantity . ').'
+                ], 400);
+            }
             $item->quantity += 1;
         } elseif ($request->action === 'decrease' && $item->quantity > 1) {
             $item->quantity -= 1;

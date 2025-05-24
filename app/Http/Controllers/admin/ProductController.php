@@ -75,19 +75,66 @@ class ProductController extends Controller
             $validate = $request->validate([
                 'name' => 'required|string|max:255',
                 'price' => 'required|numeric|min:0',
-                'category_id' => 'required',
-                'category_id.*' => 'exists:categories,id',
+                'category_id' => 'required|exists:categories,id',
                 'brand_id' => 'required|exists:brands,id',
                 'image_url' => 'nullable',
                 'sku_code' => 'required|string|unique:products,sku_code',
                 'description_title' => 'required|string|max:255',
                 'description_content' => 'required|string',
                 'description_image' => 'nullable',
+                // Validate biến thể
+                'variants' => 'required|array|min:1',
+                'variants.*.size_id' => 'required|exists:sizes,id',
+                'variants.*.color_id' => 'required|exists:colors,id',
+                'variants.*.price' => 'required|numeric|min:0',
+                'variants.*.stock_quantity' => 'required|integer|min:0',
+                'variants.*.image' => 'nullable|image',
+            ], [
+                'name.required' => 'Tên sản phẩm là bắt buộc.',
+                'price.required' => 'Giá sản phẩm là bắt buộc.',
+                'price.numeric' => 'Giá sản phẩm phải là số.',
+                'category_id.required' => 'Danh mục sản phẩm là bắt buộc.',
+                'category_id.exists' => 'Danh mục không tồn tại.',
+                'brand_id.required' => 'Thương hiệu sản phẩm là bắt buộc.',
+                'brand_id.exists' => 'Thương hiệu không tồn tại.',
+                'sku_code.required' => 'Mã SKU là bắt buộc.',
+                'sku_code.unique' => 'Mã SKU đã tồn tại.',
+                'description_title.required' => 'Tiêu đề mô tả là bắt buộc.',
+                'description_content.required' => 'Nội dung mô tả là bắt buộc.',
+                'variants.required' => 'Phải có ít nhất một biến thể.',
+                'variants.*.size_id.required' => 'Kích thước là bắt buộc.',
+                'variants.*.size_id.exists' => 'Kích thước không hợp lệ.',
+                'variants.*.color_id.required' => 'Màu sắc là bắt buộc.',
+                'variants.*.color_id.exists' => 'Màu sắc không hợp lệ.',
+                'variants.*.price.required' => 'Giá biến thể là bắt buộc.',
+                'variants.*.price.numeric' => 'Giá biến thể phải là số.',
+                'variants.*.stock_quantity.required' => 'Số lượng biến thể là bắt buộc.',
+                'variants.*.stock_quantity.integer' => 'Số lượng biến thể phải là số nguyên.',
+                'variants.*.image.image' => 'Ảnh biến thể phải là định dạng ảnh.',
             ]);
+    
+            // Custom validate: ít nhất 1 biến thể
+            if (!isset($request->variants) || count($request->variants) < 1) {
+                return redirect()->back()->withErrors(['Phải có ít nhất một biến thể.'])->withInput();
+            }
+    
+            // Custom validate: giá biến thể >= 50% giá sản phẩm
+            $productPrice = $validate['price'];
+            foreach ($request->variants as $variant) {
+                if (!isset($variant['price']) || $variant['price'] < 0.5 * $productPrice) {
+                    return redirect()->back()->withErrors(['Giá biến thể phải lớn hơn hoặc bằng 50% giá sản phẩm.'])->withInput();
+                }
+            }
     
             $imagePath = null;
             if ($request->hasFile('image_url')) {
                 $imagePath = $request->file('image_url')->store('products', 'public');
+            }
+    
+            // Tính tổng số lượng từ biến thể
+            $totalStock = 0;
+            foreach ($request->variants as $variant) {
+                $totalStock += (int)($variant['stock_quantity'] ?? 0);
             }
     
             $product = Products::create([
@@ -97,12 +144,11 @@ class ProductController extends Controller
                 'category_id' => $validate['category_id'],
                 'sku_code' => $validate['sku_code'],
                 'image_url' => $imagePath,
+                'stock_quantity' => $totalStock,
+                // Không lưu return_policy
             ]);
     
-            // // Attach categories
-            // $product->categories()->sync($validate['category_id']);
-    
-            // Lưu thông tin mô tả sản phẩm
+            // Lưu mô tả sản phẩm
             $descriptionImagePath = null;
             if ($request->hasFile('description_image')) {
                 $descriptionImagePath = $request->file('description_image')->store('product_details', 'public');
@@ -113,6 +159,21 @@ class ProductController extends Controller
                 'detail_content' => $validate['description_content'],
                 'detail_image' => $descriptionImagePath,
             ]);
+    
+            // Lưu các biến thể
+            foreach ($request->variants as $variant) {
+                $variantImagePath = null;
+                if (isset($variant['image']) && $variant['image'] instanceof \Illuminate\Http\UploadedFile) {
+                    $variantImagePath = $variant['image']->store('product_variants', 'public');
+                }
+                $product->variants()->create([
+                    'size_id' => $variant['size_id'],
+                    'color_id' => $variant['color_id'],
+                    'price' => $variant['price'],
+                    'stock_quantity' => $variant['stock_quantity'],
+                    'image_url' => $variantImagePath,
+                ]);
+            }
     
             return redirect()->route('products.list')->with('success', 'Thêm sản phẩm thành công!');
         } catch (\Exception $e) {

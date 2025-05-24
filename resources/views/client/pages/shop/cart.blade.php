@@ -65,8 +65,8 @@
                                                 <button class="btn btn-outline-secondary btn-qty-change" data-action="increase" data-id="{{ $item->id }}" type="button" style="padding: 0 8px;">+</button>
                                             </div>
                                         </td>
-                                        <td>{{ number_format($item->variant->price, 0, ',', '.') }} VND</td>
-                                        <td class="item-total">{{ number_format($itemTotal, 0, ',', '.') }} VND</td>
+                                        <td>{{ number_format($item->variant->price, 0, ',', '.') }} VNĐ</td>
+                                        <td class="item-total">{{ number_format($itemTotal, 0, ',', '.') }} VNĐ</td>
                                         <td>
                                             <form action="{{ route('cart.delete', $item->id) }}" method="POST" class="delete-single-form d-inline">
                                                 @csrf
@@ -88,11 +88,11 @@
                     <div class="text-end" style="min-width: 220px;">
                         <h5 class="mb-1">
                             Tổng cộng:
-                            <strong class="grand-total">{{ number_format($grandTotal, 0, ',', '.') }} VND</strong>
+                            <strong class="grand-total">{{ number_format($grandTotal, 0, ',', '.') }} VNĐ</strong>
                         </h5>
-                        <a href="{{ route('checkout.index') }}" class="btn btn-success btn-sm w-100 proceed-checkout">
+                        <button type="button" class="btn btn-success btn-sm w-100 proceed-checkout">
                             Tiến hành thanh toán
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.item-checkbox:checked').forEach(cb => {
             total += parseInt(cb.getAttribute('data-total'));
         });
-        document.querySelector('.grand-total').textContent = total.toLocaleString('vi-VN') + ' VND';
+        document.querySelector('.grand-total').textContent = total.toLocaleString('vi-VN') + ' VNĐ';
     }
 
     // Chọn tất cả
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     updateGrandTotal();
                 } else {
-                    alert(data.message || 'Đã xảy ra lỗi.');
+                    alert(data.message || 'Đã xảy ra lỗi. Số lượng quá chỉ định.');
                 }
             })
             .catch(() => alert('Lỗi khi gửi yêu cầu đến máy chủ.'));
@@ -177,10 +177,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ngăn checkout nếu chưa chọn sản phẩm
     document.querySelector('.proceed-checkout').addEventListener('click', function (e) {
-        if (document.querySelectorAll('.item-checkbox:checked').length === 0) {
+        const checked = Array.from(document.querySelectorAll('.item-checkbox:checked'));
+        if (checked.length === 0) {
             e.preventDefault();
             alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+            return;
         }
+
+        // Lấy danh sách id sản phẩm đã chọn
+        const ids = checked.map(cb => cb.dataset.id).join(',');
+        // Điều hướng sang trang checkout với danh sách id
+        window.location.href = `{{ route('checkout.index') }}?cart_ids=${ids}`;
     });
 
     // Xóa các sản phẩm đã chọn (AJAX, không reload từng form)
@@ -197,8 +204,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Gửi AJAX xoá từng sản phẩm, sau đó reload lại trang
     Promise.all(ids.map(id =>
-        fetch(`/cart/delete/${id}`, { // Đổi URL thành /cart/delete/{id}
-            method: 'DELETE', // Đổi method thành DELETE
+        fetch(`/cart/delete/${id}`, { 
+            method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json'

@@ -1,8 +1,7 @@
 @extends('client.layout.main')
 
 @section('content')
-    <div class="container" style="margin-top: 100px;">
-        <h2 class="text-center mb-5">Nhập mã đơn hàng để kiểm tra</h2>
+    <div class="container">
         <form action="{{ route('order.track') }}" method="POST">
             @csrf
             <form action="{{ route('order.track') }}" method="POST" class="d-flex justify-content-center">

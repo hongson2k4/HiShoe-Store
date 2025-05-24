@@ -31,6 +31,7 @@ class Voucher extends Model
     // Status constants
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+    const STATUS_EXPIRED = 2; // Thêm trạng thái hết hạn
 
     // Relationships
     public function orders(): HasMany
@@ -52,6 +53,12 @@ class Voucher extends Model
         return $this->status == self::STATUS_ACTIVE
                && now()->between($this->start_date, $this->end_date)
                && ($this->usage_limit === null || $this->used_count < $this->usage_limit);
+    }
+
+    // Check if voucher is expired
+    public function isExpired(): bool
+    {
+        return $this->end_date < now();
     }
 
     // Apply voucher to order

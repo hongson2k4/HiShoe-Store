@@ -16,7 +16,7 @@ HiShoe-Store - Thanh toán thành công
             <p class="text-gray-600 mt-2">Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đã được ghi nhận.</p>
 
             <div class="bg-gray-100 p-4 rounded mt-4 text-left">
-                <p class="font-semibold">Mã đơn hàng: <span class="text-red-500">{{ $order->id }}</span></p>
+                <p class="font-semibold">Mã đơn hàng: <span class="text-red-500">{{ $order->order_check }}</span></p>
                 <p>Số tiền thanh toán: <span class="font-bold text-lg text-green-600">{{ number_format($order->total_price) }} VNĐ</span></p>
                 @if ($payment)
                     <p>Phương thức thanh toán:
@@ -37,7 +37,7 @@ HiShoe-Store - Thanh toán thành công
 
             <div class="mt-6 flex flex-col gap-3">
                 <a href="{{ route('home') }}" class="w-full bg-blue-500 text-white px-4 py-2 rounded text-center">Quay lại trang chủ</a>
-                <a href="#" class="w-full bg-gray-500 text-white px-4 py-2 rounded text-center">Xem đơn hàng của bạn</a>
+                <a href="{{ route('order-history') }}" class="w-full bg-gray-500 text-white px-4 py-2 rounded text-center">Xem đơn hàng của bạn</a>
             </div>
         </div>
     </div>

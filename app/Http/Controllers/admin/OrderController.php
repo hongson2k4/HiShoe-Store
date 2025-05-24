@@ -46,7 +46,7 @@ class OrderController extends Controller
         }
 
         // Phân trang
-        $orders = $query->paginate(10);
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -141,5 +141,21 @@ class OrderController extends Controller
         $order->save();
 
         return redirect()->back()->with('success', 'Yêu cầu trả hàng đã được xử lý! Đơn hàng đã được chuyển sang trạng thái "Đã trả hàng".');
+    }
+
+    // Tính năng xóa đơn hàng với trạng thái không xác định
+        public function destroy(Order $order)
+    {
+        // Kiểm tra trạng thái đơn hàng
+        if (!in_array($order->status, [0, 5, 6])) {
+            return redirect()->route('orders.index')->with('error', 'Không thể xóa đơn hàng ở trạng thái này!');
+        }
+
+        // Xóa các bản ghi liên quan trong order_item_histories
+        $order->orderItemHistories()->delete();
+        // Xóa đơn hàng
+        $order->delete();
+
+        return redirect()->route('orders.index')->with('success', 'Đơn hàng đã được xóa thành công!');
     }
 }

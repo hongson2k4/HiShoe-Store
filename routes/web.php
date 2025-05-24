@@ -85,14 +85,6 @@ Route::controller(CartController::class)
     Route::delete('/delete/{id}', [CartController::class, 'destroy'])->name('cart.delete'); // New route
 });
 
-Route::controller(CartController::class)
-->prefix('cart/')
-->group(function(){
-    Route::get('/', [CartController::class, 'index'])->name('cart');
-    Route::patch('/update/{id}', [CartController::class, 'update'])->name('cart.update');
-});
-
-
 Route::middleware(['auth:web', 'client'])->group(function () {
     Route::get('/order-history', [OrderHistoryController::class, 'index'])->name('order-history')->middleware('auth');
     Route::get('/order-history/{order}', [OrderHistoryController::class, 'show'])->name('order.history.detail');
@@ -149,5 +141,5 @@ Route::prefix('checkout')->group(function(){
     Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::post('/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('apply.voucher');
+    Route::post('/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('remove.voucher');
 });
-

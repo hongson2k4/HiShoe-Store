@@ -10,6 +10,7 @@
                 <h5 class="fw-bold mb-3">Thông tin khách hàng</h5>
                 <form id="payment-form" method="POST" action="{{ route('checkout.process') }}">
                     @csrf
+                    <input type="hidden" name="cart_ids" value="{{ request('cart_ids') }}">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Họ và tên</label>
                         <div class="row">
@@ -51,7 +52,7 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
-                    <input type="hidden" name="total" value="{{ $total }}">
+                    <input type="hidden" name="total" id="total-input" value="{{ $total }}">
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('cart') }}" class="text-secondary">Quay lại giỏ hàng</a>
                         <button type="submit" class="btn btn-dark py-2 px-4">Tiếp tục</button>
@@ -76,29 +77,28 @@
                     @endforeach
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Mã giảm giá</label>
-                    <div class="input-group">
-                        <input type="text" name="voucher_code" class="form-control" placeholder="Nhập mã giảm giá" value="{{ old('voucher_code') }}" >
-                        <button type="button" class="btn btn-dark" onclick="applyVoucher()">Áp dụng</button>
-                    </div>
-                    @error('voucher_code')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
+    <label class="form-label fw-semibold">Mã giảm giá</label>
+    <div class="input-group">
+        <input type="text" name="voucher_code" class="form-control" placeholder="Nhập mã giảm giá" value="{{ old('voucher_code') }}" {{ session('applied_voucher_id') ? 'readonly' : '' }}>
+        <button type="button" class="btn btn-dark" onclick="applyVoucher()" {{ session('applied_voucher_id') ? 'disabled' : '' }}>Áp dụng</button>
+        <button type="button" class="btn btn-outline-danger" id="remove-voucher-btn" onclick="removeVoucher()" style="{{ session('applied_voucher_id') ? '' : 'display:none' }}">Hủy mã</button>
+    </div>
+    @error('voucher_code')
+        <div class="text-danger">{{ $message }}</div>
+    @enderror
+</div>
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-secondary">Tạm tính:</span>
-                    <span class="fw-semibold">{{ number_format($subtotal) }} VNĐ</span>
+                    <span class="fw-semibold" id="subtotal-text">{{ number_format($subtotal) }} VNĐ</span>
                 </div>
-                @if($discount > 0)
-                <div class="d-flex justify-content-between mb-2 text-success">
+                <div class="d-flex justify-content-between mb-2 text-success {{ $discount > 0 ? '' : 'd-none' }}" id="discount-row">
                     <span>Giảm giá:</span>
-                    <span>-{{ number_format($discount) }} VNĐ</span>
+                    <span id="discount-text">{{ $discount > 0 ? '-'.number_format($discount).' VNĐ' : '' }}</span>
                 </div>
-                @endif
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
                     <strong class="fs-5">Tổng cộng:</strong>
-                    <strong class="text-primary fs-5">{{ number_format($total) }} VNĐ</strong>
+                    <strong class="text-primary fs-5" id="total-text">{{ number_format($total) }} VNĐ</strong>
                 </div>
             </div>
         </div>
@@ -121,7 +121,22 @@ function applyVoucher() {
         .then(data => {
             if (data.success) {
                 alert('Áp dụng mã giảm giá thành công! Giảm: ' + data.discount + ' VNĐ');
-                location.reload();
+                document.getElementById('subtotal-text').innerText = data.subtotal + ' VNĐ';
+                document.getElementById('total-text').innerText = data.total + ' VNĐ';
+                document.getElementById('total-input').value = data.total.replace(/[^0-9]/g, '');
+                let discountRow = document.getElementById('discount-row');
+                let discountText = document.getElementById('discount-text');
+                if (parseInt(data.discount.replace(/,/g, '')) > 0) {
+                    discountRow.classList.remove('d-none');
+                    discountText.innerText = '-' + data.discount + ' VNĐ';
+                } else {
+                    discountRow.classList.add('d-none');
+                    discountText.innerText = '';
+                }
+            
+                document.querySelector('input[name="voucher_code"]').setAttribute('readonly', true);
+                document.querySelector('button[onclick="applyVoucher()"]').setAttribute('disabled', true);
+                document.getElementById('remove-voucher-btn').style.display = '';
             } else {
                 alert(data.message);
             }
@@ -132,6 +147,39 @@ function applyVoucher() {
     } else {
         alert('Vui lòng nhập mã giảm giá.');
     }
+}
+
+function removeVoucher() {
+    fetch('{{ route("remove.voucher") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Đã hủy mã giảm giá.');
+            document.getElementById('subtotal-text').innerText = data.subtotal + ' VNĐ';
+            document.getElementById('total-text').innerText = data.total + ' VNĐ';
+            document.getElementById('total-input').value = data.total.replace(/[^0-9]/g, '');
+            let discountRow = document.getElementById('discount-row');
+            let discountText = document.getElementById('discount-text');
+            discountRow.classList.add('d-none');
+            discountText.innerText = '';
+
+            document.querySelector('input[name="voucher_code"]').removeAttribute('readonly');
+            document.querySelector('button[onclick="applyVoucher()"]').removeAttribute('disabled');
+            document.getElementById('remove-voucher-btn').style.display = 'none';
+            document.querySelector('input[name="voucher_code"]').value = '';
+        } else {
+            alert('Có lỗi khi hủy mã giảm giá.');
+        }
+    })
+    .catch(error => {
+        alert('Đã có lỗi xảy ra. Vui lòng thử lại.');
+    });
 }
 </script>
 @endsection

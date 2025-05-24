@@ -191,6 +191,26 @@
         </div>
     </div>
 
+    <!-- Modal cảnh báo validate -->
+    <div class="modal fade" id="validateModal" tabindex="-1" role="dialog" aria-labelledby="validateModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-warning">
+            <h5 class="modal-title" id="validateModalLabel">Cảnh báo</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="validateModalBody">
+            <!-- Nội dung cảnh báo sẽ được thay đổi bằng JS -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap 4 JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -316,6 +336,40 @@
                 imagePreview.style.display = 'none';
             }
         });
+
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            // Kiểm tra có ít nhất 1 biến thể
+            const variants = document.querySelectorAll('.variant-section');
+            if (variants.length < 1) {
+                showValidateModal('Yêu cầu ít nhất 1 biến thể sản phẩm.');
+                e.preventDefault();
+                return false;
+            }
+
+            // Kiểm tra giá biến thể >= 50% giá sản phẩm
+            const productPrice = parseFloat(document.getElementById('productPrice').value) || 0;
+            let valid = true;
+            variants.forEach(function(variant) {
+                const priceInput = variant.querySelector('input[name*="[price]"]');
+                if (priceInput) {
+                    const variantPrice = parseFloat(priceInput.value) || 0;
+                    if (variantPrice < 0.5 * productPrice) {
+                        valid = false;
+                    }
+                }
+            });
+            if (!valid) {
+                showValidateModal('Giá biến thể phải lớn hơn hoặc bằng 50% giá sản phẩm.');
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Hàm hiển thị modal cảnh báo
+        function showValidateModal(message) {
+            document.getElementById('validateModalBody').innerText = message;
+            $('#validateModal').modal('show');
+        }
     </script>
 
     <style>

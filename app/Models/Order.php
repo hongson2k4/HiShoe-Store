@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class Order extends Model
@@ -24,6 +25,7 @@ class Order extends Model
         'order_check',
         'is_refunded',
         'is_reviewed',
+        'order_check',
     ];
 
     /**
@@ -31,6 +33,15 @@ class Order extends Model
      *
      * @return bool
      */
+    public static function generateOrderCheck()
+        {
+            do {
+                $code = Str::upper(Str::random(10)); // Sinh chuỗi ngẫu nhiên 10 ký tự
+            } while (self::where('order_check', $code)->exists()); // Đảm bảo mã không trùng
+
+            return $code;
+        }
+
     public function canCancel()
     {
         // Chỉ cho phép hủy khi trạng thái là "Đơn đã đặt" (status = 1)
@@ -157,6 +168,7 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+    
 
     /**
      * Relationship with Voucher (optional)

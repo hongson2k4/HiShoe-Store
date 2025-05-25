@@ -126,16 +126,29 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Giá trị đơn hàng không đủ để áp dụng mã giảm giá.']);
         }
 
+        // Nếu đã áp dụng voucher này rồi thì không trừ tiếp usage_limit
+        $appliedVoucherId = Session::get('applied_voucher_id');
+        if ($appliedVoucherId != $voucher->id) {
+            // Trừ usage_limit
+            if ($voucher->usage_limit > 0) {
+                $voucher->usage_limit -= 1;
+                if ($voucher->usage_limit <= 0) {
+                    $voucher->status = 0;
+                }
+                $voucher->save();
+            } else {
+                return response()->json(['success' => false, 'message' => 'Mã giảm giá đã hết lượt sử dụng.']);
+            }
+        }
+
         $discount = 0;
         if ($voucher->discount_type == 0) { // Giảm giá theo %
             $discount = $subtotal * ($voucher->discount_value / 100);
-
             if ($voucher->max_discount_value !== null) {
                 $discount = min($discount, $voucher->max_discount_value);
             }
         } else { // Giảm giá cố định
             $discount = $voucher->discount_value;
-
             if ($voucher->max_discount_value !== null) {
                 $discount = min($discount, $voucher->max_discount_value);
             }
@@ -145,16 +158,59 @@ class CheckoutController extends Controller
         Session::put('applied_voucher_id', $voucher->id);
         Session::put('voucher_code', $voucherCode);
 
-        // Giảm số lần sử dụng của voucher
-        $voucher->usage_limit -= 1;
-        if ($voucher->usage_limit <= 0) {
-            $voucher->status = 0;
-        }
-        $voucher->save();
+        $total = $subtotal - $discount;
 
-        return response()->json(['success' => true, 'discount' => number_format($discount)]);
+        return response()->json([
+            'success' => true,
+            'discount' => number_format($discount),
+            'subtotal' => number_format($subtotal),
+            'total' => number_format($total)
+        ]);
     }
 
+    public function removeVoucher(Request $request)
+    {
+        $appliedVoucherId = Session::get('applied_voucher_id');
+        if ($appliedVoucherId) {
+            $voucher = Voucher::find($appliedVoucherId);
+            if ($voucher) {
+                $voucher->usage_limit += 1;
+                // Nếu voucher hết hạn trước đó thì mở lại nếu còn lượt
+                if ($voucher->usage_limit > 0 && $voucher->status == 0 && $voucher->end_date >= now()) {
+                    $voucher->status = 1;
+                }
+                $voucher->save();
+            }
+            Session::forget('applied_voucher_id');
+            Session::forget('voucher_code');
+        }
+
+        // Tính lại tổng tiền không voucher
+        $subtotal = 0;
+        $user = Auth::user();
+        $cartItems = $user ? Cart::where('user_id', $user->id)->get() : Session::get('cart', []);
+        if ($user) {
+            foreach ($cartItems as $item) {
+                $subtotal += $item->productVariant->price * $item->quantity;
+            }
+        } else {
+            foreach ($cartItems as $item) {
+                $productVariant = Product_variant::find($item['product_variant_id']);
+                if ($productVariant) {
+                    $subtotal += $productVariant->price * $item['quantity'];
+                }
+            }
+        }
+        $discount = 0;
+        $total = $subtotal;
+
+        return response()->json([
+            'success' => true,
+            'discount' => number_format($discount),
+            'subtotal' => number_format($subtotal),
+            'total' => number_format($total)
+        ]);
+    }
     public function process(Request $request)
     {
         $request->validate([

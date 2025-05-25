@@ -123,7 +123,7 @@ Route::controller(OrderTrackController::class) //route kiểm tra tình trạng 
 });
 
 Route::middleware(['auth:web', 'client'])->group(function () {
- 
+
     Route::get('/orders/{order_id}/review/{product_id}', [ReviewController::class, 'create'])
     ->name('orders.review.create');
 
@@ -141,4 +141,5 @@ Route::prefix('checkout')->group(function(){
     Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::post('/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('apply.voucher');
+    Route::post('/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('remove.voucher');
 });

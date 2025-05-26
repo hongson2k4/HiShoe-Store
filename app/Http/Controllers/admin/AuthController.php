@@ -16,18 +16,32 @@ use Illuminate\Support\Facades\Redirect;
 
 class AuthController extends Controller
 {
+    /**
+     * Chuyển đến trang đăng nhập quản trị viên nếu đã đăng nhập.
+     *
+     */
     public function index(){
         if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role == 1) {
             return Redirect::route('admin.dashboard');
         }
         return view('admin.login');
     }
+
+    /**
+     * Hiển thị trang đăng nhập cho quản trị viên.
+     *
+     */
     public function loginForm(){
         if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role == 1) {
             return Redirect::route('admin.dashboard')->with('error', 'Bạn đã đăng nhập!');
         }
         return view('admin.login');
     }
+
+    /**
+     * Xử lý đăng nhập cho quản trị viên.
+     *
+     */
     public function login(Request $request){
         if (Auth::guard('admin')->attempt(['username'=>$request->input('username'), 'password'=>$request->input('password')]) ){
             if (Auth::guard('admin')->user()->role == 1) {
@@ -35,16 +49,26 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard');
             }
             session()->flash('error', 'Bạn không thể truy cập vào khu vực này!');
-            return redirect('/admin/login');
+            return redirect('/admin/login-form');
         }
     
         session()->flash('error', 'Sai thông tin đăng nhập!');
         return redirect()->route('admin.loginForm');
     }
+
+    /**
+     * Xử lý đăng xuất cho quản trị viên.
+     *
+     */
     public function logout(){
         Auth::guard('admin')->logout();
         return redirect()->route('home');
     }
+
+    /**
+     * Hiển thị trang dashboard cho quản trị viên.
+     * Trang này hiển thị các thống kê và biểu đồ doanh thu.
+     */
     public function dashboard(Request $request)
     {
         $pro = Products::count();

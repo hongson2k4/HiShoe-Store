@@ -26,7 +26,7 @@ class OrderController extends Controller
         $status = $request->query('status');
 
         // Query đơn hàng
-        $query = Order::with('user', 'product');
+        $query = Order::with('user', 'product', 'payment');
 
         // Tìm kiếm theo tên khách hàng
         if ($search) {
@@ -144,7 +144,7 @@ class OrderController extends Controller
     }
 
     // Tính năng xóa đơn hàng với trạng thái không xác định
-        public function destroy(Order $order)
+    public function destroy(Order $order)
     {
         // Kiểm tra trạng thái đơn hàng
         if (!in_array($order->status, [0, 5, 6])) {

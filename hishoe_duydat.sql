@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 23, 2025 at 12:55 AM
+-- Generation Time: May 26, 2025 at 02:12 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -169,7 +169,9 @@ CREATE TABLE `likes` (
 --
 
 INSERT INTO `likes` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
-(10, 7, 1, '2025-05-22 16:00:07', '2025-05-22 16:00:07');
+(10, 7, 1, '2025-05-22 16:00:07', '2025-05-22 16:00:07'),
+(11, 7, 2, '2025-05-26 13:52:51', '2025-05-26 13:52:51'),
+(12, 7, 3, '2025-05-26 13:52:54', '2025-05-26 13:52:54');
 
 -- --------------------------------------------------------
 
@@ -258,13 +260,17 @@ INSERT INTO `orders` (`id`, `user_id`, `total_price`, `status`, `shipping_addres
 (1234, 9, 15000, 1, '12 cầu giấy', NULL, NULL, NULL, 0, '2025-05-18 09:45:56', '2025-05-18 09:45:57', NULL, NULL, 0, 0, 'Y2W61DQGQA', 0),
 (1235, 7, 21000, 7, 'hihihihihi', NULL, NULL, 5, 1, '2025-05-21 03:43:52', '2025-05-21 06:32:05', NULL, NULL, 0, 0, '20FNCVY9BH', 0),
 (1236, 7, 21000, 7, 'HSHSHSHS', NULL, NULL, 5, 1, '2025-05-21 05:46:57', '2025-05-21 05:49:03', NULL, NULL, 0, 0, 'JCWEWPW67C', 0),
-(1237, 7, 21000, 5, 'an thanh quỳnh phụ thái bình', 'Duy Đạt', '0123456789', 5, 0, '2025-05-21 06:43:08', '2025-05-21 06:44:25', 'hsas', NULL, 0, 0, '0GUU79IFPQ', 0),
 (1238, 7, 2100000, 3, 'an thanh quỳnh phụ thái bình', 'Duy Đạt', '0123456789', 5, 0, '2025-05-21 06:56:56', '2025-05-21 07:03:28', NULL, NULL, 0, 0, '38XM1LKL5E', 0),
 (1239, 7, 2400000, 7, '1giisihihoprip', 'Duy Dạt', '0123456789', NULL, 1, '2025-05-21 07:26:19', '2025-05-22 15:35:46', NULL, NULL, 0, 0, 'SG0QCVKZLL', 0),
 (1240, 7, 1200000, 7, 'sakhashkhsihas', 'Dat Duy', '0123456789', NULL, 1, '2025-05-21 07:38:09', '2025-05-21 07:43:12', NULL, NULL, 0, 0, 'PRXKIUX2B4', 0),
-(1241, 7, 1200000, 5, 'HHIHIHIHIH', 'Demo Name', '0123456789', NULL, 0, '2025-05-22 14:47:07', '2025-05-22 14:49:16', 'Ko đủ money', NULL, 0, 0, '94FJAPM3LQ', 0),
-(1242, 7, 1200000, 5, 'shshshhshshs', 'Demo Nmae', '0123456789', NULL, 0, '2025-05-22 14:50:51', '2025-05-22 15:20:16', 'hủy', NULL, 0, 0, '3U5ZAJ6YGR', 0),
-(1243, 7, 1200000, 7, 'íhishdihdsihdih', 'Demo Name', '0123456789', NULL, 1, '2025-05-22 15:46:41', '2025-05-22 15:52:33', NULL, NULL, 0, 0, 'HIMHWGABG6', 0);
+(1243, 7, 1200000, 7, 'íhishdihdsihdih', 'Demo Name', '0123456789', NULL, 1, '2025-05-22 15:46:41', '2025-05-22 15:52:33', NULL, NULL, 0, 0, 'HIMHWGABG6', 0),
+(1244, 7, 1505000, 1, 'aaaaa', 'dat duy', '0123456789', NULL, 0, '2025-05-23 14:33:13', '2025-05-23 14:33:13', NULL, NULL, 0, 0, 'GVI9ZQKSZA', 0),
+(1245, 7, 1525000, 1, 'qqyqqyyqyyq', 'ggggg hihihaihai', '0123456789', NULL, 0, '2025-05-23 15:20:00', '2025-05-23 15:20:01', NULL, NULL, 0, 0, 'EOXG2NIXSI', 0),
+(1246, 7, 2725000, 1, 'hhhhhhh', 'hihihihi hahaha', '0123456789', NULL, 0, '2025-05-23 15:21:43', '2025-05-23 15:21:44', NULL, NULL, 0, 0, '9Y1K480ZBW', 0),
+(1247, 7, 1525000, 1, 'mmmmm', 'hhhhh kkkk', '0123456789', NULL, 0, '2025-05-23 15:31:05', '2025-05-23 15:31:06', NULL, NULL, 0, 0, 'IG04ZSTGSI', 0),
+(1249, 7, 700000, 1, 'ssssssss', 'ddd sssss', '0123456789', 6, 0, '2025-05-24 07:48:11', '2025-05-24 07:48:11', NULL, NULL, 0, 0, 'RP7KWUXYV2', 0),
+(1250, 7, 3950000, 2, 'An Thanh, Quỳnh Phụ, Thái Bình', 'Duy Đạt', '0123456789', 5, 0, '2025-05-25 05:57:12', '2025-05-25 06:44:41', NULL, NULL, 0, 0, 'AOPZZA7OAD', 0),
+(1252, 7, 1225000, 7, 'Ha Noi', 'Duy Đạt', '0123456789', 5, 0, '2025-05-26 10:43:40', '2025-05-26 10:48:49', NULL, NULL, 0, 0, '9NPZIYBJM2', 0);
 
 -- --------------------------------------------------------
 
@@ -295,13 +301,18 @@ INSERT INTO `order_details` (`id`, `order_id`, `product_variant_id`, `quantity`,
 (22, 1234, 1, 1, 15000, '2025-05-18 09:45:57', '2025-05-18 09:45:57'),
 (23, 1235, 1, 2, 15000, '2025-05-21 03:44:26', '2025-05-21 03:44:26'),
 (24, 1236, 1, 2, 15000, '2025-05-21 05:46:57', '2025-05-21 05:46:57'),
-(25, 1237, 1, 2, 15000, '2025-05-21 06:43:43', '2025-05-21 06:43:43'),
 (26, 1238, 6, 2, 1200000, '2025-05-21 06:57:01', '2025-05-21 06:57:01'),
 (27, 1239, 6, 2, 1200000, '2025-05-21 07:26:19', '2025-05-21 07:26:19'),
 (28, 1240, 6, 1, 1200000, '2025-05-21 07:38:09', '2025-05-21 07:38:09'),
-(29, 1241, 6, 1, 1200000, '2025-05-22 14:47:07', '2025-05-22 14:47:07'),
-(30, 1242, 6, 1, 1200000, '2025-05-22 14:50:51', '2025-05-22 14:50:51'),
-(31, 1243, 6, 1, 1200000, '2025-05-22 15:46:42', '2025-05-22 15:46:42');
+(31, 1243, 6, 1, 1200000, '2025-05-22 15:46:42', '2025-05-22 15:46:42'),
+(32, 1244, 9, 1, 1505000, '2025-05-23 14:33:13', '2025-05-23 14:33:13'),
+(33, 1244, 8, 1, 1545000, '2025-05-23 14:33:13', '2025-05-23 14:33:13'),
+(34, 1244, 6, 1, 1200000, '2025-05-23 14:33:13', '2025-05-23 14:33:13'),
+(35, 1247, 7, 1, 1525000, '2025-05-23 15:31:06', '2025-05-23 15:31:06'),
+(37, 1249, 9, 1, 1000000, '2025-05-24 07:48:11', '2025-05-24 07:48:11'),
+(38, 1250, 7, 2, 1525000, '2025-05-25 05:57:12', '2025-05-25 05:57:12'),
+(39, 1250, 6, 1, 1200000, '2025-05-25 05:57:12', '2025-05-25 05:57:12'),
+(40, 1252, 7, 1, 1525000, '2025-05-26 10:44:32', '2025-05-26 10:44:32');
 
 -- --------------------------------------------------------
 
@@ -467,13 +478,18 @@ INSERT INTO `order_item_histories` (`id`, `order_id`, `product_id`, `quantity`, 
 (325, 1234, 1, 1, 15000.00, '2025-05-18 09:45:57', '2025-05-18 09:45:57'),
 (326, 1235, 1, 2, 15000.00, '2025-05-21 03:44:26', '2025-05-21 03:44:26'),
 (327, 1236, 1, 2, 15000.00, '2025-05-21 05:46:57', '2025-05-21 05:46:57'),
-(328, 1237, 1, 2, 15000.00, '2025-05-21 06:43:43', '2025-05-21 06:43:43'),
 (329, 1238, 1, 2, 1200000.00, '2025-05-21 06:57:01', '2025-05-21 06:57:01'),
 (330, 1239, 1, 2, 1200000.00, '2025-05-21 07:26:19', '2025-05-21 07:26:19'),
 (331, 1240, 1, 1, 1200000.00, '2025-05-21 07:38:09', '2025-05-21 07:38:09'),
-(332, 1241, 1, 1, 1200000.00, '2025-05-22 14:47:07', '2025-05-22 14:47:07'),
-(333, 1242, 1, 1, 1200000.00, '2025-05-22 14:50:51', '2025-05-22 14:50:51'),
-(334, 1243, 1, 1, 1200000.00, '2025-05-22 15:46:42', '2025-05-22 15:46:42');
+(334, 1243, 1, 1, 1200000.00, '2025-05-22 15:46:42', '2025-05-22 15:46:42'),
+(335, 1244, 30, 1, 1505000.00, '2025-05-23 14:33:13', '2025-05-23 14:33:13'),
+(336, 1244, 30, 1, 1545000.00, '2025-05-23 14:33:13', '2025-05-23 14:33:13'),
+(337, 1244, 1, 1, 1200000.00, '2025-05-23 14:33:13', '2025-05-23 14:33:13'),
+(338, 1247, 30, 1, 1525000.00, '2025-05-23 15:31:06', '2025-05-23 15:31:06'),
+(340, 1249, 30, 1, 1000000.00, '2025-05-24 07:48:11', '2025-05-24 07:48:11'),
+(341, 1250, 30, 2, 1525000.00, '2025-05-25 05:57:12', '2025-05-25 05:57:12'),
+(342, 1250, 1, 1, 1200000.00, '2025-05-25 05:57:12', '2025-05-25 05:57:12'),
+(343, 1252, 30, 1, 1525000.00, '2025-05-26 10:44:32', '2025-05-26 10:44:32');
 
 -- --------------------------------------------------------
 
@@ -532,13 +548,17 @@ INSERT INTO `payments` (`id`, `order_id`, `payment_method`, `amount`, `payment_s
 (38, 1234, 'cod', 15000, 1, '2025-05-18 09:45:56', '2025-05-18 09:45:56'),
 (39, 1235, 'vnpay', 21000, 1, '2025-05-21 03:43:52', '2025-05-21 03:44:26'),
 (40, 1236, 'cod', 21000, 1, '2025-05-21 05:46:57', '2025-05-21 05:46:57'),
-(41, 1237, 'vnpay', 21000, 1, '2025-05-21 06:43:08', '2025-05-21 06:43:43'),
 (42, 1238, 'cod', 2100000, 1, '2025-05-21 06:56:56', '2025-05-21 06:56:56'),
 (43, 1239, 'cod', 2400000, 1, '2025-05-21 07:26:19', '2025-05-21 07:26:19'),
 (44, 1240, 'cod', 1200000, 1, '2025-05-21 07:38:09', '2025-05-21 07:38:09'),
-(45, 1241, 'cod', 1200000, 1, '2025-05-22 14:47:07', '2025-05-22 14:47:07'),
-(46, 1242, 'cod', 1200000, 1, '2025-05-22 14:50:51', '2025-05-22 14:50:51'),
-(47, 1243, 'cod', 1200000, 1, '2025-05-22 15:46:41', '2025-05-22 15:46:41');
+(47, 1243, 'cod', 1200000, 1, '2025-05-22 15:46:41', '2025-05-22 15:46:41'),
+(48, 1244, 'cod', 1505000, 1, '2025-05-23 14:33:13', '2025-05-23 14:33:13'),
+(49, 1245, 'cod', 1525000, 1, '2025-05-23 15:20:00', '2025-05-23 15:20:00'),
+(50, 1246, 'cod', 2725000, 1, '2025-05-23 15:21:43', '2025-05-23 15:21:43'),
+(51, 1247, 'cod', 1525000, 1, '2025-05-23 15:31:05', '2025-05-23 15:31:05'),
+(53, 1249, 'cod', 700000, 1, '2025-05-24 07:48:11', '2025-05-24 07:48:11'),
+(54, 1250, 'cod', 3950000, 1, '2025-05-25 05:57:12', '2025-05-25 05:57:12'),
+(56, 1252, 'vnpay', 1225000, 1, '2025-05-26 10:43:40', '2025-05-26 10:44:32');
 
 -- --------------------------------------------------------
 
@@ -665,10 +685,10 @@ CREATE TABLE `product_variants` (
 
 INSERT INTO `product_variants` (`id`, `product_id`, `size_id`, `color_id`, `price`, `stock_quantity`, `image_url`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 1, 15000, 0, NULL, NULL, '2025-05-21 06:43:43'),
-(6, 1, 2, 2, 1200000, 5, NULL, '2025-05-21 06:39:42', '2025-05-22 15:46:42'),
-(7, 30, 2, 4, 1525000, 120, 'product_variants/ClFs3tT8lqhjxNe1Y6pJNbVUvBgXkUjw5MurDr4h.jpg', '2025-05-22 16:18:47', '2025-05-22 16:18:47'),
-(8, 30, 2, 3, 1545000, 23, 'product_variants/sOXnw26N4B0KyyXAOeFNtRXnAHv4Hbcd19P61OgQ.jpg', '2025-05-22 16:18:47', '2025-05-22 16:18:47'),
-(9, 30, 5, 3, 1505000, 20, 'product_variants/mwiMylXPojvDtGbBWw7ifwXlxpP5gPSBIUiYU8BE.jpg', '2025-05-22 16:18:47', '2025-05-22 16:18:47');
+(6, 1, 2, 2, 1200000, 3, NULL, '2025-05-21 06:39:42', '2025-05-25 05:57:12'),
+(7, 30, 2, 4, 1525000, 116, 'product_variants/ClFs3tT8lqhjxNe1Y6pJNbVUvBgXkUjw5MurDr4h.jpg', '2025-05-22 16:18:47', '2025-05-26 10:44:32'),
+(8, 30, 2, 3, 1545000, 22, 'product_variants/sOXnw26N4B0KyyXAOeFNtRXnAHv4Hbcd19P61OgQ.jpg', '2025-05-22 16:18:47', '2025-05-23 14:33:13'),
+(9, 30, 5, 3, 1000000, 10, 'product_variants/mwiMylXPojvDtGbBWw7ifwXlxpP5gPSBIUiYU8BE.jpg', '2025-05-22 16:18:47', '2025-05-24 07:48:53');
 
 -- --------------------------------------------------------
 
@@ -841,8 +861,21 @@ INSERT INTO `vouchers` (`id`, `code`, `discount_type`, `discount_value`, `min_or
 (2, 'FREESHIP', 'fixed', 30000, 200000, 30000, '2024-02-29 10:00:00', '2025-12-31 09:59:59', 200, 1, '2025-03-11 23:15:09', '2025-03-11 23:15:09'),
 (3, 'NEWUSER', 'percentage', 20, 300000, 100000, '2023-12-31 10:00:00', '2025-12-31 09:59:59', 50, 1, '2025-03-11 23:15:09', '2025-03-11 23:15:09'),
 (4, 'HHHHHHH', '0', 10, 100000, 400000, '2025-05-19 17:00:00', '2025-05-30 17:00:00', 12, 1, '2025-05-21 03:27:49', '2025-05-21 03:27:49'),
-(5, 'HEHE', '0', 30, 0, 300000, '2025-05-19 17:00:00', '2025-05-28 17:00:00', 96, 1, '2025-05-21 03:43:20', '2025-05-21 06:54:56'),
-(6, 'HHHHEEE', '0', 60, 100000, 300000, '2025-05-19 17:00:00', '2025-05-28 17:00:00', 122, 1, '2025-05-21 08:19:53', '2025-05-21 08:19:53');
+(5, 'HEHE', '0', 30, 0, 300000, '2025-05-19 17:00:00', '2025-05-28 17:00:00', 94, 1, '2025-05-21 03:43:20', '2025-05-26 10:43:25'),
+(6, 'HHHHEEE', '0', 60, 100000, 300000, '2025-05-19 17:00:00', '2025-05-28 17:00:00', 121, 1, '2025-05-21 08:19:53', '2025-05-24 07:44:06');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `voucher_usages`
+--
+
+CREATE TABLE `voucher_usages` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `voucher_id` bigint UNSIGNED NOT NULL,
+  `used_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Indexes for dumped tables
@@ -1033,6 +1066,14 @@ ALTER TABLE `vouchers`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `voucher_usages`
+--
+ALTER TABLE `voucher_usages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `voucher_id` (`voucher_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -1046,7 +1087,7 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -1076,7 +1117,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `likes`
 --
 ALTER TABLE `likes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `migrations`
@@ -1088,25 +1129,25 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1244;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1253;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `order_item_histories`
 --
 ALTER TABLE `order_item_histories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=335;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=344;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -1173,6 +1214,12 @@ ALTER TABLE `user_ship_address`
 --
 ALTER TABLE `vouchers`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `voucher_usages`
+--
+ALTER TABLE `voucher_usages`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -1276,6 +1323,13 @@ ALTER TABLE `user_history_changes`
 --
 ALTER TABLE `user_ship_address`
   ADD CONSTRAINT `user_ship_address_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+--
+-- Constraints for table `voucher_usages`
+--
+ALTER TABLE `voucher_usages`
+  ADD CONSTRAINT `voucher_usages_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  ADD CONSTRAINT `voucher_usages_ibfk_2` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

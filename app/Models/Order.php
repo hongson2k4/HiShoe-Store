@@ -245,6 +245,9 @@ class Order extends Model
             default => 'bg-light text-dark',
         };
     }
-
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
 
 }

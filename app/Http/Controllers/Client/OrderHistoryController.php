@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\Products;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\VoucherUsages;
+use App\Models\Voucher;
 
 class OrderHistoryController extends Controller
 {
@@ -16,16 +18,15 @@ class OrderHistoryController extends Controller
         $this->middleware('auth'); // Chặn người chưa đăng nhập
     }
 
-    public function index(Request $request)
-    {
+    public function index(Request $request){
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'Đăng nhập để xem lịch sử đơn hàng!!');
         }
-    
+
         // Query cơ bản: Lấy đơn hàng của người dùng hiện tại
         $query = Order::where('user_id', auth()->id())
-                      ->with(['orderItemHistories.product']);
-    
+            ->with(['orderItemHistories.product']);
+
         // Áp dụng các điều kiện lọc
         if ($request->filled('order_id')) {
             $query->where('order_check', 'like', '%' . $request->order_id . '%');
@@ -42,15 +43,15 @@ class OrderHistoryController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-    
+
         // Lấy danh sách đơn hàng
         $orders = $query->orderBy('created_at', 'desc')->get();
-    
+
         // Tính số lượng loại sản phẩm và tổng số lượng sản phẩm cho mỗi đơn hàng
         foreach ($orders as $order) {
             $order->totalItems = $order->orderItemHistories->count(); // Số lượng loại sản phẩm
             $order->totalQuantity = $order->orderItemHistories->sum('quantity'); // Tổng số lượng sản phẩm
-        }        
+        }
         return view('client.history.order-history', compact('orders'));
     }
 
@@ -90,6 +91,25 @@ class OrderHistoryController extends Controller
             }
         }
 
+        // Nếu đơn hàng có sử dụng voucher thì hoàn lại usage
+        if ($order->voucher_id) {
+            // Xóa lịch sử sử dụng voucher của user cho đơn này
+            VoucherUsages::where('voucher_id', $order->voucher_id)
+                ->where('user_id', auth()->id())
+                ->delete();
+
+            // Hoàn lại usage_limit cho voucher
+            $voucher = Voucher::find($order->voucher_id);
+            if ($voucher) {
+                $voucher->usage_limit += 1;
+                // Nếu voucher hết hạn trước đó thì mở lại nếu còn lượt
+                if ($voucher->usage_limit > 0 && $voucher->status == 0 && $voucher->end_date >= now()) {
+                    $voucher->status = 1;
+                }
+                $voucher->save();
+            }
+        }
+
         // Cập nhật trạng thái và lưu lý do hủy
         $order->status = 5; // Đã hủy
         $order->customer_reasons = $request->input('cancel_reason');
@@ -102,11 +122,11 @@ class OrderHistoryController extends Controller
     // public function cancel($id)
     // {
     //     $order = Order::where('user_id', auth()->id())->findOrFail($id);
-    
+
     //     if (!$order->canCancel()) {
     //         return redirect()->back()->with('error', 'Đơn hàng không thể hủy! Chỉ có thể hủy đơn hàng trong vòng 24 giờ và khi trạng thái là "Đơn đã đặt" hoặc "Đang đóng gói".');
     //     }
-    
+
     //     // Lấy danh sách sản phẩm trong đơn hàng
     //     $orderItems = $order->orderItemHistories;
     //     foreach ($orderItems as $item) {
@@ -116,12 +136,12 @@ class OrderHistoryController extends Controller
     //             $variant->save();
     //         }
     //     }
-    
+
     //     // Cập nhật trạng thái
     //     $order->status = 5;
     //     $order->updated_at = now();
     //     $order->save();
-    
+
     //     return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công!');
     // }
 

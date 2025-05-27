@@ -22,7 +22,9 @@ class CategoryController extends Controller
         return redirect()->route('category.list');
     }
     public function delete($id){
-        $brands= Category::findOrFail($id)->delete();
+        $category = Category::findOrFail($id);
+        $category->status = 1; // Ẩn thay vì xóa
+        $category->save();
         return redirect()->route('category.list');
     }
     public function edit($id){
@@ -33,6 +35,13 @@ class CategoryController extends Controller
         $data= $request->all();
         $category = Category::findOrFail($id);
         $category->update($data);
+        return redirect()->route('category.list');
+    }
+    public function toggleStatus($id)
+    {
+        $category = Category::findOrFail($id);
+        $category->status = $category->status == 0 ? 1 : 0;
+        $category->save();
         return redirect()->route('category.list');
     }
 }

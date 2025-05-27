@@ -9,7 +9,9 @@ use App\Models\Products;
 use App\Models\Product_variant;
 use App\Models\Size; // Thêm dòng này để sử dụng model Size
 use App\Models\Color;
+use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -75,6 +77,12 @@ class ProductController extends Controller
     
         // Lấy danh sách bình luận
         $comments = $products->comments()->with('user')->latest()->get();
+
+        // Lấy danh sách đánh giá đã duyệt
+        $reviews = Review::where('product_id', $product_id)
+            ->with('user')
+            ->latest()
+            ->get();
     
         return view('client.pages.shop.detail', compact(
             'products',
@@ -82,19 +90,20 @@ class ProductController extends Controller
             'availableSizes',
             'availableColors',
             'suggestedProducts',
-            'comments'
+            'comments',
+            'reviews' // truyền reviews sang view
         ));
     }
 
     public function getVariantPrice(Request $request)
     {
-        \Log::info('Request data:', $request->all());
+        Log::info('Request data:', $request->all());
         $product = $request->product_id;
         // echo($product->id);
         $size_id = $request->size_id;
         $color_id = $request->color_id;
 
-        \Log::info("Fetching variant price for product_id: $product, size_id: $size_id, color_id: $color_id");
+        Log::info("Fetching variant price for product_id: $product, size_id: $size_id, color_id: $color_id");
 
         $variant = Product_variant::where('product_id', $product)
             ->when($size_id, function ($query) use ($size_id) {
@@ -105,7 +114,7 @@ class ProductController extends Controller
             })
             ->first();
         if (!$variant) {
-            \Log::warning("Variant not found for product_id: $product, size_id: $size_id, color_id: $color_id");
+            Log::warning("Variant not found for product_id: $product, size_id: $size_id, color_id: $color_id");
             return response()->json(['price' => null, 'error' => 'Variant not found'], 404);
         }
 

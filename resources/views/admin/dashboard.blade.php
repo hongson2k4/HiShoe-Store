@@ -158,6 +158,24 @@
     <div class="row">
         <div class="container-fluid">
             <form method="GET" action="{{ route('admin.dashboard') }}" class="mb-4">
+                <div class="form-row align-items-end">
+                    <div class="col-auto">
+                        <label for="from_date">Từ ngày</label>
+                        <input type="date" class="form-control" id="from_date" name="from_date" value="{{ $fromDate ?? '' }}">
+                    </div>
+                    <div class="col-auto">
+                        <label for="to_date">Đến ngày</label>
+                        <input type="date" class="form-control" id="to_date" name="to_date" value="{{ $toDate ?? '' }}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Xem thống kê</button>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Xóa lọc</a>
+                    </div>
+                </div>
+            </form>
+            <form method="GET" action="{{ route('admin.dashboard') }}" class="mb-4">
                 <label for="timeframe">Chọn khoảng thời gian:</label>
                 <select id="timeframe" name="type" class="form-control" onchange="this.form.submit()">
                     <option value="day" {{ request('type') == 'day' ? 'selected' : '' }}>Ngày</option>

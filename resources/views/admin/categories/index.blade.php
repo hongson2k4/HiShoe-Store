@@ -40,12 +40,18 @@
                                             <a href="{{ route('category.edit', $cate->id) }}" class="btn btn-dark" title="Chỉnh sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('category.delete', $cate->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                            <form action="{{ route('category.toggleStatus', $cate->id) }}" method="POST" style="display:inline;">
                                                 @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger" title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                                @method('PUT')
+                                                @if($cate->status == 0)
+                                                    <button type="submit" class="btn btn-warning" title="Ẩn">
+                                                        <i class="fas fa-eye-slash"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="submit" class="btn btn-success" title="Hiện">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                @endif
                                             </form>
                                         </div>
                                     </td>

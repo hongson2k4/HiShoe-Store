@@ -70,7 +70,7 @@ Route::middleware(['auth:admin', 'admin'])->controller(CategoryController::class
     Route::delete('delete/{id}', [CategoryController::class, 'delete'])->name('delete');
     Route::get('edit/{id}', [CategoryController::class, 'edit'])->name('edit');
     Route::put('update/{id}', [CategoryController::class, 'update'])->name('update');
-
+    Route::put('admin/category/toggle-status/{id}', [CategoryController::class, 'toggleStatus'])->name('toggleStatus');
 });
 
 

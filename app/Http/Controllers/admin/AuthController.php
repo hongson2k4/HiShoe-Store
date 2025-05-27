@@ -78,96 +78,119 @@ class AuthController extends Controller
         $brand = Brand::count();
         $cat = Category::count();
         $vou = Voucher::count();
-        $doanhthu = Order::where('status', '!=', 'pending')->sum('total_price');
-        
-        $type = $request->input('type', 'day'); // Mặc định là 'day'
-        
-        // Xử lý dữ liệu biểu đồ theo type
-        switch ($type) {
-            case 'day':
-                // Doanh thu theo ngày trong tuần (7 ngày gần nhất)
-                $labels = [];
-                $chartData = [];
-                
-                for ($i = 6; $i >= 0; $i--) {
-                    $date = now()->subDays($i);
-                    $dateString = $date->format('d/m/Y');
-                    $labels[] = $dateString;
+
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $type = $request->input('type', 'day');
+
+        // Nếu có chọn khoảng thời gian
+        if ($fromDate && $toDate) {
+            $doanhthu = Order::where('status', '!=', 'pending')
+                ->whereBetween('created_at', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59'])
+                ->sum('total_price');
+
+            // Lấy dữ liệu từng ngày trong khoảng
+            $labels = [];
+            $chartData = [];
+            $start = \Carbon\Carbon::parse($fromDate);
+            $end = \Carbon\Carbon::parse($toDate);
+            for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+                $labels[] = $date->format('d/m/Y');
+                $revenue = Order::where('status', '!=', 'pending')
+                    ->whereDate('created_at', $date->toDateString())
+                    ->sum('total_price');
+                $chartData[] = $revenue;
+            }
+        } else {
+            $doanhthu = Order::where('status', '!=', 'pending')->sum('total_price');
+            
+            // Xử lý dữ liệu biểu đồ theo type
+            switch ($type) {
+                case 'day':
+                    // Doanh thu theo ngày trong tuần (7 ngày gần nhất)
+                    $labels = [];
+                    $chartData = [];
                     
-                    $revenue = Order::where('status', '!=', 'pending')
-                                   ->whereDate('created_at', $date->toDateString())
-                                   ->sum('total_price');
-                    $chartData[] = $revenue;
-                }
-                break;
-                
-            case 'week':
-                // Doanh thu theo tuần (4 tuần gần nhất)
-                $labels = [];
-                $chartData = [];
-                
-                for ($i = 3; $i >= 0; $i--) {
-                    $startDate = now()->subWeeks($i)->startOfWeek();
-                    $endDate = now()->subWeeks($i)->endOfWeek();
-                    $label = 'Tuần ' . (now()->subWeeks($i)->weekOfMonth) . ' (' . 
-                             $startDate->format('d/m') . ' - ' . $endDate->format('d/m') . ')';
-                    $labels[] = $label;
+                    for ($i = 6; $i >= 0; $i--) {
+                        $date = now()->subDays($i);
+                        $dateString = $date->format('d/m/Y');
+                        $labels[] = $dateString;
+                        
+                        $revenue = Order::where('status', '!=', 'pending')
+                                       ->whereDate('created_at', $date->toDateString())
+                                       ->sum('total_price');
+                        $chartData[] = $revenue;
+                    }
+                    break;
                     
-                    $revenue = Order::where('status', '!=', 'pending')
-                                   ->whereBetween('created_at', [$startDate, $endDate])
-                                   ->sum('total_price');
-                    $chartData[] = $revenue;
-                }
-                break;
-                
-            case 'month':
-                // Doanh thu theo tháng (12 tháng trong năm hiện tại)
-                $labels = [];
-                $chartData = [];
-                
-                for ($i = 1; $i <= 12; $i++) {
-                    $labels[] = 'Tháng ' . $i;
-                    $revenue = Order::where('status', '!=', 'pending')
-                                   ->whereYear('created_at', now()->year)
-                                   ->whereMonth('created_at', $i)
-                                   ->sum('total_price');
-                    $chartData[] = $revenue;
-                }
-                break;
-                
-            case 'year':
-                // Doanh thu theo năm (5 năm gần nhất)
-                $labels = [];
-                $chartData = [];
-                
-                for ($i = 4; $i >= 0; $i--) {
-                    $year = now()->year - $i;
-                    $labels[] = 'Năm ' . $year;
+                case 'week':
+                    // Doanh thu theo tuần (4 tuần gần nhất)
+                    $labels = [];
+                    $chartData = [];
                     
-                    $revenue = Order::where('status', '!=', 'pending')
-                                   ->whereYear('created_at', $year)
-                                   ->sum('total_price');
-                    $chartData[] = $revenue;
-                }
-                break;
-                
-            default:
-                // Mặc định hiển thị theo ngày
-                $labels = [];
-                $chartData = [];
-                
-                for ($i = 6; $i >= 0; $i--) {
-                    $date = now()->subDays($i);
-                    $dateString = $date->format('d/m/Y');
-                    $labels[] = $dateString;
+                    for ($i = 3; $i >= 0; $i--) {
+                        $startDate = now()->subWeeks($i)->startOfWeek();
+                        $endDate = now()->subWeeks($i)->endOfWeek();
+                        $label = 'Tuần ' . (now()->subWeeks($i)->weekOfMonth) . ' (' . 
+                                 $startDate->format('d/m') . ' - ' . $endDate->format('d/m') . ')';
+                        $labels[] = $label;
+                        
+                        $revenue = Order::where('status', '!=', 'pending')
+                                       ->whereBetween('created_at', [$startDate, $endDate])
+                                       ->sum('total_price');
+                        $chartData[] = $revenue;
+                    }
+                    break;
                     
-                    $revenue = Order::where('status', '!=', 'pending')
-                                   ->whereDate('created_at', $date->toDateString())
-                                   ->sum('total_price');
-                    $chartData[] = $revenue;
-                }
+                case 'month':
+                    // Doanh thu theo tháng (12 tháng trong năm hiện tại)
+                    $labels = [];
+                    $chartData = [];
+                    
+                    for ($i = 1; $i <= 12; $i++) {
+                        $labels[] = 'Tháng ' . $i;
+                        $revenue = Order::where('status', '!=', 'pending')
+                                       ->whereYear('created_at', now()->year)
+                                       ->whereMonth('created_at', $i)
+                                       ->sum('total_price');
+                        $chartData[] = $revenue;
+                    }
+                    break;
+                    
+                case 'year':
+                    // Doanh thu theo năm (5 năm gần nhất)
+                    $labels = [];
+                    $chartData = [];
+                    
+                    for ($i = 4; $i >= 0; $i--) {
+                        $year = now()->year - $i;
+                        $labels[] = 'Năm ' . $year;
+                        
+                        $revenue = Order::where('status', '!=', 'pending')
+                                       ->whereYear('created_at', $year)
+                                       ->sum('total_price');
+                        $chartData[] = $revenue;
+                    }
+                    break;
+                    
+                default:
+                    // Mặc định hiển thị theo ngày
+                    $labels = [];
+                    $chartData = [];
+                    
+                    for ($i = 6; $i >= 0; $i--) {
+                        $date = now()->subDays($i);
+                        $dateString = $date->format('d/m/Y');
+                        $labels[] = $dateString;
+                        
+                        $revenue = Order::where('status', '!=', 'pending')
+                                       ->whereDate('created_at', $date->toDateString())
+                                       ->sum('total_price');
+                        $chartData[] = $revenue;
+                    }
+            }
         }
-        
+
         return view('admin.dashboard', [
             'pro' => $pro,
             'brand' => $brand,
@@ -179,7 +202,9 @@ class AuthController extends Controller
             'doanhthu' => $doanhthu,
             'labels' => $labels,
             'chartData' => $chartData,
-            'type' => $type
+            'type' => $type,
+            'fromDate' => $fromDate,
+            'toDate' => $toDate
         ]);
     }
 }

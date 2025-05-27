@@ -211,7 +211,33 @@
     </div>
 
     <div class="card bg-light p-4 mb-4 mt-4 shadow-sm">
-        <h4 class="fw-semibold mb-4">Bình luận</h4>
+        <h4 class="fw-semibold mb-4">Đánh giá & Bình luận</h4>
+
+        {{-- Hiển thị đánh giá --}}
+        @foreach ($reviews as $review)
+            <div class="media mb-4 border-bottom pb-3">
+                <img class="mr-3 rounded-circle border"
+                    src="{{ $review->user->avatar ?? 'https://cdn.kona-blue.com/upload/kona-blue_com/post/images/2024/09/19/465/avatar-trang-1.jpg' }}"
+                    alt="Avatar" width="50" height="50">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">{{ $review->user->full_name }}</h5>
+                    <small class="text-muted d-block mb-2">Đánh giá lúc {{ $review->created_at->format('d/m/Y H:i') }}</small>
+                    <div class="mb-2">
+                        {{-- Hiển thị số sao --}}
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if ($i <= $review->rating)
+                                <span style="color: #ffc107;">&#9733;</span>
+                            @else
+                                <span style="color: #e4e5e9;">&#9733;</span>
+                            @endif
+                        @endfor
+                    </div>
+                    <p class="mb-2">{{ $review->comment }}</p>
+                </div>
+            </div>
+        @endforeach
+
+        {{-- Hiển thị bình luận --}}
         @foreach ($comments as $cmt)
             <div class="media mb-4 border-bottom pb-3">
                 <img class="mr-3 rounded-circle border"
@@ -226,6 +252,7 @@
             </div>
         @endforeach
 
+        {{-- Form gửi bình luận --}}
         <div class="mt-4">
             <form action="{{URL('comment/send')}}" method="POST">
                 @csrf

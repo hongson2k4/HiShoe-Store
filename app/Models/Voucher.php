@@ -11,24 +11,27 @@ class Voucher extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code', 
-        'discount_amount', 
-        'start_date', 
-        'end_date', 
-        'minimum_order_value',
+        'code',
+        'discount_type',
+        'discount_value',
+        'start_date',
+        'end_date',
+        'min_order_value',
+        'max_discount_value',
         'usage_limit',
         'used_count',
         'status'
     ];
 
     protected $dates = [
-        'start_date', 
+        'start_date',
         'end_date'
     ];
 
     // Status constants
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+    const STATUS_EXPIRED = 2; // Thêm trạng thái hết hạn
 
     // Relationships
     public function orders(): HasMany
@@ -47,9 +50,15 @@ class Voucher extends Model
     // Check if voucher is valid
     public function isValid(): bool
     {
-        return $this->status == self::STATUS_ACTIVE 
+        return $this->status == self::STATUS_ACTIVE
                && now()->between($this->start_date, $this->end_date)
                && ($this->usage_limit === null || $this->used_count < $this->usage_limit);
+    }
+
+    // Check if voucher is expired
+    public function isExpired(): bool
+    {
+        return $this->end_date < now();
     }
 
     // Apply voucher to order
@@ -65,7 +74,7 @@ class Voucher extends Model
 
         $order->total_price -= $this->discount_amount;
         $order->voucher_id = $this->id;
-        
+
         $this->increment('used_count');
 
         return true;

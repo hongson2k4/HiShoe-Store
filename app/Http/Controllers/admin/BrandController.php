@@ -9,7 +9,10 @@ use Illuminate\Validation\ValidationException;
 
 class BrandController extends Controller
 {
-    // Display list of brands with search and filter
+    /**
+     * Trang danh sách thương hiệu.
+     * Hiển thị danh sách thương hiệu với phân trang và tìm kiếm.
+     */
     public function index(Request $request)
     {
         $brands = Brand::when($request->filled('search'), function ($query) use ($request) {
@@ -24,20 +27,32 @@ class BrandController extends Controller
         return view('admin.brands.list', compact('brands'));
     }
 
-    // Show create brand form
+    /* 
+     * Hiển thị form để thêm thương hiệu mới.
+     */
     public function create()
     {
         return view('admin.brands.add');
     }
 
-    // Store a new brand
+    /**
+     * Xử lý lưu thương hiệu mới.
+     * Validate dữ liệu và lưu vào cơ sở dữ liệu.
+     */
     public function store(Request $request)
     {
         try {
-            // Validate input
+            // Validate input with custom messages
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:brands,name',
                 'description' => 'nullable|string|max:1000'
+            ], [
+                'name.required' => 'Tên thương hiệu là bắt buộc.',
+                'name.string' => 'Tên thương hiệu phải là chuỗi ký tự.',
+                'name.max' => 'Tên thương hiệu không được vượt quá 255 ký tự.',
+                'name.unique' => 'Tên thương hiệu đã tồn tại.',
+                'description.string' => 'Mô tả phải là chuỗi ký tự.',
+                'description.max' => 'Mô tả không được vượt quá 1000 ký tự.'
             ]);
 
             // Create brand
@@ -48,13 +63,15 @@ class BrandController extends Controller
             ]);
 
             return redirect()->route('brands.index')
-                ->with('success', "Brand '{$brand->name}' added successfully!");
+                ->with('success', "Thương hiệu '{$brand->name}' đã được thêm thành công!");
         } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         }
     }
 
-    // Edit brand form
+    /** Hiển thị form để chỉnh sửa thương hiệu.
+     * Nhận đối tượng Brand từ route model binding.
+     */
     public function edit(Brand $brand)
     {
         return view('admin.brands.edit', compact('brand'));
@@ -64,10 +81,17 @@ class BrandController extends Controller
     public function update(Request $request, Brand $brand)
     {
         try {
-            // Validate input
+            // Validate input with custom messages
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:brands,name,' . $brand->id,
                 'description' => 'nullable|string|max:1000'
+            ], [
+                'name.required' => 'Tên thương hiệu là bắt buộc.',
+                'name.string' => 'Tên thương hiệu phải là chuỗi ký tự.',
+                'name.max' => 'Tên thương hiệu không được vượt quá 255 ký tự.',
+                'name.unique' => 'Tên thương hiệu đã tồn tại.',
+                'description.string' => 'Mô tả phải là chuỗi ký tự.',
+                'description.max' => 'Mô tả không được vượt quá 1000 ký tự.'
             ]);
 
             // Update brand
@@ -77,7 +101,7 @@ class BrandController extends Controller
             ]);
 
             return redirect()->route('brands.index')
-                ->with('success', "Brand '{$brand->name}' updated successfully!");
+                ->with('success', "Thương hiệu '{$brand->name}' đã được cập nhật thành công!");
         } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         }

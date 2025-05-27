@@ -5,277 +5,173 @@ HiShoe-Store - Trang chủ
 @section('content')
 
 <div class="container">
+    @if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+    @endif
     <div class="heading_container heading_center">
         <h2>
-            Latest Products
+            Sản phẩm mới nhất
         </h2>
     </div>
-    <div class="container py-4">
-        <h1 class="mb-4">Sản phẩm mới nhất</h1>
 
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    @if ($product)
-                    <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="card-text">{{ number_format($product->price) }} VNĐ</p>
-
-                        <!-- Include form Add to Cart -->
-                        @include('client.cart.add-to-cart', [
-                        'product' => $product,
-                        'sizes' => $sizes,
-                        'colors' => $colors
-                        ])
-                    </div>
-                    @else 
-                        Không có sản phẩm
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="row">
+        @foreach($products as $product)
         <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
+            <div class="box position-relative" style="height: 380px">
+                <button class="btn btn-none like-btn {{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? 'liked' : '' }}" 
+                    data-id="{{ $product->id }}">
+                    <span class="heart">{{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? '❤️' : '🤍' }}</span> 
+                    <span class="text">{{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? 'Đã thích' : 'Thích' }}</span>
+                </button>
+    
+                <a href="{{ route('detail', $product->id) }}">
                     <div class="img-box">
-                        <img src="images/p1.png" alt="">
+                        <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}" alt="{{ $product->name }}">
                     </div>
                     <div class="detail-box">
-                        <h6>
-                            Ring
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $200
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
+                        <a class="card-title" href="{{ route('detail', $product->id) }}">{{ $product->name }}</a>
+                        <h6>Giá: <span>{{ number_format($product->price) }} VND</span></h6>
                     </div>
                 </a>
             </div>
         </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="images/p2.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Watch
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $300
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="images/p3.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Teddy Bear
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $110
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="images/p4.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Flower Bouquet
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $45
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="images/p5.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Teddy Bear
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $95
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="images/p6.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Flower Bouquet
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $70
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="images/p7.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Watch
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $400
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box">
-                <a href="">
-                    <div class="img-box">
-                        <img src="images/p8.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h6>
-                            Ring
-                        </h6>
-                        <h6>
-                            Price
-                            <span>
-                                $450
-                            </span>
-                        </h6>
-                    </div>
-                    <div class="new">
-                        <span>
-                            New
-                        </span>
-                    </div>
-                </a>
+        @endforeach
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".like-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    let productId = this.dataset.id;
+                    let heart = this.querySelector(".heart");
+                    let text = this.querySelector(".text");
+                    let isLoggedIn = {{ auth()->check() ? 'true' : 'false' }}; // Kiểm tra trạng thái đăng nhập
+
+                    if (!isLoggedIn) {
+                        // Hiển thị modal đăng nhập
+                        $('#loginModal').modal('show');
+                        return;
+                    }
+
+                    fetch(`/products/${productId}/like`, {  
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"  
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Lỗi khi gửi yêu cầu.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.liked !== undefined) {
+                            // Cập nhật biểu tượng và văn bản dựa trên phản hồi từ server
+                            heart.textContent = data.liked ? '❤️' : '🤍';
+                            text.innerText = data.liked ? "Đã thích" : "Thích";
+                        }
+                    })
+                    .catch(error => console.error("Lỗi:", error));
+                });
+            });
+        });
+    </script>
+    <!-- Modal Đăng nhập -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Thông báo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Bạn cần đăng nhập để thích sản phẩm!
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ route('loginForm') }}" class="btn btn-primary">Đăng nhập</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
             </div>
         </div>
     </div>
     <div class="btn-box">
         <a href="">
-            View All Products
+            Xem tất cả sản phẩm
         </a>
     </div>
 </div>
 </section>
 
-<!-- end shop section -->
+{{-- Block hiển thị voucher của cửa hàng --}}
+@if(isset($vouchers) && count($vouchers))
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fa fa-gift"></i> Mã giảm giá của cửa hàng</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach($vouchers as $voucher)
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="border rounded p-3 h-100 bg-light">
+                        <h6 class="text-primary font-weight-bold">{{ $voucher->code }}</h6>
+                        <p class="mb-1">
+                            <strong>Giảm:</strong>
+                            @if($voucher->discount_type == 0)
+                                {{ $voucher->discount_value }}%
+                                @if($voucher->max_discount_value)
+                                    (Tối đa {{ number_format($voucher->max_discount_value, 0, ',', '.') }}đ)
+                                @endif
+                            @else
+                                {{ number_format($voucher->discount_value, 0, ',', '.') }}đ
+                            @endif
+                        </p>
+                        <p class="mb-1"><strong>Đơn tối thiểu:</strong> {{ number_format($voucher->min_order_value, 0, ',', '.') }}đ</p>
+                        <p class="mb-1"><strong>HSD:</strong> {{ \Carbon\Carbon::parse($voucher->end_date)->format('d/m/Y') }}</p>
+                        <span class="badge badge-{{ $voucher->status == 1 ? 'success' : 'secondary' }}">
+                            {{ $voucher->status == 1 ? 'Còn hiệu lực' : 'Không hiệu lực' }}
+                        </span>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
-<!-- saving section -->
-
+<!-- Phần khuyến mãi -->
 <section class="saving_section ">
     <div class="box">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-6">
                     <div class="img-box">
-                        <img src="images/saving-img.png" alt="">
+                        <img src="{{ asset('client/images/saving-img.png') }}" alt="">
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="detail-box">
                         <div class="heading_container">
                             <h2>
-                                Best Savings on <br>
-                                new arrivals
+                                Tiết kiệm tốt nhất với <br>
+                                sản phẩm mới
                             </h2>
                         </div>
                         <p>
-                            Qui ex dolore at repellat, quia neque doloribus omnis adipisci, ipsum eos odio fugit ut eveniet blanditiis praesentium totam non nostrum dignissimos nihil eius facere et eaque. Qui, animi obcaecati.
+                            Chúng tôi mang đến những ưu đãi tuyệt vời cho các sản phẩm mới nhất. Hãy khám phá ngay để không bỏ lỡ cơ hội sở hữu những sản phẩm chất lượng với giá ưu đãi!
                         </p>
                         <div class="btn-box">
                             <a href="#" class="btn1">
-                                Buy Now
+                                Mua ngay
                             </a>
                             <a href="#" class="btn2">
-                                See More
+                                Xem thêm
                             </a>
                         </div>
                     </div>
@@ -284,16 +180,14 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
+<!-- Kết thúc phần khuyến mãi -->
 
-<!-- end saving section -->
-
-<!-- why section -->
-
+<!-- Phần lý do mua sắm -->
 <section class="why_section layout_padding">
     <div class="container">
         <div class="heading_container heading_center">
             <h2>
-                Why Shop With Us
+                Tại sao nên mua sắm với chúng tôi
             </h2>
         </div>
         <div class="row">
@@ -301,97 +195,15 @@ HiShoe-Store - Trang chủ
                 <div class="box ">
                     <div class="img-box">
                         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-                            <g>
-                                <g>
-                                    <path d="M476.158,231.363l-13.259-53.035c3.625-0.77,6.345-3.986,6.345-7.839v-8.551c0-18.566-15.105-33.67-33.67-33.67h-60.392
-                 V110.63c0-9.136-7.432-16.568-16.568-16.568H50.772c-9.136,0-16.568,7.432-16.568,16.568V256c0,4.427,3.589,8.017,8.017,8.017
-                 c4.427,0,8.017-3.589,8.017-8.017V110.63c0-0.295,0.239-0.534,0.534-0.534h307.841c0.295,0,0.534,0.239,0.534,0.534v145.372
-                 c0,4.427,3.589,8.017,8.017,8.017c4.427,0,8.017-3.589,8.017-8.017v-9.088h94.569c0.008,0,0.014,0.002,0.021,0.002
-                 c0.008,0,0.015-0.001,0.022-0.001c11.637,0.008,21.518,7.646,24.912,18.171h-24.928c-4.427,0-8.017,3.589-8.017,8.017v17.102
-                 c0,13.851,11.268,25.119,25.119,25.119h9.086v35.273h-20.962c-6.886-19.883-25.787-34.205-47.982-34.205
-                 s-41.097,14.322-47.982,34.205h-3.86v-60.393c0-4.427-3.589-8.017-8.017-8.017c-4.427,0-8.017,3.589-8.017,8.017v60.391H192.817
-                 c-6.886-19.883-25.787-34.205-47.982-34.205s-41.097,14.322-47.982,34.205H50.772c-0.295,0-0.534-0.239-0.534-0.534v-17.637
-                 h34.739c4.427,0,8.017-3.589,8.017-8.017s-3.589-8.017-8.017-8.017H8.017c-4.427,0-8.017,3.589-8.017,8.017
-                 s3.589,8.017,8.017,8.017h26.188v17.637c0,9.136,7.432,16.568,16.568,16.568h43.304c-0.002,0.178-0.014,0.355-0.014,0.534
-                 c0,27.996,22.777,50.772,50.772,50.772s50.772-22.776,50.772-50.772c0-0.18-0.012-0.356-0.014-0.534h180.67
-                 c-0.002,0.178-0.014,0.355-0.014,0.534c0,27.996,22.777,50.772,50.772,50.772c27.995,0,50.772-22.776,50.772-50.772
-                 c0-0.18-0.012-0.356-0.014-0.534h26.203c4.427,0,8.017-3.589,8.017-8.017v-85.511C512,251.989,496.423,234.448,476.158,231.363z
-                  M375.182,144.301h60.392c9.725,0,17.637,7.912,17.637,17.637v0.534h-78.029V144.301z M375.182,230.881v-52.376h71.235
-                 l13.094,52.376H375.182z M144.835,401.904c-19.155,0-34.739-15.583-34.739-34.739s15.584-34.739,34.739-34.739
-                 c19.155,0,34.739,15.583,34.739,34.739S163.99,401.904,144.835,401.904z M427.023,401.904c-19.155,0-34.739-15.583-34.739-34.739
-                 s15.584-34.739,34.739-34.739c19.155,0,34.739,15.583,34.739,34.739S446.178,401.904,427.023,401.904z M495.967,299.29h-9.086
-                 c-5.01,0-9.086-4.076-9.086-9.086v-9.086h18.171V299.29z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M144.835,350.597c-9.136,0-16.568,7.432-16.568,16.568c0,9.136,7.432,16.568,16.568,16.568
-                 c9.136,0,16.568-7.432,16.568-16.568C161.403,358.029,153.971,350.597,144.835,350.597z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M427.023,350.597c-9.136,0-16.568,7.432-16.568,16.568c0,9.136,7.432,16.568,16.568,16.568
-                 c9.136,0,16.568-7.432,16.568-16.568C443.591,358.029,436.159,350.597,427.023,350.597z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M332.96,316.393H213.244c-4.427,0-8.017,3.589-8.017,8.017s3.589,8.017,8.017,8.017H332.96
-                 c4.427,0,8.017-3.589,8.017-8.017S337.388,316.393,332.96,316.393z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M127.733,282.188H25.119c-4.427,0-8.017,3.589-8.017,8.017s3.589,8.017,8.017,8.017h102.614
-                 c4.427,0,8.017-3.589,8.017-8.017S132.16,282.188,127.733,282.188z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M278.771,173.37c-3.13-3.13-8.207-3.13-11.337,0.001l-71.292,71.291l-37.087-37.087c-3.131-3.131-8.207-3.131-11.337,0
-                 c-3.131,3.131-3.131,8.206,0,11.337l42.756,42.756c1.565,1.566,3.617,2.348,5.668,2.348s4.104-0.782,5.668-2.348l76.96-76.96
-                 C281.901,181.576,281.901,176.501,278.771,173.37z" />
-                                </g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
+                            <!-- SVG cho Giao hàng nhanh -->
                         </svg>
                     </div>
                     <div class="detail-box">
                         <h5>
-                            Fast Delivery
+                            Giao hàng nhanh
                         </h5>
                         <p>
-                            variations of passages of Lorem Ipsum available
+                            Chúng tôi đảm bảo giao hàng nhanh chóng đến tay bạn.
                         </p>
                     </div>
                 </div>
@@ -400,113 +212,15 @@ HiShoe-Store - Trang chủ
                 <div class="box ">
                     <div class="img-box">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 490.667 490.667" style="enable-background:new 0 0 490.667 490.667;" xml:space="preserve">
-                            <g>
-                                <g>
-                                    <path d="M138.667,192H96c-5.888,0-10.667,4.779-10.667,10.667V288c0,5.888,4.779,10.667,10.667,10.667s10.667-4.779,10.667-10.667
-                 v-74.667h32c5.888,0,10.667-4.779,10.667-10.667S144.555,192,138.667,192z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M117.333,234.667H96c-5.888,0-10.667,4.779-10.667,10.667S90.112,256,96,256h21.333c5.888,0,10.667-4.779,10.667-10.667
-                 S123.221,234.667,117.333,234.667z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M245.333,0C110.059,0,0,110.059,0,245.333s110.059,245.333,245.333,245.333s245.333-110.059,245.333-245.333
-                 S380.608,0,245.333,0z M245.333,469.333c-123.52,0-224-100.48-224-224s100.48-224,224-224s224,100.48,224,224
-                 S368.853,469.333,245.333,469.333z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M386.752,131.989C352.085,88.789,300.544,64,245.333,64s-106.752,24.789-141.419,67.989
-                 c-3.691,4.587-2.965,11.307,1.643,14.997c4.587,3.691,11.307,2.965,14.976-1.643c30.613-38.144,76.096-60.011,124.8-60.011
-                 s94.187,21.867,124.779,60.011c2.112,2.624,5.205,3.989,8.32,3.989c2.368,0,4.715-0.768,6.677-2.347
-                 C389.717,143.296,390.443,136.576,386.752,131.989z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M376.405,354.923c-4.224-4.032-11.008-3.861-15.061,0.405c-30.613,32.235-71.808,50.005-116.011,50.005
-                 s-85.397-17.771-115.989-50.005c-4.032-4.309-10.816-4.437-15.061-0.405c-4.309,4.053-4.459,10.816-0.405,15.083
-                 c34.667,36.544,81.344,56.661,131.456,56.661s96.789-20.117,131.477-56.661C380.864,365.739,380.693,358.976,376.405,354.923z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M206.805,255.723c15.701-2.027,27.861-15.488,27.861-31.723c0-17.643-14.357-32-32-32h-21.333
-                 c-5.888,0-10.667,4.779-10.667,10.667v42.581c0,0.043,0,0.107,0,0.149V288c0,5.888,4.779,10.667,10.667,10.667
-                 S192,293.888,192,288v-16.917l24.448,24.469c2.091,2.069,4.821,3.115,7.552,3.115c2.731,0,5.461-1.045,7.531-3.136
-                 c4.16-4.16,4.16-10.923,0-15.083L206.805,255.723z M192,234.667v-21.333h10.667c5.867,0,10.667,4.779,10.667,10.667
-                 s-4.8,10.667-10.667,10.667H192z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M309.333,277.333h-32v-64h32c5.888,0,10.667-4.779,10.667-10.667S315.221,192,309.333,192h-42.667
-                 c-5.888,0-10.667,4.779-10.667,10.667V288c0,5.888,4.779,10.667,10.667,10.667h42.667c5.888,0,10.667-4.779,10.667-10.667
-                 S315.221,277.333,309.333,277.333z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M288,234.667h-21.333c-5.888,0-10.667,4.779-10.667,10.667S260.779,256,266.667,256H288
-                 c5.888,0,10.667-4.779,10.667-10.667S293.888,234.667,288,234.667z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M394.667,277.333h-32v-64h32c5.888,0,10.667-4.779,10.667-10.667S400.555,192,394.667,192H352
-                 c-5.888,0-10.667,4.779-10.667,10.667V288c0,5.888,4.779,10.667,10.667,10.667h42.667c5.888,0,10.667-4.779,10.667-10.667
-                 S400.555,277.333,394.667,277.333z" />
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M373.333,234.667H352c-5.888,0-10.667,4.779-10.667,10.667S346.112,256,352,256h21.333
-                 c5.888,0,10.667-4.779,10.667-10.667S379.221,234.667,373.333,234.667z" />
-                                </g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
-                            <g>
-                            </g>
+                            <!-- SVG cho Miễn phí vận chuyển -->
                         </svg>
                     </div>
                     <div class="detail-box">
                         <h5>
-                            Free Shiping
+                            Miễn phí vận chuyển
                         </h5>
                         <p>
-                            variations of passages of Lorem Ipsum available
+                            Tận hưởng dịch vụ vận chuyển miễn phí cho mọi đơn hàng.
                         </p>
                     </div>
                 </div>
@@ -515,19 +229,15 @@ HiShoe-Store - Trang chủ
                 <div class="box ">
                     <div class="img-box">
                         <svg id="_30_Premium" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg" data-name="30_Premium">
-                            <g id="filled">
-                                <path d="m252.92 300h3.08a124.245 124.245 0 1 0 -4.49-.09c.075.009.15.023.226.03.394.039.789.06 1.184.06zm-96.92-124a100 100 0 1 1 100 100 100.113 100.113 0 0 1 -100-100z" />
-                                <path d="m447.445 387.635-80.4-80.4a171.682 171.682 0 0 0 60.955-131.235c0-94.841-77.159-172-172-172s-172 77.159-172 172c0 73.747 46.657 136.794 112 161.2v158.8c-.3 9.289 11.094 15.384 18.656 9.984l41.344-27.562 41.344 27.562c7.574 5.4 18.949-.7 18.656-9.984v-70.109l46.6 46.594c6.395 6.789 18.712 3.025 20.253-6.132l9.74-48.724 48.725-9.742c9.163-1.531 12.904-13.893 6.127-20.252zm-339.445-211.635c0-81.607 66.393-148 148-148s148 66.393 148 148-66.393 148-148 148-148-66.393-148-148zm154.656 278.016a12 12 0 0 0 -13.312 0l-29.344 19.562v-129.378a172.338 172.338 0 0 0 72 0v129.38zm117.381-58.353a12 12 0 0 0 -9.415 9.415l-6.913 34.58-47.709-47.709v-54.749a171.469 171.469 0 0 0 31.467-15.6l67.151 67.152z" />
-                                <path d="m287.62 236.985c8.349 4.694 19.251-3.212 17.367-12.618l-5.841-35.145 25.384-25c7.049-6.5 2.89-19.3-6.634-20.415l-35.23-5.306-15.933-31.867c-4.009-8.713-17.457-8.711-21.466 0l-15.933 31.866-35.23 5.306c-9.526 1.119-13.681 13.911-6.634 20.415l25.384 25-5.841 35.145c-1.879 9.406 9 17.31 17.367 12.618l31.62-16.414zm-53-32.359 2.928-17.615a12 12 0 0 0 -3.417-10.516l-12.721-12.531 17.658-2.66a12 12 0 0 0 8.947-6.5l7.985-15.971 7.985 15.972a12 12 0 0 0 8.947 6.5l17.658 2.66-12.723 12.535a12 12 0 0 0 -3.417 10.516l2.928 17.615-15.849-8.231a12 12 0 0 0 -11.058 0z" />
-                            </g>
+                            <!-- SVG cho Chất lượng tốt nhất -->
                         </svg>
                     </div>
                     <div class="detail-box">
                         <h5>
-                            Best Quality
+                            Chất lượng tốt nhất
                         </h5>
                         <p>
-                            variations of passages of Lorem Ipsum available
+                            Sản phẩm của chúng tôi luôn đảm bảo chất lượng hàng đầu.
                         </p>
                     </div>
                 </div>
@@ -535,12 +245,9 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
+<!-- Kết thúc phần lý do mua sắm -->
 
-<!-- end why section -->
-
-
-<!-- gift section -->
-
+<!-- Phần quà tặng -->
 <section class="gift_section layout_padding-bottom">
     <div class="box ">
         <div class="container-fluid">
@@ -548,7 +255,7 @@ HiShoe-Store - Trang chủ
                 <div class="col-md-5">
                     <div class="img_container">
                         <div class="img-box">
-                            <img src="images/gifts.png" alt="">
+                            <img src="{{ asset('client/images/gifts.png') }}" alt="">
                         </div>
                     </div>
                 </div>
@@ -556,19 +263,19 @@ HiShoe-Store - Trang chủ
                     <div class="detail-box">
                         <div class="heading_container">
                             <h2>
-                                Gifts for your <br>
-                                loved ones
+                                Quà tặng cho <br>
+                                người thân yêu
                             </h2>
                         </div>
                         <p>
-                            Omnis ex nam laudantium odit illum harum, excepturi accusamus at corrupti, velit blanditiis unde perspiciatis, vitae minus culpa? Beatae at aut consequuntur porro adipisci aliquam eaque iste ducimus expedita accusantium?
+                            Tặng những món quà ý nghĩa cho người thân yêu của bạn với những sản phẩm được chọn lọc kỹ lưỡng, đảm bảo mang lại niềm vui và hạnh phúc.
                         </p>
                         <div class="btn-box">
                             <a href="#" class="btn1">
-                                Buy Now
+                                Mua ngay
                             </a>
                             <a href="#" class="btn2">
-                                See More
+                                Xem thêm
                             </a>
                         </div>
                     </div>
@@ -577,18 +284,14 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
+<!-- Kết thúc phần quà tặng -->
 
-
-<!-- end gift section -->
-
-
-<!-- contact section -->
-
+<!-- Phần liên hệ -->
 <section class="contact_section ">
     <div class="container px-0">
         <div class="heading_container ">
             <h2 class="">
-                Contact Us
+                Liên hệ với chúng tôi
             </h2>
         </div>
     </div>
@@ -604,20 +307,20 @@ HiShoe-Store - Trang chủ
             <div class="col-md-6 col-lg-5 px-0">
                 <form action="#">
                     <div>
-                        <input type="text" placeholder="Name" />
+                        <input type="text" placeholder="Họ và tên" />
                     </div>
                     <div>
                         <input type="email" placeholder="Email" />
                     </div>
                     <div>
-                        <input type="text" placeholder="Phone" />
+                        <input type="text" placeholder="Số điện thoại" />
                     </div>
                     <div>
-                        <input type="text" class="message-box" placeholder="Message" />
+                        <input type="text" class="message-box" placeholder="Tin nhắn" />
                     </div>
                     <div class="d-flex ">
                         <button>
-                            SEND
+                            GỬI
                         </button>
                     </div>
                 </form>
@@ -625,20 +328,19 @@ HiShoe-Store - Trang chủ
         </div>
     </div>
 </section>
+<!-- Kết thúc phần liên hệ -->
 
-<!-- end contact section -->
-
-<!-- client section -->
+<!-- Phần đánh giá khách hàng -->
 <section class="client_section layout_padding">
     <div class="container">
         <div class="heading_container heading_center">
             <h2>
-                Testimonial
+                Đánh giá khách hàng
             </h2>
         </div>
     </div>
     <div class="container px-0">
-        <div id="customCarousel2" class="carousel  carousel-fade" data-ride="carousel">
+        <div id="customCarousel2" class="carousel carousel-fade" data-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <div class="box">
@@ -648,13 +350,13 @@ HiShoe-Store - Trang chủ
                                     Morijorch
                                 </h5>
                                 <h6>
-                                    Default model text
+                                    Khách hàng
                                 </h6>
                             </div>
                             <i class="fa fa-quote-left" aria-hidden="true"></i>
                         </div>
                         <p>
-                            editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Variouseditors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Variouseditors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various
+                            Tôi rất hài lòng với chất lượng sản phẩm và dịch vụ của HiShoe-Store. Giao hàng nhanh chóng và sản phẩm đúng như mô tả!
                         </p>
                     </div>
                 </div>
@@ -666,13 +368,13 @@ HiShoe-Store - Trang chủ
                                     Rochak
                                 </h5>
                                 <h6>
-                                    Default model text
+                                    Khách hàng
                                 </h6>
                             </div>
                             <i class="fa fa-quote-left" aria-hidden="true"></i>
                         </div>
                         <p>
-                            Variouseditors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Variouseditors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.
+                            Dịch vụ tuyệt vời, sản phẩm chất lượng cao và giá cả hợp lý. Tôi sẽ tiếp tục ủng hộ HiShoe-Store!
                         </p>
                     </div>
                 </div>
@@ -684,13 +386,13 @@ HiShoe-Store - Trang chủ
                                     Brad Johns
                                 </h5>
                                 <h6>
-                                    Default model text
+                                    Khách hàng
                                 </h6>
                             </div>
                             <i class="fa fa-quote-left" aria-hidden="true"></i>
                         </div>
                         <p>
-                            Variouseditors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy, editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Variouseditors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various
+                            HiShoe-Store là lựa chọn hàng đầu của tôi khi mua sắm trực tuyến. Sản phẩm đẹp, giao hàng nhanh và dịch vụ chăm sóc khách hàng tuyệt vời!
                         </p>
                     </div>
                 </div>
@@ -698,16 +400,91 @@ HiShoe-Store - Trang chủ
             <div class="carousel_btn-box">
                 <a class="carousel-control-prev" href="#customCarousel2" role="button" data-slide="prev">
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
-                    <span class="sr-only">Previous</span>
+                    <span class="sr-only">Trước</span>
                 </a>
                 <a class="carousel-control-next" href="#customCarousel2" role="button" data-slide="next">
                     <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    <span class="sr-only">Next</span>
+                    <span class="sr-only">Tiếp</span>
                 </a>
             </div>
         </div>
     </div>
 </section>
-<!-- end client section -->
+<!-- Kết thúc phần đánh giá khách hàng -->
+
+<!-- Phần thông tin chân trang -->
+<section class="info_section layout_padding2-top">
+    <div class="social_container">
+        <div class="social_box">
+            <a href="">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+            </a>
+            <a href="">
+                <i class="fa fa-twitter" aria-hidden="true"></i>
+            </a>
+            <a href="">
+                <i class="fa fa-instagram" aria-hidden="true"></i>
+            </a>
+            <a href="">
+                <i class="fa fa-youtube" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+    <div class="info_container ">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <h6>
+                        VỀ CHÚNG TÔI
+                    </h6>
+                    <p>
+                        HiShoe-Store là cửa hàng trực tuyến chuyên cung cấp các sản phẩm chất lượng cao, giá cả hợp lý, và dịch vụ tận tâm.
+                    </p>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="info_form ">
+                        <h5>
+                            Đăng ký nhận tin
+                        </h5>
+                        <form action="#">
+                            <input type="email" placeholder="Nhập email của bạn">
+                            <button>
+                                Đăng ký
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <h6>
+                        HỖ TRỢ
+                    </h6>
+                    <p>
+                        Nếu bạn cần hỗ trợ, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại. Chúng tôi luôn sẵn sàng giúp bạn!
+                    </p>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <h6>
+                        LIÊN HỆ
+                    </h6>
+                    <div class="info_link-box">
+                        <a href="">
+                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                            <span> 123 Đường GB, London, UK </span>
+                        </a>
+                        <a href="">
+                            <i class="fa fa-phone" aria-hidden="true"></i>
+                            <span>+01 12345678901</span>
+                        </a>
+                        <a href="">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                            <span> demo@gmail.com</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Kết thúc phần thông tin chân trang -->
 
 @endsection

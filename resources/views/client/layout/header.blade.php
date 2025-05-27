@@ -117,7 +117,7 @@
           @endif
         </a>
 
-        <a href=""><i class="fa fa-heart" aria-hidden="true"></i></a>
+        <a href="{{ route('liked.products') }}"><i class="fa fa-heart" aria-hidden="true"></i></a>
 
         <div class="dropdown">
           <a class="dropdown-toggle" role="button" id="searchDropdown" data-toggle="dropdown"

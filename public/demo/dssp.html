@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Sản Phẩm</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Sidebar Lọc sản phẩm -->
+            <div class="col-lg-3 col-md-4 mb-4">
+                <h5 class="mb-3">Lọc sản phẩm</h5>
+                <div class="mb-4">
+                    <label><strong>Khoảng giá</strong></label>
+                    <input type="range" class="custom-range" min="0" max="1299000">
+                    <small>0đ - 1,299,000đ</small>
+                </div>
+                <div class="mb-4">
+                    <label><strong>Màu sắc</strong></label>
+                    <div>
+                        <span class="badge badge-secondary p-2 mr-1" style="background-color: red;"></span>
+                        <span class="badge badge-secondary p-2 mr-1" style="background-color: black;"></span>
+                        <span class="badge badge-secondary p-2 mr-1" style="background-color: white;"></span>
+                        <span class="badge badge-secondary p-2 mr-1" style="background-color: blue;"></span>
+                        <span class="badge badge-secondary p-2 mr-1" style="background-color: yellow;"></span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label><strong>Danh mục</strong></label>
+                    <ul class="list-unstyled">
+                        <li><input type="checkbox"> Giày chạy</li>
+                        <li><input type="checkbox"> Giày thể thao</li>
+                        <li><input type="checkbox"> Giày nhựa</li>
+                    </ul>
+                </div>
+                <button class="btn btn-primary btn-block">Áp dụng</button>
+            </div>
+            <!-- Nội dung danh sách sản phẩm -->
+            <div class="col-lg-9 col-md-8">
+                <h3 class="mb-3">Giày thể thao & chạy chính hãng giảm giá đến 30%</h3>
+                <div class="row">
+                    <!-- Sản phẩm 1 -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <span class="badge badge-danger position-absolute" style="top: 10px; left: 10px;">Bán chạy</span>
+                            <img src="shoe1.jpg" class="card-img-top" alt="Sản phẩm 1">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Giày thể thao nam</h5>
+                                <p class="text-muted">Siêu nhẹ, êm ái</p>
+                                <p class="text-danger font-weight-bold">799,000đ</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sản phẩm 2 -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <img src="shoe2.jpg" class="card-img-top" alt="Sản phẩm 2">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Giày thể thao nữ</h5>
+                                <p class="text-muted">Đế cao 6.5 cm</p>
+                                <p class="text-danger font-weight-bold">899,000đ</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sản phẩm 3 -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <span class="badge badge-primary position-absolute" style="top: 10px; left: 10px;">-13%</span>
+                            <img src="shoe3.jpg" class="card-img-top" alt="Sản phẩm 3">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Giày thể thao nam</h5>
+                                <p class="text-muted">Êm chân, kháng khuẩn</p>
+                                <p><span class="text-danger font-weight-bold">699,000đ</span> <del class="text-muted">799,000đ</del></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sản phẩm 4 -->
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card">
+                            <span class="badge badge-danger position-absolute" style="top: 10px; left: 10px;">Bán chạy</span>
+                            <img src="shoe4.jpg" class="card-img-top" alt="Sản phẩm 4">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Giày thể thao siêu êm</h5>
+                                <p class="text-muted">Thoáng khí</p>
+                                <p class="text-danger font-weight-bold">999,000đ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

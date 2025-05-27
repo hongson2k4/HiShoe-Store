@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('address');
             $table->tinyInteger('role')->default(0); // 0 for user and 1 for admin and 2 for staff
             // $table->rememberToken();
+            $table->tinyInteger('status')->default(0); // 0 for active and 1 for banned
+            $table->string('ban_reason')->nullable();
+            $table->timestamp('banned_at')->nullable();
             $table->timestamps();
         });
     }

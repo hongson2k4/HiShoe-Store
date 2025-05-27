@@ -12,7 +12,8 @@ class Review extends Model
 
     // Fillable fields
     protected $fillable = [
-        'user_id', 
+        'user_id',
+        'order_id', 
         'product_id', 
         'rating', 
         'comment', 
@@ -38,7 +39,7 @@ class Review extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Products::class);
     }
 
     // Scopes

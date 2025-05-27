@@ -34,19 +34,21 @@ class OrderDetail extends Model
 
     public function productVariant(): BelongsTo
     {
-        return $this->belongsTo(ProductVariant::class);
+        return $this->belongsTo(Product_variant::class);
     }
 
+    // Sửa lại quan hệ product để trỏ trực tiếp đến Product
     public function product(): BelongsTo
     {
-        return $this->belongsTo(ProductVariant::class)->with('product');
+        return $this->belongsTo(Products::class, 'product_id', 'id');
     }
 
-    // Calculated attributes
-    public function getSubtotalAttribute(): float
-    {
-        return $this->quantity * $this->price;
-    }
+    // Bỏ getSubtotalAttribute nếu bạn đã lưu subtotal trong cơ sở dữ liệu
+    // Nếu không lưu, bạn có thể giữ lại để tính toán
+    // public function getSubtotalAttribute(): float
+    // {
+    //     return $this->quantity * $this->price;
+    // }
 
     // Mutators
     public function setQuantityAttribute($value)
@@ -80,10 +82,10 @@ class OrderDetail extends Model
     public function getVariantDetails(): string
     {
         $variant = $this->productVariant;
-        return $variant ? implode(' - ', [
+        return $variant ? implode(' - ', array_filter([
             $variant->color->name ?? '',
             $variant->size->name ?? ''
-        ]) : 'No Variant Details';
+        ])) : 'No Variant Details';
     }
 
     // Static methods

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Sản Phẩm</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .product-image {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .thumbnail-img {
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <img id="mainImage" src="https://via.placeholder.com/500" class="product-image" alt="Sản phẩm">
+                <div class="d-flex mt-3">
+                    <img src="https://via.placeholder.com/500" class="thumbnail-img" onclick="changeImage(this)">
+                    <img src="https://via.placeholder.com/500" class="thumbnail-img" onclick="changeImage(this)">
+                    <img src="https://via.placeholder.com/500" class="thumbnail-img" onclick="changeImage(this)">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h2 class="text-primary">Tên Sản Phẩm</h2>
+                <p class="text-muted">Mã sản phẩm: SP001</p>
+                <h4 class="text-danger">1.200.000 VNĐ</h4>
+                <p>Mô tả sản phẩm chi tiết ở đây. Đây là sản phẩm chất lượng cao với thiết kế đẹp mắt.</p>
+                
+                <div class="form-group">
+                    <label for="colorSelect">Chọn màu:</label>
+                    <select class="form-control" id="colorSelect">
+                        <option>Đỏ</option>
+                        <option>Xanh</option>
+                        <option>Đen</option>
+                        <option>Trắng</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sizeSelect">Chọn kích thước:</label>
+                    <select class="form-control" id="sizeSelect">
+                        <option>S</option>
+                        <option>M</option>
+                        <option>L</option>
+                        <option>XL</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-success btn-lg mt-3">Thêm vào giỏ hàng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changeImage(element) {
+            document.getElementById('mainImage').src = element.src;
+        }
+    </script>
+</body>
+</html>

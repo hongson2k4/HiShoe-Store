@@ -8,10 +8,10 @@ use App\Models\OrderItemHistory;
 use App\Models\Product_variant;
 use Illuminate\Http\Request;
 use App\Models\Cart;
-use App\Models\ProductVariant;
 use App\Models\Voucher;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\VoucherUsages;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Mail\OrderSuccessMail;
@@ -96,7 +96,7 @@ class CheckoutController extends Controller
         $voucherCode = $request->input('voucher_code');
         $subtotal = 0;
 
-        $user = Auth::user();
+        $user = Auth::guard('web')->user();
         $cartItems = $user ? Cart::where('user_id', $user->id)->get() : Session::get('cart', []);
         if ($user) {
             foreach ($cartItems as $item) {
@@ -124,6 +124,16 @@ class CheckoutController extends Controller
 
         if ($subtotal < $voucher->min_order_value) {
             return response()->json(['success' => false, 'message' => 'Giá trị đơn hàng không đủ để áp dụng mã giảm giá.']);
+        }
+
+        // Kiểm tra lịch sử sử dụng voucher
+        if ($user) {
+            $used = VoucherUsages::where('voucher_id', $voucher->id)
+                ->where('user_id', $user->id)
+                ->exists();
+            if ($used) {
+                return response()->json(['success' => false, 'message' => 'Bạn đã sử dụng mã giảm giá này rồi.']);
+            }
         }
 
         // Nếu đã áp dụng voucher này rồi thì không trừ tiếp usage_limit
@@ -158,6 +168,15 @@ class CheckoutController extends Controller
         Session::put('applied_voucher_id', $voucher->id);
         Session::put('voucher_code', $voucherCode);
 
+        // Lưu lịch sử sử dụng voucher nếu là user đăng nhập
+        if ($user) {
+            VoucherUsages::create([
+                'voucher_id' => $voucher->id,
+                'user_id' => $user->id,
+                'used_at' => now(),
+            ]);
+        }
+
         $total = $subtotal - $discount;
 
         return response()->json([
@@ -183,6 +202,13 @@ class CheckoutController extends Controller
             }
             Session::forget('applied_voucher_id');
             Session::forget('voucher_code');
+        }
+
+        $user = Auth::user();
+        if ($user) {
+            VoucherUsages::where('voucher_id', $appliedVoucherId)
+                ->where('user_id', $user->id)
+                ->delete();
         }
 
         // Tính lại tổng tiền không voucher

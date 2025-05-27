@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class VoucherUsages extends Model
 {
     use HasFactory;
-
+    public $timestamps = false;
     protected $table = 'voucher_usages';
 
     protected $fillable = [

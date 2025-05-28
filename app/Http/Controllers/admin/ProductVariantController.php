@@ -73,6 +73,12 @@ class ProductVariantController extends Controller
             'image_url' => $imagePath,
         ]);
 
+        // Đồng bộ lại số lượng kho tổng
+        $product = Products::find($product_id);
+        if ($product) {
+            $product->syncStockQuantity();
+        }
+
         return redirect()->route('products.variant.list', $product_id)->with('success', 'Biến thể sản phẩm đã được tạo thành công.');
     }
 
@@ -127,6 +133,12 @@ class ProductVariantController extends Controller
         $product_variant->stock_quantity = $request->stock_quantity;
         $product_variant->save();
 
+        // Đồng bộ lại số lượng kho tổng
+        $product = $product_variant->product;
+        if ($product) {
+            $product->syncStockQuantity();
+        }
+
         return redirect()->route('products.variant.list', ['product_id' => $product_variant->product_id])
             ->with('success', 'Cập nhật biến thể sản phẩm thành công!');
     }
@@ -145,6 +157,12 @@ class ProductVariantController extends Controller
 
         $product_id = $product_variant->product_id;
         $product_variant->delete();
+
+        // Đồng bộ lại số lượng kho tổng
+        $product = Products::find($product_id);
+        if ($product) {
+            $product->syncStockQuantity();
+        }
 
         return redirect()->route('products.variant.list', ['product_id' => $product_id])
             ->with('success', 'Xóa biến thể sản phẩm thành công!');

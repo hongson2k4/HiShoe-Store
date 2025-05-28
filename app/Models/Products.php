@@ -80,5 +80,11 @@ class Products extends Model
     
         return $randomCode;
     }
+    public function syncStockQuantity()
+    {
+        $total = $this->variants()->sum('stock_quantity');
+        $this->stock_quantity = $total;
+        $this->save();
+    }
     
 }

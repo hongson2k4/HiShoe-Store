@@ -88,6 +88,12 @@ class OrderHistoryController extends Controller
             if ($variant) {
                 $variant->stock_quantity += $item->quantity;
                 $variant->save();
+
+                // Đồng bộ lại số lượng kho tổng của sản phẩm
+                $product = $variant->product;
+                if ($product) {
+                    $product->syncStockQuantity();
+                }
             }
         }
 

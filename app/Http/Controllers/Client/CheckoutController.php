@@ -374,6 +374,12 @@ class CheckoutController extends Controller
                     $productVariant = $item->productVariant;
                     $productVariant->stock_quantity -= $item->quantity;
                     $productVariant->save();
+
+                    // Đồng bộ lại số lượng kho tổng của sản phẩm
+                    $product = $productVariant->product;
+                    if ($product) {
+                        $product->syncStockQuantity();
+                    }
                 }
 
                 $user = Auth::user();
@@ -448,6 +454,12 @@ class CheckoutController extends Controller
                         $productVariant = $item->productVariant;
                         $productVariant->stock_quantity -= $item->quantity;
                         $productVariant->save();
+
+                        // Đồng bộ lại số lượng kho tổng của sản phẩm
+                        $product = $productVariant->product;
+                        if ($product) {
+                            $product->syncStockQuantity();
+                        }
                     }
                     $user = Auth::user();
                     if ($user) {

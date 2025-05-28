@@ -120,17 +120,20 @@
             color: #fff !important;
             border-color: #007bff !important;
         }
+
         .variant-button {
             border-color: #007bff !important;
             color: #007bff !important;
             background-color: #fff !important;
             transition: background 0.2s, color 0.2s;
         }
+
         .variant-button:hover:not(:disabled):not(.active) {
             background-color: #e6f0ff !important;
             color: #0056b3 !important;
             border-color: #007bff !important;
         }
+
         .variant-button:disabled {
             background-color: #e0e0e0 !important;
             color: #a0a0a0 !important;
@@ -142,8 +145,21 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-lg-6 col-md-12 text-center">
-                <img src="{{ Storage::url($products->image_url) }}" class="product-image img-fluid"
+                <img id="mainProductImage" src="{{ Storage::url($products->image_url) }}" class="product-image img-fluid"
                     alt="{{ $products->name }}">
+                <div class="d-flex justify-content-center mt-3" id="productGallery">
+                    <!-- Ảnh chính -->
+                    <img src="{{ Storage::url($products->image_url) }}" class="img-thumbnail mx-1 gallery-thumb"
+                        data-main-image="{{ Storage::url($products->image_url) }}" data-size-id="" data-color-id=""
+                        style="width:70px; height:70px; object-fit:cover; cursor:pointer;">
+                    <!-- Ảnh biến thể -->
+                    @foreach($variantImages as $img)
+                        <img src="{{ Storage::url($img['image_url']) }}" class="img-thumbnail mx-1 gallery-thumb"
+                            data-main-image="{{ Storage::url($img['image_url']) }}" data-size-id="{{ $img['size_id'] }}"
+                            data-color-id="{{ $img['color_id'] }}"
+                            style="width:70px; height:70px; object-fit:cover; cursor:pointer;">
+                    @endforeach
+                </div>
             </div>
             <div class="col-lg-6 col-md-12">
                 <div class="p-4 border rounded bg-white shadow-sm">
@@ -294,25 +310,15 @@
     </div>
 
     <script>
+        // Đặt các biến toàn cục ở ngoài
+        let sizeButtons, colorButtons, selectedSize = null, selectedColor = null, variants, updateStockInfo, updateColorButtonStates, updateSizeButtonStates;
+
         document.addEventListener('DOMContentLoaded', function () {
-            const sizeButtons = document.querySelectorAll('#sizeButtons .variant-button');
-            const colorButtons = document.querySelectorAll('#colorButtons .variant-button');
-            const quantityInput = document.getElementById('quantityInput');
-            const decreaseQuantityButton = document.getElementById('decreaseQuantity');
-            const increaseQuantityButton = document.getElementById('increaseQuantity');
-            const addToCartButton = document.getElementById('addToCartButton');
-            const stockInfo = document.getElementById('stockInfo');
-            const totalPrice = document.getElementById('totalPrice');
-            let selectedSize = null;
-            let selectedColor = null;
-            let quantity = 1;
+            sizeButtons = document.querySelectorAll('#sizeButtons .variant-button');
+            colorButtons = document.querySelectorAll('#colorButtons .variant-button');
+            variants = @json($variants);
 
-
-
-            // Define the variants variable
-            const variants = @json($variants);
-
-            function updateStockInfo() {
+            updateStockInfo = function() {
                 const selectedSizeId = selectedSize;
                 const selectedColorId = selectedColor;
 
@@ -337,8 +343,8 @@
 
                 // Định dạng giá tiền đẹp hơn
                 totalPrice.innerHTML = `<span style="font-size:1.5rem;">
-                            ${Number(price).toLocaleString('vi-VN')} <span style="font-size:1rem;">VNĐ</span>
-                        </span>`;
+                                    ${Number(price).toLocaleString('vi-VN')} <span style="font-size:1rem;">VNĐ</span>
+                                </span>`;
 
                 return maxStock;
             }
@@ -389,7 +395,7 @@
             });
 
             // Disable color buttons if no variant exists for selected size
-            function updateColorButtonStates() {
+            updateColorButtonStates = function() {
                 colorButtons.forEach(button => {
                     const colorId = button.getAttribute('data-color-id');
                     const exists = variants.some(variant =>
@@ -401,7 +407,7 @@
             }
 
             // Disable size buttons if no variant exists for selected color
-            function updateSizeButtonStates() {
+            updateSizeButtonStates = function() {
                 sizeButtons.forEach(button => {
                     const sizeId = button.getAttribute('data-size-id');
                     const exists = variants.some(variant =>
@@ -451,7 +457,7 @@
                     return;
                 @endif
 
-                const maxStock = updateStockInfo();
+                        const maxStock = updateStockInfo();
                 if (!selectedSize || !selectedColor) {
                     alert('Vui lòng chọn kích cỡ và màu sắc trước khi thêm vào giỏ hàng.');
                     return;
@@ -493,4 +499,72 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mainProductImage = document.getElementById('mainProductImage');
+            const galleryThumbs = document.querySelectorAll('.gallery-thumb');
+
+            // Khi click vào ảnh nhỏ
+            galleryThumbs.forEach(function (thumb) {
+                thumb.addEventListener('click', function () {
+                    // Đổi ảnh lớn
+                    mainProductImage.src = this.getAttribute('data-main-image');
+                    // Nếu là ảnh biến thể thì tự chọn size & color
+                    const sizeId = this.getAttribute('data-size-id');
+                    const colorId = this.getAttribute('data-color-id');
+                    if (sizeId && colorId) {
+                        // Tự chọn nút size
+                        sizeButtons.forEach(btn => {
+                            if (btn.getAttribute('data-size-id') == sizeId) {
+                                btn.classList.add('active');
+                                selectedSize = sizeId;
+                            } else {
+                                btn.classList.remove('active');
+                            }
+                        });
+                        // Tự chọn nút color
+                        colorButtons.forEach(btn => {
+                            if (btn.getAttribute('data-color-id') == colorId) {
+                                btn.classList.add('active');
+                                selectedColor = colorId;
+                            } else {
+                                btn.classList.remove('active');
+                            }
+                        });
+                        if (typeof updateStockInfo === 'function') updateStockInfo();
+                        if (typeof updateColorButtonStates === 'function') updateColorButtonStates();
+                        if (typeof updateSizeButtonStates === 'function') updateSizeButtonStates();
+                    }
+                });
+            });
+
+            function updateMainImageByVariant() {
+                if (selectedSize && selectedColor) {
+                    const matchingVariant = variants.find(variant =>
+                        variant.size_id == selectedSize && variant.color_id == selectedColor
+                    );
+                    if (matchingVariant && matchingVariant.image_url) {
+                        mainProductImage.src = '/storage/' + matchingVariant.image_url.replace(/^public\//, '');
+                    } else {
+                        mainProductImage.src = "{{ Storage::url($products->image_url) }}";
+                    }
+                }
+            }
+
+            if (sizeButtons && colorButtons) {
+                sizeButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        setTimeout(updateMainImageByVariant, 10);
+                    });
+                });
+                colorButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        setTimeout(updateMainImageByVariant, 10);
+                    });
+                });
+            }
+        });
+    </script>
+
 @endsection

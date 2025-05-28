@@ -64,17 +64,17 @@ class ProductController extends Controller
     {
         $products = Products::findOrFail($product_id);
         $variants = $products->variants;
-    
+
         // Lấy danh sách các kích cỡ và màu sắc có sẵn cho sản phẩm này
         $availableSizes = $variants->pluck('size.name', 'size.id')->unique()->toArray();
         $availableColors = $variants->pluck('color.name', 'color.id')->unique()->toArray();
-    
+
         // Lấy danh sách sản phẩm gợi ý theo danh mục
         $suggestedProducts = Products::where('category_id', $products->category_id)
             ->where('id', '!=', $product_id)
             ->take(8)
             ->get();
-    
+
         // Lấy danh sách bình luận
         $comments = $products->comments()->with('user')->latest()->get();
 
@@ -83,7 +83,19 @@ class ProductController extends Controller
             ->with('user')
             ->latest()
             ->get();
-    
+
+        // Lấy danh sách ảnh biến thể
+        $variantImages = $variants->map(function($variant) {
+            return [
+                'id' => $variant->id,
+                'size_id' => $variant->size_id,
+                'color_id' => $variant->color_id,
+                'image_url' => $variant->image_url,
+            ];
+        })->filter(function($item) {
+            return !empty($item['image_url']);
+        })->values();
+
         return view('client.pages.shop.detail', compact(
             'products',
             'variants',
@@ -91,7 +103,8 @@ class ProductController extends Controller
             'availableColors',
             'suggestedProducts',
             'comments',
-            'reviews' // truyền reviews sang view
+            'reviews',
+            'variantImages' // truyền sang view
         ));
     }
 

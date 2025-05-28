@@ -9,7 +9,13 @@ class HomeController extends Controller
 {
     public function home()
     {
-        $products = Products::all();
+        $products = \App\Models\Products::whereHas('category', function($q) {
+                $q->where('status', 0);
+            })
+            ->whereHas('brand', function($q) {
+                $q->where('status', 1);
+            })
+            ->get();
         $vouchers = \App\Models\Voucher::active()->get();
         return view('client.home', compact('products', 'vouchers'));
     }

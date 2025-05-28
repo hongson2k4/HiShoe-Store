@@ -59,10 +59,10 @@
           <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">Danh mục</a>
           <div class="dropdown-menu" aria-labelledby="categoryDropdown">
-            @foreach(App\Models\Category::all() as $category)
-              <a class="dropdown-item" href="{{ route('category', ['category_id' => $category->id]) }}">
-                {{ $category->name }}
-              </a>
+            @foreach(App\Models\Category::where('status', 0)->get() as $category)
+                <a class="dropdown-item" href="{{ route('category', ['category_id' => $category->id]) }}">
+                    {{ $category->name }}
+                </a>
             @endforeach
           </div>
         </li>
@@ -70,11 +70,11 @@
           <a class="nav-link dropdown-toggle" href="#" id="brandDropdown" role="button" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">Nhãn hàng</a>
           <div class="dropdown-menu" aria-labelledby="brandDropdown">
-            @foreach(App\Models\Brand::all() as $brand)
-              <a class="dropdown-item" href="{{ route('brand', ['brand_id' => $brand->id]) }}">
-                {{ $brand->name }}
-              </a>
-            @endforeach
+            @foreach(App\Models\Brand::where('status', 1)->get() as $brand)
+    <a class="dropdown-item" href="{{ route('brand', ['brand_id' => $brand->id]) }}">
+        {{ $brand->name }}
+    </a>
+@endforeach
           </div>
         </li>
         <li class="nav-item">

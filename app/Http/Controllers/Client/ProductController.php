@@ -18,43 +18,50 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Products::query();
-    
+
+        // Ẩn sản phẩm nếu danh mục hoặc nhãn hàng bị ẩn
+        $query->whereHas('category', function($q) {
+            $q->where('status', 0);
+        })->whereHas('brand', function($q) {
+            $q->where('status', 1);
+        });
+
         // Lọc theo danh mục
         if ($request->filled('category_id')) {
             $query->whereIn('category_id', (array) $request->category_id);
         }
-    
+
         // Lọc theo nhãn hàng
         if ($request->filled('brand_id')) {
             $query->whereIn('brand_id', (array) $request->brand_id);
         }
-    
+
         // Lọc theo khoảng giá
         if ($request->filled('price_min') && $request->filled('price_max')) {
             $query->whereBetween('price', [$request->price_min, $request->price_max]);
         }
-    
+
         // Lọc theo kích thước
         if ($request->filled('size_id')) {
             $query->whereHas('variants', function ($q) use ($request) {
                 $q->where('size_id', $request->size_id);
             });
         }
-    
+
         // Lọc theo màu sắc
         if ($request->filled('color_id')) {
             $query->whereHas('variants', function ($q) use ($request) {
                 $q->where('color_id', $request->color_id);
             });
         }
-    
+
         $products = $query->get();
         $categories = Category::all();
         $brands = Brand::all();
         $sizes = Size::all(); // Lấy danh sách kích thước
         $colors = Color::all(); // Lấy danh sách màu sắc
         $maxPrice = Products::max('price');
-    
+
         // Trả về view với các bộ lọc đã chọn
         return view('client.pages.shop.shop', compact('products', 'categories', 'brands', 'sizes', 'colors', 'maxPrice'))
             ->with('selectedFilters', $request->all());
@@ -153,7 +160,14 @@ class ProductController extends Controller
     public function category($category_id)
     {
         $category = Category::findOrFail($category_id);
-        $products = Products::where('category_id', $category_id)->get();
+        $products = Products::where('category_id', $category_id)
+            ->whereHas('category', function($q) {
+                $q->where('status', 0);
+            })
+            ->whereHas('brand', function($q) {
+                $q->where('status', 0);
+            })
+            ->get();
 
         return view('client.pages.shop.category', compact('category', 'products'));
     }
@@ -161,7 +175,14 @@ class ProductController extends Controller
     public function brand($brand_id)
     {
         $brand = Brand::findOrFail($brand_id);
-        $products = Products::where('brand_id', $brand_id)->get();
+        $products = Products::where('brand_id', $brand_id)
+            ->whereHas('category', function($q) {
+                $q->where('status', 0);
+            })
+            ->whereHas('brand', function($q) {
+                $q->where('status', 0);
+            })
+            ->get();
 
         return view('client.pages.shop.brand', compact('brand', 'products'));
     }

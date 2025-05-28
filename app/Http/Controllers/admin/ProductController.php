@@ -112,12 +112,12 @@ class ProductController extends Controller
                 'variants.*.stock_quantity.integer' => 'Số lượng biến thể phải là số nguyên.',
                 'variants.*.image.image' => 'Ảnh biến thể phải là định dạng ảnh.',
             ]);
-    
+
             // Custom validate: ít nhất 1 biến thể
             if (!isset($request->variants) || count($request->variants) < 1) {
                 return redirect()->back()->withErrors(['Phải có ít nhất một biến thể.'])->withInput();
             }
-    
+
             // Custom validate: giá biến thể >= 50% giá sản phẩm
             $productPrice = $validate['price'];
             foreach ($request->variants as $variant) {
@@ -125,18 +125,18 @@ class ProductController extends Controller
                     return redirect()->back()->withErrors(['Giá biến thể phải lớn hơn hoặc bằng 50% giá sản phẩm.'])->withInput();
                 }
             }
-    
+
             $imagePath = null;
             if ($request->hasFile('image_url')) {
                 $imagePath = $request->file('image_url')->store('products', 'public');
             }
-    
+
             // Tính tổng số lượng từ biến thể
             $totalStock = 0;
             foreach ($request->variants as $variant) {
                 $totalStock += (int)($variant['stock_quantity'] ?? 0);
             }
-    
+
             $product = Products::create([
                 'name' => $validate['name'],
                 'price' => $validate['price'],
@@ -147,19 +147,19 @@ class ProductController extends Controller
                 'stock_quantity' => $totalStock,
                 // Không lưu return_policy
             ]);
-    
+
             // Lưu mô tả sản phẩm
             $descriptionImagePath = null;
             if ($request->hasFile('description_image')) {
                 $descriptionImagePath = $request->file('description_image')->store('product_details', 'public');
             }
-    
+
             $product->productDetails()->create([
                 'detail_title' => $validate['description_title'],
                 'detail_content' => $validate['description_content'],
                 'detail_image' => $descriptionImagePath,
             ]);
-    
+
             // Lưu các biến thể
             foreach ($request->variants as $variant) {
                 $variantImagePath = null;
@@ -174,7 +174,7 @@ class ProductController extends Controller
                     'image_url' => $variantImagePath,
                 ]);
             }
-    
+            $product->syncStockQuantity();
             return redirect()->route('products.list')->with('success', 'Thêm sản phẩm thành công!');
         } catch (\Exception $e) {
             Log::error('Error creating product: ' . $e->getMessage());
@@ -234,7 +234,7 @@ class ProductController extends Controller
         }else{
             $part = $product->image_url;
         }
-        
+
         $product->update([
             'name'=>$validate['name'],
             'description'=>$validate['description'],
@@ -256,4 +256,32 @@ class ProductController extends Controller
         return redirect()->route('products.list');
     }
 
+    /**
+     * Hide the specified resource.
+     */
+    public function hide($id)
+    {
+        $product = Products::findOrFail($id);
+        $product->delete(); // Soft delete
+        return redirect()->route('products.list')->with('success', 'Sản phẩm đã được ẩn!');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore($id)
+    {
+        $product = Products::withTrashed()->findOrFail($id);
+        $product->restore();
+        return redirect()->route('products.list')->with('success', 'Sản phẩm đã được khôi phục!');
+    }
+
+    /**
+     * Display a listing of the hidden resources.
+     */
+    public function hidden()
+    {
+        $products = Products::onlyTrashed()->with('category', 'brand')->get();
+        return view('admin.products.hidden', compact('products'));
+    }
 }

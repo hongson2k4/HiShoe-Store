@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Products extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $table = 'products';
     protected $fillable = [
         'id',
@@ -73,11 +74,11 @@ class Products extends Model
         $length = max(12, min($length, 15)); // Giới hạn độ dài từ 12 đến 15
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $randomCode = '';
-    
+
         for ($i = 0; $i < $length; $i++) {
             $randomCode .= $characters[random_int(0, strlen($characters) - 1)];
         }
-    
+
         return $randomCode;
     }
     public function syncStockQuantity()
@@ -86,5 +87,5 @@ class Products extends Model
         $this->stock_quantity = $total;
         $this->save();
     }
-    
+
 }

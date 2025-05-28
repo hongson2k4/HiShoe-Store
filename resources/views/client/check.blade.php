@@ -105,3 +105,75 @@
                 @endif
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
+                    <span class="text-secondary">Tổng cộng:</span>
+                    <span class="fw-bold" id="total-amount">{{ number_format($total) }} VNĐ</span>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-dark w-100" id="confirm-payment-btn">Xác nhận thanh toán</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận thanh toán -->
+<div class="modal fade" id="confirmPaymentModal" tabindex="-1" aria-labelledby="confirmPaymentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="confirmPaymentModalLabel">Xác nhận thanh toán</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Bạn có chắc chắn muốn xác nhận thanh toán cho đơn hàng này không?</p>
+                <p class="text-danger fw-semibold" id="modal-total-amount"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-dark" id="modal-confirm-btn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function applyVoucher() {
+        const voucherCode = document.querySelector('input[name="voucher_code"]').value;
+        const csrfToken = '{{ csrf_token() }}';
+
+        fetch('{{ route("checkout.applyVoucher") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ voucher_code: voucherCode })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cập nhật lại tổng tiền sau khi áp dụng mã giảm giá
+                document.getElementById('total-amount').innerText = data.new_total + ' VNĐ';
+                alert('Áp dụng mã giảm giá thành công!');
+            } else {
+                alert('Mã giảm giá không hợp lệ hoặc đã hết hạn!');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    document.getElementById('confirm-payment-btn').addEventListener('click', function() {
+        // Hiển thị modal xác nhận thanh toán
+        const totalAmount = document.getElementById('total-amount').innerText;
+        document.getElementById('modal-total-amount').innerText = totalAmount;
+        const myModal = new bootstrap.Modal(document.getElementById('confirmPaymentModal'));
+        myModal.show();
+    });
+
+    document.getElementById('modal-confirm-btn').addEventListener('click', function() {
+        // Xác nhận thanh toán và gửi form
+        document.getElementById('payment-form').submit();
+    });
+</script>
+@endsection

@@ -5,7 +5,10 @@
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
                 <h2 class="mb-0">Quản lý sản phẩm</h2>
-                <a class="btn btn-success" href="{{ route('products.create') }}">Thêm mới sản phẩm</a>
+                <div>
+                    <a class="btn btn-success" href="{{ route('products.create') }}">Thêm mới sản phẩm</a>
+                    <a class="btn btn-secondary" href="{{ route('products.hidden') }}">Hiển thị sản phẩm ẩn</a>
+                </div>
             </div>
             <div class="card-body">
                 <form action="{{ route('products.list') }}" method="GET" class="form-inline mb-3 float-end">
@@ -66,19 +69,19 @@
                                                 href="{{ route('products.edit', $product->id) }}" title="Chỉnh sửa">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </a>
-                                            <form action="{{ route('products.destroy', $product->id) }}" method="post"
-                                                style="display:inline;">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button class="btn btn-danger btn-sm me-1"
-                                                    onclick="return confirm('Xác nhận xóa ?')" title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            {{-- Xóa nút xóa cứng, chỉ để nút ẩn --}}
                                             <a class="btn btn-info btn-sm"
                                                 href="{{ route('products.variant.list', $product->id) }}" title="Biến thể">
                                                 <i class="fas fa-tshirt"></i>
                                             </a>
+                                            <form action="{{ route('products.hide', $product->id) }}" method="post"
+                                                style="display:inline;">
+                                                @csrf
+                                                <button class="btn btn-danger btn-sm me-1"
+                                                    onclick="return confirm('Xác nhận ẩn sản phẩm này?')" title="Ẩn">
+                                                    <i class="fas fa-eye-slash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

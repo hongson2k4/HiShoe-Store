@@ -144,3 +144,6 @@ Route::middleware(['auth:admin', 'admin'])->controller(VoucherController::class)
     Route::put('update/{id}', [VoucherController::class, 'update'])->name('update');
     Route::delete('/admin/vouchers/delete-expired', [VoucherController::class, 'deleteExpired'])->name('deleteExpired');
 });
+Route::post('admin/products/{id}/hide', [ProductController::class, 'hide'])->name('products.hide');
+Route::get('admin/products/hidden', [ProductController::class, 'hidden'])->name('products.hidden');
+Route::post('admin/products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');

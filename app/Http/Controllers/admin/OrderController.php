@@ -71,8 +71,14 @@ class OrderController extends Controller
     // Hiển thị chi tiết đơn hàng
     public function show(Order $order)
     {
-        // Eager load các mối quan hệ
-        $order->load('orderDetails.productVariant.product', 'orderDetails.productVariant.size', 'orderDetails.productVariant.color');
+        // Eager load các mối quan hệ, bao gồm cả sản phẩm đã xóa mềm
+        $order->load([
+            'orderDetails.productVariant.product' => function ($query) {
+                $query->withTrashed();
+            },
+            'orderDetails.productVariant.size',
+            'orderDetails.productVariant.color'
+        ]);
         return view('admin.orders.show', compact('order'));
     }
 

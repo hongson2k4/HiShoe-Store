@@ -318,6 +318,14 @@
             colorButtons = document.querySelectorAll('#colorButtons .variant-button');
             variants = @json($variants);
 
+            const decreaseQuantityButton = document.getElementById('decreaseQuantity');
+            const increaseQuantityButton = document.getElementById('increaseQuantity');
+            const quantityInput = document.getElementById('quantityInput');
+            const addToCartButton = document.getElementById('addToCartButton');
+            const totalPrice = document.getElementById('totalPrice');
+            const stockInfo = document.getElementById('stockInfo');
+            let quantity = parseInt(quantityInput.value);
+
             updateStockInfo = function() {
                 const selectedSizeId = selectedSize;
                 const selectedColorId = selectedColor;

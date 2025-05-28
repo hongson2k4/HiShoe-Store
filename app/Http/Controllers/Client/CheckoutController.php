@@ -97,13 +97,21 @@ class CheckoutController extends Controller
         $subtotal = 0;
 
         $user = Auth::guard('web')->user();
-        $cartItems = $user ? Cart::where('user_id', $user->id)->get() : Session::get('cart', []);
+        $cartIds = $request->input('cart_ids') ? explode(',', $request->input('cart_ids')) : [];
+
         if ($user) {
+            $query = Cart::where('user_id', $user->id);
+            if (!empty($cartIds)) {
+                $query->whereIn('id', $cartIds);
+            }
+            $cartItems = $query->get();
             foreach ($cartItems as $item) {
                 $subtotal += $item->productVariant->price * $item->quantity;
             }
         } else {
-            foreach ($cartItems as $item) {
+            $sessionCart = Session::get('cart', []);
+            foreach ($sessionCart as $item) {
+                if (!empty($cartIds) && !in_array($item['id'], $cartIds)) continue;
                 $productVariant = Product_variant::find($item['product_variant_id']);
                 if ($productVariant) {
                     $subtotal += $productVariant->price * $item['quantity'];
@@ -194,7 +202,6 @@ class CheckoutController extends Controller
             $voucher = Voucher::find($appliedVoucherId);
             if ($voucher) {
                 $voucher->usage_limit += 1;
-                // Nếu voucher hết hạn trước đó thì mở lại nếu còn lượt
                 if ($voucher->usage_limit > 0 && $voucher->status == 0 && $voucher->end_date >= now()) {
                     $voucher->status = 1;
                 }
@@ -211,16 +218,24 @@ class CheckoutController extends Controller
                 ->delete();
         }
 
-        // Tính lại tổng tiền không voucher
+        // Lấy cart_ids từ request
+        $cartIds = $request->input('cart_ids') ? explode(',', $request->input('cart_ids')) : [];
+
+        // Tính lại tổng tiền không voucher chỉ cho các sản phẩm được chọn
         $subtotal = 0;
-        $user = Auth::user();
-        $cartItems = $user ? Cart::where('user_id', $user->id)->get() : Session::get('cart', []);
         if ($user) {
+            $query = Cart::where('user_id', $user->id);
+            if (!empty($cartIds)) {
+                $query->whereIn('id', $cartIds);
+            }
+            $cartItems = $query->get();
             foreach ($cartItems as $item) {
                 $subtotal += $item->productVariant->price * $item->quantity;
             }
         } else {
-            foreach ($cartItems as $item) {
+            $sessionCart = Session::get('cart', []);
+            foreach ($sessionCart as $item) {
+                if (!empty($cartIds) && !in_array($item['id'], $cartIds)) continue;
                 $productVariant = Product_variant::find($item['product_variant_id']);
                 if ($productVariant) {
                     $subtotal += $productVariant->price * $item['quantity'];
@@ -263,6 +278,21 @@ class CheckoutController extends Controller
         // Lấy danh sách cart_ids từ request
         $cartIds = $request->input('cart_ids');
         $cartIdArr = $cartIds ? explode(',', $cartIds) : [];
+
+        // Kiểm tra tồn kho từng sản phẩm
+        $cartItems = Cart::where('user_id', Auth::id())
+            ->whereIn('id', $cartIdArr)
+            ->with('productVariant')
+            ->get();
+
+        foreach ($cartItems as $item) {
+            $variant = $item->productVariant;
+            if (!$variant || $variant->stock_quantity < $item->quantity) {
+                return back()->withErrors([
+                    'stock' => 'Sản phẩm "' . ($variant ? $variant->product->name : 'Không xác định') . '" đã hết hàng hoặc không đủ số lượng.'
+                ])->withInput();
+            }
+        }
 
         $order = new Order();
         $order->user_id = Auth::id();

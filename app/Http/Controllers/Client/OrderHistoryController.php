@@ -23,9 +23,11 @@ class OrderHistoryController extends Controller
             return redirect()->route('login')->with('error', 'Đăng nhập để xem lịch sử đơn hàng!!');
         }
 
-        // Query cơ bản: Lấy đơn hàng của người dùng hiện tại
+        // Lấy đơn hàng của người dùng hiện tại, kèm sản phẩm đã xóa mềm
         $query = Order::where('user_id', auth()->id())
-            ->with(['orderItemHistories.product']);
+            ->with(['orderItemHistories.product' => function($q) {
+                $q->withTrashed();
+            }]);
 
         // Áp dụng các điều kiện lọc
         if ($request->filled('order_id')) {
@@ -57,9 +59,10 @@ class OrderHistoryController extends Controller
 
     public function show($id)
     {
-        // Tải đơn hàng cùng với danh sách sản phẩm và thông tin người dùng
-        $order = Order::with(['orderItemHistories.product'])->findOrFail($id);
-        // $product = Products::with('productVariants')->findOrFail($order->product_id);
+        $order = Order::with(['orderItemHistories.product' => function($q) {
+            $q->withTrashed();
+        }])->findOrFail($id);
+
         // Kiểm tra quyền truy cập
         if ($order->user_id !== auth()->id()) {
             return redirect()->route('order-history')->with('error', 'Bạn không có quyền xem đơn hàng này!');

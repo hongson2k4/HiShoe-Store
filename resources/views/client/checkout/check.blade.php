@@ -105,9 +105,38 @@
     </div>
 </div>
 
+@if($errors->has('stock'))
+    <div class="alert alert-danger">
+        {{ $errors->first('stock') }}
+    </div>
+@endif
+
+<!-- Toast thông báo -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055">
+    <div id="main-toast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="main-toast-body">
+                <!-- Nội dung thông báo sẽ được JS thay đổi -->
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <script>
+function showToast(message, type = 'danger') {
+    const toast = document.getElementById('main-toast');
+    const toastBody = document.getElementById('main-toast-body');
+    toast.className = `toast align-items-center text-white bg-${type} border-0`;
+    toastBody.innerText = message;
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
+
+// Thay alert(...) bằng showToast(...) trong JS:
 function applyVoucher() {
     let voucherCode = document.querySelector('input[name="voucher_code"]').value;
+    let cartIds = '{{ request("cart_ids") }}';
     if (voucherCode) {
         fetch('{{ route("apply.voucher") }}', {
             method: 'POST',
@@ -115,12 +144,12 @@ function applyVoucher() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({ voucher_code: voucherCode })
+            body: JSON.stringify({ voucher_code: voucherCode, cart_ids: cartIds })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Áp dụng mã giảm giá thành công! Giảm: ' + data.discount + ' VNĐ');
+                showToast('Áp dụng mã giảm giá thành công!', 'success');
                 document.getElementById('subtotal-text').innerText = data.subtotal + ' VNĐ';
                 document.getElementById('total-text').innerText = data.total + ' VNĐ';
                 document.getElementById('total-input').value = data.total.replace(/[^0-9]/g, '');
@@ -133,34 +162,36 @@ function applyVoucher() {
                     discountRow.classList.add('d-none');
                     discountText.innerText = '';
                 }
-            
+
                 document.querySelector('input[name="voucher_code"]').setAttribute('readonly', true);
                 document.querySelector('button[onclick="applyVoucher()"]').setAttribute('disabled', true);
                 document.getElementById('remove-voucher-btn').style.display = '';
             } else {
-                alert(data.message);
+                showToast(data.message, 'danger');
             }
         })
         .catch(error => {
-            alert('Đã có lỗi xảy ra. Vui lòng thử lại.');
+            showToast('Đã có lỗi xảy ra. Vui lòng thử lại.', 'danger');
         });
     } else {
-        alert('Vui lòng nhập mã giảm giá.');
+        showToast('Vui lòng nhập mã giảm giá.', 'warning');
     }
 }
 
 function removeVoucher() {
+    let cartIds = '{{ request("cart_ids") }}';
     fetch('{{ route("remove.voucher") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
+        },
+        body: JSON.stringify({ cart_ids: cartIds })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Đã hủy mã giảm giá.');
+            showToast('Đã hủy mã giảm giá.', 'success');
             document.getElementById('subtotal-text').innerText = data.subtotal + ' VNĐ';
             document.getElementById('total-text').innerText = data.total + ' VNĐ';
             document.getElementById('total-input').value = data.total.replace(/[^0-9]/g, '');
@@ -174,11 +205,11 @@ function removeVoucher() {
             document.getElementById('remove-voucher-btn').style.display = 'none';
             document.querySelector('input[name="voucher_code"]').value = '';
         } else {
-            alert('Có lỗi khi hủy mã giảm giá.');
+            showToast('Có lỗi khi hủy mã giảm giá.', 'danger');
         }
     })
     .catch(error => {
-        alert('Đã có lỗi xảy ra. Vui lòng thử lại.');
+        showToast('Đã có lỗi xảy ra. Vui lòng thử lại.', 'danger');
     });
 }
 </script>

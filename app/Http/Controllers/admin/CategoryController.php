@@ -9,10 +9,16 @@ use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
-    public function index(){
-        $category = Category::latest('id')->paginate(7);
-        return view('admin.categories.index',compact('category'));
+    public function index(Request $request){
+    $query = Category::query();
+
+    if ($request->has('search') && $request->search) {
+        $query->where('name', 'like', '%' . $request->search . '%');
     }
+
+    $category = $query->latest('id')->paginate(7);
+    return view('admin.categories.index', compact('category'));
+}
     public function create(){
         return view('admin.categories.create');
     }

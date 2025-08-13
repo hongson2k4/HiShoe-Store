@@ -8,6 +8,14 @@
                 class="fas fa-download fa-sm text-white-50"></i> Tạo báo cáo</a>
     </div>
 
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Content Row -->
     <div class="row">
         <!-- Earnings (Monthly) Card Example -->
@@ -39,15 +47,17 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $user }}</div>
                         </div>
                         <div class="col-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 2rem; height: 2rem; color: #6c757d;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" style="width: 2rem; height: 2rem; color: #6c757d;">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                             </svg>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
 
         <!-- Earnings (Monthly) Card Example -->
         <div class="col-xl-3 col-md-6 mb-4">
@@ -67,7 +77,7 @@
                 </div>
             </div>
         </div>
-        
+
 
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
@@ -76,7 +86,8 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Doanh thu</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($doanhthu, 0, ',', '.') }} đ</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($doanhthu, 0, ',', '.') }}
+                                đ</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -113,7 +124,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{$brand}}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-building fs-2 text-primary"></i> 
+                            <i class="bi bi-building fs-2 text-primary"></i>
                         </div>
                     </div>
                 </div>
@@ -129,7 +140,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{$cat}}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-list-ul fs-2 text-secondary"></i>   
+                            <i class="bi bi-list-ul fs-2 text-secondary"></i>
                         </div>
                     </div>
                 </div>
@@ -161,7 +172,8 @@
                 <div class="form-row align-items-end">
                     <div class="col-auto">
                         <label for="from_date">Từ ngày</label>
-                        <input type="date" class="form-control" id="from_date" name="from_date" value="{{ $fromDate ?? '' }}">
+                        <input type="date" class="form-control" id="from_date" name="from_date"
+                            value="{{ $fromDate ?? '' }}">
                     </div>
                     <div class="col-auto">
                         <label for="to_date">Đến ngày</label>
@@ -191,7 +203,7 @@
         <script>
             const ctx = document.getElementById('myChart');
             const type = "{{ request('type', 'day') }}"; // Lấy type từ URL, mặc định là 'day'
-            
+
             // Dữ liệu từ controller
             const data = {
                 labels: @json($labels),
@@ -212,7 +224,7 @@
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
+                                callback: function (value) {
                                     return value.toLocaleString() + ' VNĐ';
                                 }
                             }

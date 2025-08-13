@@ -11,9 +11,9 @@ class OrderDetail extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id', 
-        'product_variant_id', 
-        'quantity', 
+        'order_id',
+        'product_variant_id',
+        'quantity',
         'price',
         'subtotal',
         'discount_amount'
@@ -42,13 +42,6 @@ class OrderDetail extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'id');
     }
-
-    // Bỏ getSubtotalAttribute nếu bạn đã lưu subtotal trong cơ sở dữ liệu
-    // Nếu không lưu, bạn có thể giữ lại để tính toán
-    // public function getSubtotalAttribute(): float
-    // {
-    //     return $this->quantity * $this->price;
-    // }
 
     // Mutators
     public function setQuantityAttribute($value)

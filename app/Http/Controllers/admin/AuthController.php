@@ -20,7 +20,8 @@ class AuthController extends Controller
      * Chuyển đến trang đăng nhập quản trị viên nếu đã đăng nhập.
      *
      */
-    public function index(){
+    public function index()
+    {
         if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role == 1) {
             return Redirect::route('admin.dashboard');
         }
@@ -31,7 +32,8 @@ class AuthController extends Controller
      * Hiển thị trang đăng nhập cho quản trị viên.
      *
      */
-    public function loginForm(){
+    public function loginForm()
+    {
         if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->role == 1) {
             return Redirect::route('admin.dashboard')->with('error', 'Bạn đã đăng nhập!');
         }
@@ -42,16 +44,17 @@ class AuthController extends Controller
      * Xử lý đăng nhập cho quản trị viên.
      *
      */
-    public function login(Request $request){
-        if (Auth::guard('admin')->attempt(['username'=>$request->input('username'), 'password'=>$request->input('password')]) ){
+    public function login(Request $request)
+    {
+        if (Auth::guard('admin')->attempt(['username' => $request->input('username'), 'password' => $request->input('password')])) {
             if (Auth::guard('admin')->user()->role == 1) {
-               
+
                 return redirect()->route('admin.dashboard');
             }
             session()->flash('error', 'Bạn không thể truy cập vào khu vực này!');
             return redirect('/admin/login-form');
         }
-    
+
         session()->flash('error', 'Sai thông tin đăng nhập!');
         return redirect()->route('admin.loginForm');
     }
@@ -60,7 +63,8 @@ class AuthController extends Controller
      * Xử lý đăng xuất cho quản trị viên.
      *
      */
-    public function logout(){
+    public function logout()
+    {
         Auth::guard('admin')->logout();
         return redirect()->route('home');
     }
@@ -103,89 +107,89 @@ class AuthController extends Controller
             }
         } else {
             $doanhthu = Order::where('status', '!=', 'pending')->sum('total_price');
-            
+
             // Xử lý dữ liệu biểu đồ theo type
             switch ($type) {
                 case 'day':
                     // Doanh thu theo ngày trong tuần (7 ngày gần nhất)
                     $labels = [];
                     $chartData = [];
-                    
+
                     for ($i = 6; $i >= 0; $i--) {
                         $date = now()->subDays($i);
                         $dateString = $date->format('d/m/Y');
                         $labels[] = $dateString;
-                        
+
                         $revenue = Order::where('status', '!=', 'pending')
-                                       ->whereDate('created_at', $date->toDateString())
-                                       ->sum('total_price');
+                            ->whereDate('created_at', $date->toDateString())
+                            ->sum('total_price');
                         $chartData[] = $revenue;
                     }
                     break;
-                    
+
                 case 'week':
                     // Doanh thu theo tuần (4 tuần gần nhất)
                     $labels = [];
                     $chartData = [];
-                    
+
                     for ($i = 3; $i >= 0; $i--) {
                         $startDate = now()->subWeeks($i)->startOfWeek();
                         $endDate = now()->subWeeks($i)->endOfWeek();
-                        $label = 'Tuần ' . (now()->subWeeks($i)->weekOfMonth) . ' (' . 
-                                 $startDate->format('d/m') . ' - ' . $endDate->format('d/m') . ')';
+                        $label = 'Tuần ' . (now()->subWeeks($i)->weekOfMonth) . ' (' .
+                            $startDate->format('d/m') . ' - ' . $endDate->format('d/m') . ')';
                         $labels[] = $label;
-                        
+
                         $revenue = Order::where('status', '!=', 'pending')
-                                       ->whereBetween('created_at', [$startDate, $endDate])
-                                       ->sum('total_price');
+                            ->whereBetween('created_at', [$startDate, $endDate])
+                            ->sum('total_price');
                         $chartData[] = $revenue;
                     }
                     break;
-                    
+
                 case 'month':
                     // Doanh thu theo tháng (12 tháng trong năm hiện tại)
                     $labels = [];
                     $chartData = [];
-                    
+
                     for ($i = 1; $i <= 12; $i++) {
                         $labels[] = 'Tháng ' . $i;
                         $revenue = Order::where('status', '!=', 'pending')
-                                       ->whereYear('created_at', now()->year)
-                                       ->whereMonth('created_at', $i)
-                                       ->sum('total_price');
+                            ->whereYear('created_at', now()->year)
+                            ->whereMonth('created_at', $i)
+                            ->sum('total_price');
                         $chartData[] = $revenue;
                     }
                     break;
-                    
+
                 case 'year':
                     // Doanh thu theo năm (5 năm gần nhất)
                     $labels = [];
                     $chartData = [];
-                    
+
                     for ($i = 4; $i >= 0; $i--) {
                         $year = now()->year - $i;
                         $labels[] = 'Năm ' . $year;
-                        
+
                         $revenue = Order::where('status', '!=', 'pending')
-                                       ->whereYear('created_at', $year)
-                                       ->sum('total_price');
+                            ->whereYear('created_at', $year)
+                            ->sum('total_price');
                         $chartData[] = $revenue;
                     }
                     break;
-                    
+
                 default:
                     // Mặc định hiển thị theo ngày
                     $labels = [];
                     $chartData = [];
-                    
+
                     for ($i = 6; $i >= 0; $i--) {
                         $date = now()->subDays($i);
                         $dateString = $date->format('d/m/Y');
                         $labels[] = $dateString;
-                        
+
                         $revenue = Order::where('status', '!=', 'pending')
-                                       ->whereDate('created_at', $date->toDateString())
-                                       ->sum('total_price');
+                            ->whereDate('created_at', $date->toDateString())
+                            ->sum('total_price');
                         $chartData[] = $revenue;
                     }
             }

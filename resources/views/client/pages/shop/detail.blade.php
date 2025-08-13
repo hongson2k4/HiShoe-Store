@@ -4,6 +4,9 @@
 
 @section('content')
 
+    <!-- Thêm vào trước thẻ </body> nếu chưa có -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .product-image {
             width: 100%;
@@ -170,38 +173,44 @@
                     <p>Thương hiệu: {{ $products->brand->name }}</p>
                     <p>Danh mục: {{ $products->category->name }}</p>
 
-                    <div class="variant-selector">
-                        <p>Chọn kích cỡ:</p>
-                        <div id="sizeButtons">
-                            @foreach($availableSizes as $id => $name)
-                                <button class="btn btn-outline-secondary m-1 variant-button"
-                                    data-size-id="{{ $id }}">{{ $name }}</button>
-                            @endforeach
+                    @if($variants->count() == 0)
+                        <div class="alert alert-danger mt-3">
+                            Sản phẩm hiện đang hết hàng. Vui lòng quay lại sau!
                         </div>
-                        <p>Chọn màu sắc:</p>
-                        <div id="colorButtons">
-                            @foreach($availableColors as $id => $name)
-                                <button class="btn btn-outline-secondary m-1 variant-button"
-                                    data-color-id="{{ $id }}">{{ $name }}</button>
-                            @endforeach
+                    @else
+                        <div class="variant-selector">
+                            <p>Chọn kích cỡ:</p>
+                            <div id="sizeButtons">
+                                @foreach($availableSizes as $id => $name)
+                                    <button class="btn btn-outline-secondary m-1 variant-button"
+                                        data-size-id="{{ $id }}">{{ $name }}</button>
+                                @endforeach
+                            </div>
+                            <p>Chọn màu sắc:</p>
+                            <div id="colorButtons">
+                                @foreach($availableColors as $id => $name)
+                                    <button class="btn btn-outline-secondary m-1 variant-button"
+                                        data-color-id="{{ $id }}">{{ $name }}</button>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
 
-                    <p id="stockInfo" class="text-muted">Chọn kích cỡ và màu sắc để xem số lượng hàng trong kho</p>
+                        <p id="stockInfo" class="text-muted">Chọn kích cỡ và màu sắc để xem số lượng hàng trong kho</p>
 
-                    <div class="input-group my-3" style="width: 120px;">
-                        <div class="input-group-prepend">
-                            <button class="btn btn-outline-secondary" type="button" id="decreaseQuantity">-</button>
+                        <div class="input-group my-3" style="width: 120px;">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-secondary" type="button" id="decreaseQuantity">-</button>
+                            </div>
+                            <input type="number" class="form-control text-center" value="1" min="1" id="quantityInput">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="increaseQuantity">+</button>
+                            </div>
                         </div>
-                        <input type="number" class="form-control text-center" value="1" min="1" id="quantityInput">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" id="increaseQuantity">+</button>
-                        </div>
-                    </div>
 
-                    <h4 class="text-danger mt-3" id="totalPrice">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h4>
+                        <h4 class="text-danger mt-3" id="totalPrice">{{ number_format($products->price, 0, ',', '.') }} VNĐ</h4>
 
-                    <button id="addToCartButton" class="btn btn-success mt-3 w-100">Thêm vào giỏ hàng</button>
+                        <button id="addToCartButton" class="btn btn-success mt-3 w-100">Thêm vào giỏ hàng</button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -309,13 +318,31 @@
         </div>
     </div>
 
+    <!-- Toast thông báo thêm vào giỏ hàng thành công -->
+    <div aria-live="polite" aria-atomic="true"
+        style="position: fixed; bottom: 1rem; right: 1rem; min-width: 250px; z-index: 9999;">
+        <div class="toast" id="cartSuccessToast" data-delay="2500">
+            <div class="toast-header bg-success text-white">
+                <strong class="mr-auto"><i class="fa fa-check-circle"></i> Thành công</strong>
+                <small>Vừa xong</small>
+                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Đóng">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Sản phẩm đã được thêm vào giỏ hàng.
+            </div>
+        </div>
+    </div>
+    <!-- Kết thúc toast -->
+
     <script>
         // Đặt các biến toàn cục ở ngoài
         let sizeButtons, colorButtons, selectedSize = null, selectedColor = null, variants, updateStockInfo, updateColorButtonStates, updateSizeButtonStates;
 
         document.addEventListener('DOMContentLoaded', function () {
-            sizeButtons = document.querySelectorAll('#sizeButtons .variant-button');
-            colorButtons = document.querySelectorAll('#colorButtons .variant-button');
+            sizeButtons = Array.from(document.querySelectorAll('#sizeButtons .variant-button'));
+            colorButtons = Array.from(document.querySelectorAll('#colorButtons .variant-button'));
             variants = @json($variants);
 
             const decreaseQuantityButton = document.getElementById('decreaseQuantity');
@@ -326,7 +353,7 @@
             const stockInfo = document.getElementById('stockInfo');
             let quantity = parseInt(quantityInput.value);
 
-            updateStockInfo = function() {
+            updateStockInfo = function () {
                 const selectedSizeId = selectedSize;
                 const selectedColorId = selectedColor;
 
@@ -351,8 +378,8 @@
 
                 // Định dạng giá tiền đẹp hơn
                 totalPrice.innerHTML = `<span style="font-size:1.5rem;">
-                                    ${Number(price).toLocaleString('vi-VN')} <span style="font-size:1rem;">VNĐ</span>
-                                </span>`;
+                                                ${Number(price).toLocaleString('vi-VN')} <span style="font-size:1rem;">VNĐ</span>
+                                            </span>`;
 
                 return maxStock;
             }
@@ -403,7 +430,7 @@
             });
 
             // Disable color buttons if no variant exists for selected size
-            updateColorButtonStates = function() {
+            updateColorButtonStates = function () {
                 colorButtons.forEach(button => {
                     const colorId = button.getAttribute('data-color-id');
                     const exists = variants.some(variant =>
@@ -415,7 +442,7 @@
             }
 
             // Disable size buttons if no variant exists for selected color
-            updateSizeButtonStates = function() {
+            updateSizeButtonStates = function () {
                 sizeButtons.forEach(button => {
                     const sizeId = button.getAttribute('data-size-id');
                     const exists = variants.some(variant =>
@@ -458,6 +485,11 @@
             });
 
             addToCartButton.addEventListener('click', function () {
+                // Kiểm tra hết hàng
+                if (variants.length === 0) {
+                    alert('Sản phẩm này hiện đang hết hàng.');
+                    return;
+                }
                 // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
                 @if (!Auth::check())
                     alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');
@@ -468,6 +500,12 @@
                         const maxStock = updateStockInfo();
                 if (!selectedSize || !selectedColor) {
                     alert('Vui lòng chọn kích cỡ và màu sắc trước khi thêm vào giỏ hàng.');
+                    return;
+                }
+
+                // Thêm kiểm tra này để báo hết hàng đúng cách
+                if (maxStock === 0) {
+                    alert('Sản phẩm này hiện đang hết hàng.');
                     return;
                 }
 
@@ -495,7 +533,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Sản phẩm đã được thêm vào giỏ hàng.');
+                            // Hiển thị toast Bootstrap 4 bằng jQuery
+                            $('#cartSuccessToast').toast('show');
                         } else {
                             alert(data.message || 'Đã xảy ra lỗi khi thêm vào giỏ hàng.');
                         }

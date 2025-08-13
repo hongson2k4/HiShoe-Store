@@ -78,7 +78,7 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="contact.html">Liên hệ</a>
+          <a class="nav-link" href="{{ route('contact') }}">Liên hệ</a>
         </li>
       </ul>
 <!-- User Options -->
@@ -105,8 +105,8 @@
 
         <a href="{{ route('cart') }}" class="nav-link position-relative">
           <i class="fa fa-shopping-cart fa-lg"></i>
-          @if(Auth::check())
-            @php $cartCount = App\Models\Cart::where('user_id', Auth::id())->sum('quantity'); @endphp
+            @if(Auth::check())
+            @php $cartCount = App\Models\Cart::where('user_id', Auth::id())->count(); @endphp
           @else
             @php $cartCount = collect(Session::get('cart', []))->sum('quantity'); @endphp
           @endif

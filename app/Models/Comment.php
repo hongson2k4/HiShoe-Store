@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comment extends Model
 {
-    protected $table = 'comments'; 
+    protected $table = 'comments';
 
     protected $fillable = [
         'product_id',

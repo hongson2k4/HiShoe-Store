@@ -28,40 +28,46 @@ class Voucher extends Model
         'end_date'
     ];
 
-    // Status constants
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
-    const STATUS_EXPIRED = 2; // Thêm trạng thái hết hạn
+    public const STATUS_ACTIVE = 1;
+    public const STATUS_INACTIVE = 0;
+    public const STATUS_EXPIRED = 2;
+    public const STATUS_FUTURE = 3;
 
-    // Relationships
+    /** 
+     * Get the orders associated with the voucher.
+     */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
-
-    // Scope for active vouchers
+    /**
+     * Scope a query to only include active vouchers.
+     */
     public function scopeActive($query)
     {
         return $query->where('status', self::STATUS_ACTIVE)
-                     ->where('start_date', '<=', now())
-                     ->where('end_date', '>=', now());
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now());
     }
-
-    // Check if voucher is valid
+    /**
+     * Check if the voucher is valid
+     */
     public function isValid(): bool
     {
         return $this->status == self::STATUS_ACTIVE
-               && now()->between($this->start_date, $this->end_date)
-               && ($this->usage_limit === null || $this->used_count < $this->usage_limit);
+            && now()->between($this->start_date, $this->end_date)
+            && ($this->usage_limit === null || $this->used_count < $this->usage_limit);
     }
-
-    // Check if voucher is expired
+    /**
+     * Check if the voucher is expired
+     */
     public function isExpired(): bool
     {
         return $this->end_date < now();
     }
-
-    // Apply voucher to order
+    /**
+     * Apply the voucher to an order
+     */
     public function applyToOrder(Order $order)
     {
         if (!$this->isValid()) {
@@ -79,8 +85,9 @@ class Voucher extends Model
 
         return true;
     }
-
-    // Get status text
+    /**
+     * Get the discount amount based on the type
+     */
     public function getStatusTextAttribute()
     {
         return $this->status == self::STATUS_ACTIVE ? 'Active' : 'Inactive';

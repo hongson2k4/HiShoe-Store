@@ -14,7 +14,8 @@ class UserController extends Controller
 {
     private $view;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->view = [];
     }
 
@@ -24,15 +25,15 @@ class UserController extends Controller
         $status = $request->query('status');
         $role = $request->query('role');
         $address = $request->query('address');
-    
+
         $users = User::query()
-            ->where('role',0)
+            ->where('role', 0)
             ->when($search, function ($query) use ($search) {
                 return $query->where(function ($query) use ($search) {
                     $query->where('username', 'like', "%{$search}%")
-                          ->orWhere('full_name', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%")
-                          ->orWhere('phone_number', 'like', "%{$search}%");
+                        ->orWhere('full_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone_number', 'like', "%{$search}%");
                 });
             })
             ->when($status !== null, function ($query) use ($status) {
@@ -45,28 +46,28 @@ class UserController extends Controller
                 return $query->where('address', 'like', "%{$address}%");
             })
             ->get();
-    
+
         $provinces = json_decode(File::get(public_path('hanhchinhvn/tinh_tp.json')), true);
         $districts = json_decode(File::get(public_path('hanhchinhvn/quan_huyen.json')), true);
         $wards = json_decode(File::get(public_path('hanhchinhvn/xa_phuong.json')), true);
-    
+
         foreach ($users as $user) {
-            if($user->address) {
+            if ($user->address) {
                 $addressParts = explode(', ', $user->address);
                 list($wardCode, $districtCode, $provinceCode) = $addressParts;
-    
+
                 $wardName = $wards[$wardCode]['name_with_type'] ?? 'Không xác định';
                 $districtName = $districts[$districtCode]['name_with_type'] ?? 'Không xác định';
                 $provinceName = $provinces[$provinceCode]['name_with_type'] ?? 'Không xác định';
-    
+
                 $user->address = "$wardName, $districtName, $provinceName";
             } else {
                 $user->address = 'Chưa cập nhật địa chỉ';
             }
         }
-    
+
         $addresses = $users->pluck('address')->unique();
-    
+
         return view("admin.users.list", compact("users", "addresses"));
     }
 
@@ -78,7 +79,7 @@ class UserController extends Controller
         $districts = json_decode(File::get(public_path('hanhchinhvn/quan_huyen.json')), true);
         $wards = json_decode(File::get(public_path('hanhchinhvn/xa_phuong.json')), true);
 
-        if($user->address) {
+        if ($user->address) {
             $addressParts = explode(', ', $user->address);
             list($wardCode, $districtCode, $provinceCode) = $addressParts;
 
@@ -91,9 +92,9 @@ class UserController extends Controller
             $user->address = 'Chưa cập nhật địa chỉ';
         }
 
-        return view('admin.users.show', compact('user'));   
+        return view('admin.users.show', compact('user'));
     }
-    
+
     public function ban(Request $request)
     {
         $user = User::findOrFail($request->user_id);
@@ -104,7 +105,7 @@ class UserController extends Controller
             $user->status = 1;
             $user->ban_reason = $request->ban_reason;
             $user->banned_at = now();
-    
+
             UserHistoryChanges::create([
                 'user_id' => $user->id,
                 'field_name' => 'status',
@@ -116,10 +117,10 @@ class UserController extends Controller
             ]);
         }
         $user->save();
-    
+
         return redirect()->route('users.list')->with('success', 'Trạng thái đã được cập nhật!');
     }
-    
+
     public function unban($id)
     {
         $user = User::findOrFail($id);
@@ -129,7 +130,7 @@ class UserController extends Controller
         $user->status = 0;
         $user->ban_reason = null;
         $user->banned_at = null;
-    
+
         UserHistoryChanges::create([
             'user_id' => $user->id,
             'field_name' => 'status',
@@ -139,7 +140,7 @@ class UserController extends Controller
             'content' => "Gỡ khóa tài khoản người dùng!",
             'updated_at' => now(),
         ]);
-    
+
         $user->save();
         return redirect()->route('users.list')->with('success', 'Trạng thái đã được cập nhật!');
     }

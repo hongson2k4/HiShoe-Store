@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -24,7 +23,7 @@ class UserSeeder extends Seeder
                 'email_verified_at'=> fake()->dateTime(),
                 'phone_number' => fake()->phoneNumber(),
                 'address' => fake()->address(),
-                'role' => 0, // always users is customer
+                'role' => 0,
             ];
         }
         DB::table('users')->insert($s);

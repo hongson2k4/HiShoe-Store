@@ -2,6 +2,18 @@
 @section('content')
     <h1>Danh sách biến thể sản phẩm</h1>
     <h3>Tên sản phẩm: {{ $product->name }}</h3>
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <a class="btn btn-success m-2" href="{{ route('products.variant.create', ['product_id' => $product_id]) }}">Thêm mới biến thể</a>
     <table class="table">
         <thead>

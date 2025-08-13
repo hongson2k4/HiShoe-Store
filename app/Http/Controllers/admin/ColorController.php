@@ -7,16 +7,19 @@ use Illuminate\Http\Request;
 
 class ColorController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $colors = Color::all();
         return view('admin.colors.index', compact('colors'));
     }
 
-    public function create() {
+    public function create()
+    {
         return view('admin.colors.create');
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
             'name' => 'required|unique:colors',
             'code' => 'nullable|string',
@@ -31,11 +34,13 @@ class ColorController extends Controller
         return redirect()->route('colors.index')->with('success', 'Màu đã được thêm.');
     }
 
-    public function edit(Color $color) {
+    public function edit(Color $color)
+    {
         return view('admin.colors.edit', compact('color'));
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
         $color = Color::findOrFail($id);
 
         // Kiểm tra dữ liệu đầu vào
@@ -59,7 +64,8 @@ class ColorController extends Controller
         return redirect()->route('colors.index')->with('success', 'Màu đã cập nhật thành công!');
     }
 
-    public function destroy(Color $color) {
+    public function destroy(Color $color)
+    {
         $color->delete();
         return redirect()->route('colors.index')->with('success', 'Màu đã xóa.');
     }

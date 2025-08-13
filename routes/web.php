@@ -38,7 +38,6 @@ Route::controller(ProductController::class)
     Route::get('/category/{category_id}',[ProductController::class,'category'])->name('category');
     Route::get('/brand/{brand_id}',[ProductController::class,'brand'])->name('brand');
 });
-// Route::get('/api/get-variant-price', [ProductController::class, 'getVariantPrice']);
 
 Route::controller(AuthController::class)
 ->prefix('')
@@ -48,6 +47,8 @@ Route::controller(AuthController::class)
     Route::get('/register-form', [AuthController::class, 'registerForm'])->name('registerForm');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
+    Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback']);
 });
 
 Route::controller(AuthController::class)
@@ -140,6 +141,9 @@ Route::prefix('checkout')->group(function(){
     Route::get('/index', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/failed', [CheckoutController::class, 'failure'])->name('checkout.failed');
     Route::post('/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('apply.voucher');
     Route::post('/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('remove.voucher');
 });
+
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');

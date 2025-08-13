@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class BrandController extends Controller
 {
+    
     /**
      * Trang danh sách thương hiệu.
      * Hiển thị danh sách thương hiệu với phân trang và tìm kiếm.
@@ -18,11 +19,11 @@ class BrandController extends Controller
         $brands = Brand::when($request->filled('search'), function ($query) use ($request) {
             $query->where('name', 'like', '%' . trim($request->search) . '%');
         })
-        ->when($request->filled('status'), function ($query) use ($request) {
-            $query->where('status', $request->status);
-        })
-        ->orderByDesc('updated_at')
-        ->paginate(10);
+            ->when($request->filled('status'), function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->orderByDesc('updated_at')
+            ->paginate(10);
 
         return view('admin.brands.list', compact('brands'));
     }
@@ -111,12 +112,12 @@ class BrandController extends Controller
     public function toggleStatus(Brand $brand)
     {
         // Use model's built-in methods
-        $brand->status === Brand::STATUS_ACTIVE 
-            ? $brand->deactivate() 
+        $brand->status === Brand::STATUS_ACTIVE
+            ? $brand->deactivate()
             : $brand->activate();
 
-        $statusMessage = $brand->status === Brand::STATUS_ACTIVE 
-            ? 'activated' 
+        $statusMessage = $brand->status === Brand::STATUS_ACTIVE
+            ? 'activated'
             : 'deactivated';
 
         return redirect()->route('brands.index')

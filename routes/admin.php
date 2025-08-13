@@ -12,6 +12,10 @@ use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\OrderController;
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\Admin;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Two\GoogleProvider;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +32,7 @@ Route::controller(AuthController::class)
     ->name('admin.')
     ->prefix('admin/')
     ->group(function () {
-        Route::get('', [AuthController::class, 'index'])->name('index');
+        Route::get('/', [AuthController::class, 'index'])->name('index');
         Route::get('/login-form', [AuthController::class, 'loginForm'])->name('loginForm');
         Route::post('/login', [AuthController::class, 'login'])->name('login');
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -89,19 +93,6 @@ Route::middleware(['auth:admin', 'admin'])->prefix('admin/orders')->group(functi
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.delete');
 });
 
-// Route::middleware(['auth:admin', 'admin'])->controller(BrandController::class)
-//     ->prefix('admin/colors')
-//     ->name('colors.')
-//     ->group(function () {
-//         Route::get('/', 'index')->name('');
-//         Route::get('/create', 'create')->name('create');
-//         Route::post('/', 'store')->name('store');
-//         Route::get('/{brand}/edit', 'edit')->name('edit');
-//         Route::put('/{brand}', 'update')->name('update');
-//         Route::put('/{brand}/toggle', 'toggleStatus')->name('toggle');
-// });
-
-
 Route::middleware(['auth:admin', 'admin'])->resource('admin/sizes', SizeController::class);
 Route::middleware(['auth:admin', 'admin'])->resource('admin/colors', ColorController::class);
 Route::middleware(['auth:admin', 'admin'])->put('/colors/{id}', [ColorController::class, 'update'])->name('colors.update');
@@ -127,9 +118,9 @@ Route::middleware(['auth:admin', 'admin'])->controller(ProductVariantController:
         Route::get('products/{product_id}', [ProductVariantController::class, 'index'])->name('list');
         Route::get('products/{product_id}/create', [ProductVariantController::class, 'create'])->name('create');
         Route::post('products/{product_id}/store', [ProductVariantController::class, 'store'])->name('store');
-        Route::get('products/{product_id}/edit/{id}', [ProductVariantController::class, 'edit'])->where('id', '[0-9]+')->name('edit');
-        Route::put('products/{product_id}/update/{id}', [ProductVariantController::class, 'update'])->where('id', '[0-9]+')->name('update');
-        Route::delete('products/{product_id}/delete/{id}', [ProductVariantController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
+        Route::get('products/{product_id}/edit/{id}', [ProductVariantController::class, 'edit'])->name('edit');
+        Route::put('products/{product_id}/update/{id}', [ProductVariantController::class, 'update'])->name('update');
+        Route::delete('products/{product_id}/delete/{id}', [ProductVariantController::class, 'destroy'])->name('destroy');
     });
 
 Route::middleware(['auth:admin', 'admin'])->controller(VoucherController::class)
@@ -147,3 +138,38 @@ Route::middleware(['auth:admin', 'admin'])->controller(VoucherController::class)
 Route::post('admin/products/{id}/hide', [ProductController::class, 'hide'])->name('products.hide');
 Route::get('admin/products/hidden', [ProductController::class, 'hidden'])->name('products.hidden');
 Route::post('admin/products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
+
+
+Route::get('/auth/redirect/google', function () {
+    $config = config('services.google_admin');
+    $provider = Socialite::buildProvider(GoogleProvider::class, [
+        'client_id' => $config['client_id'],
+        'client_secret' => $config['client_secret'],
+        'redirect' => $config['redirect'],
+    ]);
+    return $provider->redirect();
+})->name('admin.auth.redirect.google');
+
+Route::get('/auth/callback/google', function () {
+    $config = config('services.google_admin');
+    $provider = Socialite::buildProvider(GoogleProvider::class, [
+        'client_id' => $config['client_id'],
+        'client_secret' => $config['client_secret'],
+        'redirect' => $config['redirect'],
+    ]);
+    $googleUser = $provider->stateless()->user();
+
+    $admin = Admin::where('email', $googleUser->getEmail())->first();
+
+    if ($admin) {
+        if (!$admin->google_id) {
+            $admin->google_id = $googleUser->getId();
+            $admin->save();
+        }
+        Auth::guard('admin')->login($admin);
+    } else {
+        return redirect('/admin/login-form')->with('error',  'Tài khoản không thể đăng nhập khu vực này. Vui lòng liên hệ quản trị viên.');
+    }
+
+    return redirect('/admin/dashboard')->with('success', 'Đăng nhập thành công với Google!');
+})->name('admin.auth.callback.google');

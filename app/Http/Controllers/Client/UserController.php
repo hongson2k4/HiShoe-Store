@@ -10,21 +10,24 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function profile(){
-        if(!Auth::guard('web')->check()){
+    public function profile()
+    {
+        if (!Auth::guard('web')->check()) {
             return redirect()->route('loginForm')->with('error', 'Chức năng này yêu cầu đăng nhập.');
         }
         return view("client.pages.user.profile");
     }
 
-    public function addAddress(){
-        if(!Auth::guard('web')->check()){
+    public function addAddress()
+    {
+        if (!Auth::guard('web')->check()) {
             return redirect()->route('loginForm')->with('error', 'Chức năng này yêu cầu đăng nhập.');
         }
         return view("client.pages.user.add_address");
     }
 
-    public function submitAddress(Request $request){
+    public function submitAddress(Request $request)
+    {
         $request->validate([
             'receive_name' => 'required|string|max:255',
             'receive_number' => 'required|string|max:255',

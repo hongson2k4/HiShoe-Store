@@ -31,29 +31,28 @@ class Order extends Model
     /**
      * Determine if the order can be cancelled
      *
-     * @return bool
      */
     public static function generateOrderCheck()
-        {
-            do {
-                $code = Str::upper(Str::random(10)); // Sinh chuỗi ngẫu nhiên 10 ký tự
-            } while (self::where('order_check', $code)->exists()); // Đảm bảo mã không trùng
+    {
+        do {
+            $code = Str::upper(Str::random(10)); // Sinh chuỗi ngẫu nhiên 10 ký tự
+        } while (self::where('order_check', $code)->exists()); // Đảm bảo mã không trùng
 
-            return $code;
-        }
+        return $code;
+    }
 
     public function canCancel()
     {
         // Chỉ cho phép hủy khi trạng thái là "Đơn đã đặt" (status = 1)
         $cancelableStatuses = [1]; // Chỉ Pending
-    
+
         if (!in_array($this->status, $cancelableStatuses)) {
             return false;
         }
-    
+
         // Kiểm tra thời gian 7 ngày (7 * 24 = 168 giờ)
         $createdWithin7Days = Carbon::parse($this->created_at)->diffInHours(Carbon::now()) <= 168;
-    
+
         return $createdWithin7Days;
     }
 
@@ -132,7 +131,7 @@ class Order extends Model
         ];
         return $statuses[$this->status] ?? 'Không xác định';
     }
-    
+
     /**
      * Get status badge class
      *
@@ -168,7 +167,7 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
-    
+
 
     /**
      * Relationship with Voucher (optional)
@@ -192,9 +191,7 @@ class Order extends Model
     // Recalculate total price with voucher consideration
     public function recalculateTotalPrice()
     {
-        $total = $this->orderDetails->sum(function ($detail) {
-            return $detail->quantity * $detail->price;
-        });
+        $total = $this->orderDetails->reduce(fn($carry, $detail) => $carry + $detail->quantity * $detail->price, 0);
 
         // Apply voucher discount if exists
         if ($this->voucher && $this->voucher->exists) {
@@ -207,7 +204,7 @@ class Order extends Model
         return $this->total_price;
     }
 
-     
+
 
     // Mối quan hệ với bảng order_item_histories
     public function orderItemHistories()
@@ -220,7 +217,7 @@ class Order extends Model
     {
         return $this->belongsTo(Products::class, 'product_id');
     }
-    
+
     public function variant()
     {
         return $this->belongsTo(Product_variant::class, 'variant_id');

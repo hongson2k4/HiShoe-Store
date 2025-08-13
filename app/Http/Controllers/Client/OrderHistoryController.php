@@ -18,16 +18,19 @@ class OrderHistoryController extends Controller
         $this->middleware('auth'); // Chặn người chưa đăng nhập
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'Đăng nhập để xem lịch sử đơn hàng!!');
         }
 
         // Lấy đơn hàng của người dùng hiện tại, kèm sản phẩm đã xóa mềm
         $query = Order::where('user_id', auth()->id())
-            ->with(['orderItemHistories.product' => function($q) {
-                $q->withTrashed();
-            }]);
+            ->with([
+                'orderItemHistories.product' => function ($q) {
+                    $q->withTrashed();
+                }
+            ]);
 
         // Áp dụng các điều kiện lọc
         if ($request->filled('order_id')) {
@@ -59,9 +62,11 @@ class OrderHistoryController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['orderItemHistories.product' => function($q) {
-            $q->withTrashed();
-        }])->findOrFail($id);
+        $order = Order::with([
+            'orderItemHistories.product' => function ($q) {
+                $q->withTrashed();
+            }
+        ])->findOrFail($id);
 
         // Kiểm tra quyền truy cập
         if ($order->user_id !== auth()->id()) {
@@ -127,32 +132,6 @@ class OrderHistoryController extends Controller
 
         return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công!');
     }
-
-    // public function cancel($id)
-    // {
-    //     $order = Order::where('user_id', auth()->id())->findOrFail($id);
-
-    //     if (!$order->canCancel()) {
-    //         return redirect()->back()->with('error', 'Đơn hàng không thể hủy! Chỉ có thể hủy đơn hàng trong vòng 24 giờ và khi trạng thái là "Đơn đã đặt" hoặc "Đang đóng gói".');
-    //     }
-
-    //     // Lấy danh sách sản phẩm trong đơn hàng
-    //     $orderItems = $order->orderItemHistories;
-    //     foreach ($orderItems as $item) {
-    //         $variant = \App\Models\ProductVariant::find($item->variant_id);
-    //         if ($variant) {
-    //             $variant->stock += $item->quantity;
-    //             $variant->save();
-    //         }
-    //     }
-
-    //     // Cập nhật trạng thái
-    //     $order->status = 5;
-    //     $order->updated_at = now();
-    //     $order->save();
-
-    //     return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công!');
-    // }
 
     public function receive($id)
     {

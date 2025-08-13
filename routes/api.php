@@ -35,17 +35,10 @@ Route::get('/get-products', function (Request $request) {
 
     return response()->json($products);
 });
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 Route::get('/get-variant-price', [ProductController::class, 'getVariantPrice']);
 
 Route::middleware(['auth:web'])->post('/cart/add', [CartController::class, 'addToCart']);
-
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::post('/products/{product}/like', [LikeController::class, 'toggleLike']);
-// });
 
 Route::patch('/cart/{id}', [CartController::class, 'apiUpdate']);
 

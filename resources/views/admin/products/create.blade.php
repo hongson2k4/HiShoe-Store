@@ -32,18 +32,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <!-- Giá sản phẩm -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="productPrice">Giá tiền (VND)</label>
-                                <input type="number" class="form-control @error('price') is-invalid @enderror"
-                                    id="productPrice" name="price" value="{{ old('price') }}" placeholder="Giá"
-                                    required>
-                                @error('price')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+
                     </div>
                     <input type="hidden" name="sku_code" value="{{ old('sku_code', $skuCode) }}">
                     <div class="form-group">
@@ -224,69 +213,73 @@
 
         // Hàm thêm biến thể mới
         function addVariant() {
-            variantCount++;
+            const variants = document.querySelectorAll('.variant-section');
+            const idx = variants.length;
             const variantHtml = `
-                                <div class="variant-section" id="variant-${variantCount}">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h6>Variant ${variantCount}</h6>
-                                        <span class="remove-variant" onclick="removeVariant(${variantCount})">
-                                            <i class="fas fa-trash-alt"></i> Remove
-                                        </span>
-                                    </div>
-                                    <div class="row">
-                                        <!-- Kích thước -->
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="variantSize-${variantCount}">Kích cỡ</label>
-                                                <select class="form-control" id="variantSize-${variantCount}" name="variants[${variantCount}][size_id]" required>
-                                                    <option value="">Select a size</option>
-                                                    ${Object.keys(sizes).map(id => `<option value="${id}">${sizes[id]}</option>`).join('')}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <!-- Màu sắc -->
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="variantColor-${variantCount}">Màu</label>
-                                                <select class="form-control" id="variantColor-${variantCount}" name="variants[${variantCount}][color_id]" required>
-                                                    <option value="">Select a color</option>
-                                                    ${Object.keys(colors).map(id => `<option value="${id}">${colors[id]}</option>`).join('')}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <!-- Giá -->
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="variantPrice-${variantCount}">Giá tiền (VND)</label>
-                                                <input type="number" class="form-control" id="variantPrice-${variantCount}" name="variants[${variantCount}][price]" placeholder="Enter price">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <!-- Số lượng tồn kho -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="variantStock-${variantCount}">Số lượng</label>
-                                                <input type="number" class="form-control" id="variantStock-${variantCount}" name="variants[${variantCount}][stock_quantity]" placeholder="Enter stock quantity">
-                                            </div>
-                                        </div>
-                                        <!-- Hình ảnh biến thể -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="variantImage-${variantCount}">Ảnh biến thể</label>
-                                                <input type="file" class="form-control-file" id="variantImage-${variantCount}" name="variants[${variantCount}][image]">
-                                                <img id="variantImagePreview-${variantCount}" class="image-preview" src="#" alt="Variant Image Preview">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
+        <div class="variant-section" id="variant-${idx}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6>Variant ${idx + 1}</h6>
+                <span class="remove-variant" onclick="removeVariant(${idx})">
+                    <i class="fas fa-trash-alt"></i> Remove
+                </span>
+            </div>
+            <div class="alert alert-danger py-1 px-2 mb-2 d-none" id="duplicateAlert-${idx}" style="font-size: 0.95em;">
+                Biến thể này đã bị trùng kích cỡ và màu sắc với biến thể khác!
+            </div>
+            <div class="row">
+                <!-- Kích thước -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="variantSize-${idx}">Kích cỡ</label>
+                        <select class="form-control" id="variantSize-${idx}" name="variants[${idx}][size_id]" required>
+                            <option value="">Select a size</option>
+                            ${Object.keys(sizes).map(id => `<option value="${id}">${sizes[id]}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <!-- Màu sắc -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="variantColor-${idx}">Màu</label>
+                        <select class="form-control" id="variantColor-${idx}" name="variants[${idx}][color_id]" required>
+                            <option value="">Select a color</option>
+                            ${Object.keys(colors).map(id => `<option value="${id}">${colors[id]}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <!-- Giá -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="variantPrice-${idx}">Giá tiền (VND)</label>
+                        <input type="number" class="form-control" id="variantPrice-${idx}" name="variants[${idx}][price]" placeholder="Enter price">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Số lượng tồn kho -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="variantStock-${idx}">Số lượng</label>
+                        <input type="number" class="form-control" id="variantStock-${idx}" name="variants[${idx}][stock_quantity]" placeholder="Enter stock quantity">
+                    </div>
+                </div>
+                <!-- Hình ảnh biến thể -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="variantImage-${idx}">Ảnh biến thể</label>
+                        <input type="file" class="form-control-file" id="variantImage-${idx}" name="variants[${idx}][image]">
+                        <img id="variantImagePreview-${idx}" class="image-preview" src="#" alt="Variant Image Preview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
             document.getElementById('variantsContainer').insertAdjacentHTML('beforeend', variantHtml);
 
             // Xem trước hình ảnh biến thể
-            document.getElementById(`variantImage-${variantCount}`).addEventListener('change', function (event) {
+            document.getElementById(`variantImage-${idx}`).addEventListener('change', function (event) {
                 const file = event.target.files[0];
-                const imagePreview = document.getElementById(`variantImagePreview-${variantCount}`);
+                const imagePreview = document.getElementById(`variantImagePreview-${idx}`);
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function (e) {
@@ -298,11 +291,82 @@
                     imagePreview.style.display = 'none';
                 }
             });
+
+            document.getElementById(`variantSize-${idx}`).addEventListener('change', checkDuplicateVariants);
+            document.getElementById(`variantColor-${idx}`).addEventListener('change', checkDuplicateVariants);
+
+            checkDuplicateVariants();
         }
 
         // Hàm xóa biến thể
-        function removeVariant(variantId) {
-            document.getElementById(`variant-${variantId}`).remove();
+        function removeVariant(idx) {
+            const variant = document.getElementById(`variant-${idx}`);
+            if (variant) {
+                variant.remove();
+                updateVariantIndexes();
+                checkDuplicateVariants();
+            }
+        }
+
+        // Cập nhật lại index, name, id cho các trường biến thể sau khi xóa
+        function updateVariantIndexes() {
+            const variants = document.querySelectorAll('.variant-section');
+            variants.forEach((variant, newIdx) => {
+                const oldIdx = variant.id.split('-')[1];
+                // Cập nhật id cho section
+                variant.id = `variant-${newIdx}`;
+                // Cập nhật tiêu đề
+                const h6 = variant.querySelector('h6');
+                if (h6) h6.textContent = `Variant ${newIdx + 1}`;
+                // Cập nhật nút xóa
+                const removeBtn = variant.querySelector('.remove-variant');
+                if (removeBtn) removeBtn.setAttribute('onclick', `removeVariant(${newIdx})`);
+                // Cập nhật các trường input/select
+                ['Size', 'Color', 'Price', 'Stock', 'Image', 'ImagePreview'].forEach(field => {
+                    const input = variant.querySelector(`#variant${field}-${oldIdx}`);
+                    if (input) {
+                        input.id = `variant${field}-${newIdx}`;
+                        // Cập nhật name cho input
+                        if (input.name) {
+                            input.name = input.name.replace(/\[\d+\]/, `[${newIdx}]`);
+                        }
+                    }
+                });
+                // Cập nhật alert
+                const alertDiv = variant.querySelector(`#duplicateAlert-${oldIdx}`);
+                if (alertDiv) alertDiv.id = `duplicateAlert-${newIdx}`;
+            });
+        }
+
+        // Hàm kiểm tra trùng biến thể
+        function checkDuplicateVariants() {
+            // Lấy tất cả biến thể hiện tại
+            const variants = document.querySelectorAll('.variant-section');
+            let pairs = [];
+            variants.forEach(function(variant) {
+                const id = variant.id.split('-')[1];
+                const size = document.getElementById(`variantSize-${id}`).value;
+                const color = document.getElementById(`variantColor-${id}`).value;
+                const alertDiv = document.getElementById(`duplicateAlert-${id}`);
+                // Ẩn cảnh báo trước
+                alertDiv.classList.add('d-none');
+                if (size && color) {
+                    pairs.push({size, color, id});
+                }
+            });
+
+            // Kiểm tra trùng lặp
+            pairs.forEach(function(current, idx) {
+                const isDuplicate = pairs.some((other, j) =>
+                    j !== idx && other.size === current.size && other.color === current.color
+                );
+                const alertDiv = document.getElementById(`duplicateAlert-${current.id}`);
+                if (isDuplicate) {
+                    alertDiv.classList.remove('d-none');
+                } else {
+                    alertDiv.classList.add('d-none');
+                }
+            });
         }
 
         // Xem trước hình ảnh chính
@@ -360,6 +424,30 @@
             });
             if (!valid) {
                 showValidateModal('Giá biến thể phải lớn hơn hoặc bằng 50% giá sản phẩm.');
+                e.preventDefault();
+                return false;
+            }
+
+            // Kiểm tra chênh lệch giá biến thể không quá 20%
+            const priceInputs = document.querySelectorAll('input[name^="variants"][name$="[price]"]');
+            let prices = [];
+            priceInputs.forEach(input => {
+                if (input.value) prices.push(parseFloat(input.value));
+            });
+            let validPriceDiff = true;
+            if (prices.length > 1) {
+                prices.forEach((price, i) => {
+                    prices.forEach((other, j) => {
+                        if (i !== j && other > 0) {
+                            if (price < other * 0.8 || price > other * 1.2) {
+                                validPriceDiff = false;
+                            }
+                        }
+                    });
+                });
+            }
+            if (!validPriceDiff) {
+                showValidateModal('Giá các biến thể không được chênh lệch quá 20% so với nhau.');
                 e.preventDefault();
                 return false;
             }

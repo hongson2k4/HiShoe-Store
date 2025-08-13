@@ -16,7 +16,9 @@ class User_ship_address extends Model
         'receive_address',
         'is_default'
     ];
-
+    /**
+     * Get the user that owns the shipping address.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

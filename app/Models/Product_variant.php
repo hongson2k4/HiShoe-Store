@@ -19,7 +19,13 @@ class Product_variant extends Model
         'stock_quantity',
         'image_url',
     ];
-    public $timestamp = false;
+    public $timestamps = true;
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
     public function size()
     {
@@ -33,6 +39,4 @@ class Product_variant extends Model
     {
         return $this->belongsTo(Products::class, 'product_id');
     }
-
-
 }

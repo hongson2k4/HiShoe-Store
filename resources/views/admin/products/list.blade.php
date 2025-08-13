@@ -47,7 +47,7 @@
                                                 ->pluck('category.name')
                                                 ->toArray();
                                         @endphp
-                                        {{ implode(', ', $categories) ?: 'N/A' }}
+                                        {{ implode(', ', $categories) ?: $product->category->name }}
                                     </td>
                                     <td>{{ $product->brand->name ?? 'N/A' }}</td>
                                     <td>

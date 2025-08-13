@@ -2,7 +2,7 @@
 @section('content')
 <div class="container">
     <h2>Tạo biến thể cho: {{ $product->name }}</h2>
-    <form action="{{ route('products.variant.store', $product_id) }}" method="POST">
+    <form action="{{ route('products.variant.store', $product_id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
             <label for="size_id">Kích thước</label>
@@ -27,6 +27,10 @@
         <div class="form-group">
             <label for="stock_quantity">Số lượng</label>
             <input type="text" name="stock_quantity" id="stock_quantity" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="image">Ảnh biến thể</label>
+            <input type="file" name="image" id="image" class="form-control-file" accept="image/*">
         </div>
         <button type="submit" class="btn btn-primary">Tạo mới</button>
     </form>

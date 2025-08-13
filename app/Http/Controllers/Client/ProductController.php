@@ -20,9 +20,9 @@ class ProductController extends Controller
         $query = Products::query();
 
         // Ẩn sản phẩm nếu danh mục hoặc nhãn hàng bị ẩn
-        $query->whereHas('category', function($q) {
+        $query->whereHas('category', function ($q) {
             $q->where('status', 0);
-        })->whereHas('brand', function($q) {
+        })->whereHas('brand', function ($q) {
             $q->where('status', 1);
         });
 
@@ -92,14 +92,14 @@ class ProductController extends Controller
             ->get();
 
         // Lấy danh sách ảnh biến thể
-        $variantImages = $variants->map(function($variant) {
+        $variantImages = $variants->map(function ($variant) {
             return [
                 'id' => $variant->id,
                 'size_id' => $variant->size_id,
                 'color_id' => $variant->color_id,
                 'image_url' => $variant->image_url,
             ];
-        })->filter(function($item) {
+        })->filter(function ($item) {
             return !empty($item['image_url']);
         })->values();
 
@@ -161,11 +161,11 @@ class ProductController extends Controller
     {
         $category = Category::findOrFail($category_id);
         $products = Products::where('category_id', $category_id)
-            ->whereHas('category', function($q) {
+            ->whereHas('category', function ($q) {
                 $q->where('status', 0);
             })
-            ->whereHas('brand', function($q) {
-                $q->where('status', 0);
+            ->whereHas('brand', function ($q) {
+                $q->where('status', 1);
             })
             ->get();
 
@@ -176,11 +176,11 @@ class ProductController extends Controller
     {
         $brand = Brand::findOrFail($brand_id);
         $products = Products::where('brand_id', $brand_id)
-            ->whereHas('category', function($q) {
+            ->whereHas('category', function ($q) {
                 $q->where('status', 0);
             })
-            ->whereHas('brand', function($q) {
-                $q->where('status', 0);
+            ->whereHas('brand', function ($q) {
+                $q->where('status', 1);
             })
             ->get();
 

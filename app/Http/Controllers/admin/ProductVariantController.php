@@ -32,7 +32,7 @@ class ProductVariantController extends Controller
         $product = Products::findOrFail($product_id);
         $sizes = Size::all();
         $colors = Color::all();
-        return view('admin.products_variant.create', compact('product_id', 'sizes', 'colors','product'));
+        return view('admin.products_variant.create', compact('product_id', 'sizes', 'colors', 'product'));
     }
 
     /**
@@ -45,7 +45,7 @@ class ProductVariantController extends Controller
             'color_id' => 'required|exists:colors,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable',
         ], [
             'size_id.required' => 'Vui lòng chọn kích thước!',
             'size_id.exists' => 'Kích thước không hợp lệ!',
@@ -107,15 +107,12 @@ class ProductVariantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $product_id, string $id )
+    public function update(Request $request, string $product_id, string $id)
     {
         $request->validate([
-            'price' => 'required|numeric',
             'stock_quantity' => 'required|integer',
             'image_url' => 'nullable|image|max:2048',
         ], [
-            'price.required' => 'Vui lòng nhập giá!',
-            'price.numeric' => 'Giá phải là số!',
             'stock_quantity.required' => 'Vui lòng nhập số lượng!',
             'stock_quantity.integer' => 'Số lượng phải là số nguyên!',
             'image_url.image' => 'Tệp phải là hình ảnh!',
@@ -129,7 +126,6 @@ class ProductVariantController extends Controller
             $product_variant->image_url = $imagePath;
         }
 
-        $product_variant->price = $request->price;
         $product_variant->stock_quantity = $request->stock_quantity;
         $product_variant->save();
 
@@ -146,7 +142,7 @@ class ProductVariantController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id, $product_id)
+    public function destroy($product_id, $id)
     {
         $product_variant = Product_variant::findOrFail($id);
 

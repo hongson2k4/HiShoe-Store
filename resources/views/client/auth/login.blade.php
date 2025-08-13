@@ -195,6 +195,11 @@
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Đăng nhập</button>
                 </div>
+                <div class="form-group">
+                    <a href="{{ route('login.google') }}" class="btn btn-danger" style="width:100%">
+                        <i class="fa fa-google"></i> Đăng nhập bằng Google
+                    </a>
+                </div>
                 <div class="text-links">
                     <a href="{{ route('password.request') }}">Quên mật khẩu?</a>
                 </div>

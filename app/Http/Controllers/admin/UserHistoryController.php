@@ -16,8 +16,8 @@ class UserHistoryController extends Controller
             ->with('changed_by') // Load user thực hiện thay đổi
             ->orderBy('updated_at', 'desc')
             ->get();
-    
+
         return view('admin.users.history', compact('user', 'history'));
     }
-    
+
 }

@@ -70,7 +70,7 @@ return [
         ],
         'admin' => [
             'driver' => 'session',
-            'provider' => 'admins', // Sử dụng provider riêng
+            'provider' => 'admins',
         ],
         // 'users' => [
         //     'driver' => 'database',

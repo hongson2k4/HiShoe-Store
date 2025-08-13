@@ -18,21 +18,29 @@ HiShoe-Store - Trang chủ
 
     <div class="row">
         @foreach($products as $product)
-        <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="box position-relative" style="height: 380px">
-                <button class="btn btn-none like-btn {{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? 'liked' : '' }}" 
-                    data-id="{{ $product->id }}">
-                    <span class="heart">{{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? '❤️' : '🤍' }}</span> 
-                    <span class="text">{{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? 'Đã thích' : 'Thích' }}</span>
-                </button>
-    
-                <a href="{{ route('detail', $product->id) }}">
-                    <div class="img-box">
-                        <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}" alt="{{ $product->name }}">
+        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="card product-card h-100 shadow-sm border-0 rounded-4 position-relative">
+                <div class="position-absolute top-0 end-0 m-2 z-2">
+                    <button class="btn btn-light like-btn p-2 rounded-circle {{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? 'liked' : '' }}"
+                        data-id="{{ $product->id }}" style="box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+                        <span class="heart" style="font-size: 1.2rem;">{{ auth()->guard('web')->check() && $product->likes()->where('product_id', $product->id)->where('user_id', auth()->id())->exists() ? '❤️' : '🤍' }}</span>
+                    </button>
+                </div>
+                <a href="{{ route('detail', $product->id) }}" class="text-decoration-none">
+                    <div class="ratio ratio-1x1 overflow-hidden rounded-4">
+                        <img src="{{ $product->image_url ? Storage::url($product->image_url) : asset('images/default-product.jpg') }}"
+                            alt="{{ $product->name }}"
+                            class="card-img-top object-fit-cover transition"
+                            style="transition: transform .3s; object-fit: cover;">
                     </div>
-                    <div class="detail-box">
-                        <a class="card-title" href="{{ route('detail', $product->id) }}">{{ $product->name }}</a>
-                        <h6>Giá: <span>{{ number_format($product->price) }} VND</span></h6>
+                    <div class="card-body text-center">
+                        <h6 class="card-title fw-bold text-dark mb-2" style="min-height:40px;">{{ $product->name }}</h6>
+                        <div class="mb-2">
+                            <span class="badge bg-success bg-gradient text-white px-3 py-2 fs-6 shadow-sm">
+                                {{ number_format($product->price) }} VND
+                            </span>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm mt-2 px-4">Xem chi tiết</button>
                     </div>
                 </a>
             </div>
@@ -54,11 +62,11 @@ HiShoe-Store - Trang chủ
                         return;
                     }
 
-                    fetch(`/products/${productId}/like`, {  
+                    fetch(`/products/${productId}/like`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}"  
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
                         }
                     })
                     .then(response => {

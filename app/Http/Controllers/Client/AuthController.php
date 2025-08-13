@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -28,7 +29,7 @@ class AuthController extends Controller
         if ($request->isMethod('post')) {
             $validate = $request->validate([
                 'password' => [
-                    'required', 
+                    'required',
                     'regex:/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/'
                 ],
                 'password_confirmation' => 'required|same:password',
@@ -89,11 +90,11 @@ class AuthController extends Controller
             'username.required' => 'Vui lòng nhập tên đăng nhập hoặc email.',
             'password.required' => 'Vui lòng nhập mật khẩu.',
         ]);
-    
+
         $credentials = filter_var($validate['username'], FILTER_VALIDATE_EMAIL)
             ? ['email' => $validate['username'], 'password' => $validate['password']]
             : ['username' => $validate['username'], 'password' => $validate['password']];
-    
+
         if (Auth::guard('web')->attempt($credentials)) {
             $user = Auth::guard('web')->user();
             if ($user->status == 1) {
@@ -106,7 +107,7 @@ class AuthController extends Controller
             }
             return redirect()->route('home');
         }
-    
+
         session()->flash('error', 'Sai thông tin đăng nhập!');
         return redirect()->route('loginForm');
     }
@@ -146,23 +147,23 @@ class AuthController extends Controller
         ], [
             'password.regex' => 'Mật khẩu phải từ 8-20 ký tự, không có ký tự đặc biệt, ít nhất 1 chữ in hoa và 1 số.',
         ]);
-    
+
         $identifier = $request->input('email_or_phone');
         $otp = $request->input('otp');
-    
+
         $user = filter_var($identifier, FILTER_VALIDATE_EMAIL)
             ? User::where('email', $identifier)->first()
             : User::where('phone_number', $identifier)->first();
-    
+
         if (!$user || $user->otp != $otp) {
             return back()->withErrors(['otp' => 'Mã OTP không hợp lệ.']);
         }
-    
+
         $user->update([
             'password' => bcrypt($request->input('password')),
             'otp' => null, // Xóa OTP sau khi sử dụng
         ]);
-    
+
         return redirect()->route('loginForm')->with('status', 'Đặt lại mật khẩu thành công!');
     }
     protected function validateEmail(Request $request)
@@ -206,7 +207,7 @@ class AuthController extends Controller
 
         $user = User::find(Auth::guard('web')->id());
 
-        if (!Hash::check($validate['old_password'], $user->password)) {
+        if (!Hash::check($validate['old_password'], (string) $user->password)) {
             return redirect()->back()->withErrors(['error' => 'Sai mật khẩu cũ']);
         }
 
@@ -260,20 +261,43 @@ class AuthController extends Controller
                 $otp = rand(100000, 999999); // Tạo mã OTP
                 $user->update(['otp' => $otp]); // Lưu OTP vào cơ sở dữ liệu
 
-                // Gửi OTP qua Twilio
-                $twilio = new \Twilio\Rest\Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
-                $twilio->messages->create(
-                    $identifier,
-                    [
-                        'from' => env('TWILIO_PHONE_NUMBER'),
-                        'body' => "Mã OTP đặt lại mật khẩu của bạn là: $otp",
-                    ]
-                );
+                // Không gửi OTP qua Twilio nữa
 
-                return back()->with('status', 'Mã OTP đã được gửi đến số điện thoại của bạn.');
+                return back()->with('status', 'Mã OTP đã được tạo. Vui lòng kiểm tra thông báo hoặc liên hệ hỗ trợ để nhận mã OTP.');
             } catch (\Exception $e) {
-                return back()->withErrors(['identifier' => 'Không thể gửi OTP. Vui lòng thử lại sau.']);
+                return back()->withErrors(['identifier' => 'Không thể tạo OTP. Vui lòng thử lại sau.']);
             }
+        }
+    }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if (!$user) {
+                $user = User::create([
+                    'username' => explode('@', $googleUser->getEmail())[0],
+                    'full_name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'password' => bcrypt(uniqid()), // random password
+                    'role' => 0,
+                    'status' => 0,
+                ]);
+            }
+
+            Auth::guard('web')->login($user);
+
+            return redirect()->route('home');
+        } catch (\Exception $e) {
+            return redirect()->route('loginForm')->with('error', 'Đăng nhập Google thất bại!');
         }
     }
 }

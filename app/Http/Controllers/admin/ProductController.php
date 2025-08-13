@@ -4,8 +4,6 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Products;
-use App\Models\Category;
-use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\storage;
@@ -16,7 +14,8 @@ class ProductController extends Controller
 {
     private $view;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->view = [];
     }
     public function index(Request $request)
@@ -26,32 +25,38 @@ class ProductController extends Controller
         $brands = DB::table('brands')->get();
         $categories = DB::table('categories')->get();
         $products = Products::query()
-        ->when($search, function ($query) use ($search) {
-            return $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%")
-                      ->orWhere('price', 'like', "%{$search}%");
-            });
-        })
-        ->with('category')
-        ->with('brand')
-        ->get();
+            ->when($search, function ($query) use ($search) {
+                return $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('price', 'like', "%{$search}%");
+                });
+            })
+            ->with('category')
+            ->with('brand')
+            ->get();
+
+        // Đồng bộ số lượng và trạng thái cho từng sản phẩm
+        foreach ($products as $product) {
+            $product->syncStockQuantity();
+        }
+
         return view("admin.products.list", compact("products"));
     }
 
     public function search(Request $request)
     {
         $search = $request->search;
-        $products = Products::where(function($query) use ($search){
-            $query->where('name','like',"%$search%")
-            ->orWhere('description','like',"%$search%")
-            ->orWhere('price','like',"%$search%");
+        $products = Products::where(function ($query) use ($search) {
+            $query->where('name', 'like', "%$search%")
+                ->orWhere('description', 'like', "%$search%")
+                ->orWhere('price', 'like', "%$search%");
         })
-        ->orWhereHas('brands',function($query) use ($search){
-            $query->where('brand_id','like',"%$search%");
-        })
-        ->get();
-        return view("admin.products.list", compact("products","search"));
+            ->orWhereHas('brands', function ($query) use ($search) {
+                $query->where('brand_id', 'like', "%$search%");
+            })
+            ->get();
+        return view("admin.products.list", compact("products", "search"));
     }
 
     /**
@@ -74,7 +79,7 @@ class ProductController extends Controller
         try {
             $validate = $request->validate([
                 'name' => 'required|string|max:255',
-                'price' => 'required|numeric|min:0',
+                // 'price' => 'required|numeric|min:0', // XÓA DÒNG NÀY
                 'category_id' => 'required|exists:categories,id',
                 'brand_id' => 'required|exists:brands,id',
                 'image_url' => 'nullable',
@@ -88,7 +93,7 @@ class ProductController extends Controller
                 'variants.*.color_id' => 'required|exists:colors,id',
                 'variants.*.price' => 'required|numeric|min:0',
                 'variants.*.stock_quantity' => 'required|integer|min:0',
-                'variants.*.image' => 'nullable|image',
+                'variants.*.image' => 'nullable',
             ], [
                 'name.required' => 'Tên sản phẩm là bắt buộc.',
                 'price.required' => 'Giá sản phẩm là bắt buộc.',
@@ -118,12 +123,41 @@ class ProductController extends Controller
                 return redirect()->back()->withErrors(['Phải có ít nhất một biến thể.'])->withInput();
             }
 
-            // Custom validate: giá biến thể >= 50% giá sản phẩm
-            $productPrice = $validate['price'];
+            // ====== BẮT ĐẦU: Kiểm tra chênh lệch giá biến thể ======
+            $prices = [];
             foreach ($request->variants as $variant) {
-                if (!isset($variant['price']) || $variant['price'] < 0.5 * $productPrice) {
-                    return redirect()->back()->withErrors(['Giá biến thể phải lớn hơn hoặc bằng 50% giá sản phẩm.'])->withInput();
+                if (isset($variant['price'])) {
+                    $prices[] = floatval($variant['price']);
                 }
+            }
+            if (count($prices) > 1) {
+                foreach ($prices as $i => $price) {
+                    foreach ($prices as $j => $otherPrice) {
+                        if ($i !== $j && $otherPrice > 0) {
+                            $min = $otherPrice * 0.8;
+                            $max = $otherPrice * 1.2;
+                            if ($price < $min || $price > $max) {
+                                return redirect()->back()
+                                    ->withErrors(['Giá các biến thể không được chênh lệch quá 20% so với nhau.'])
+                                    ->withInput();
+                            }
+                        }
+                    }
+                }
+            }
+            // ====== KẾT THÚC: Kiểm tra chênh lệch giá biến thể ======
+
+            // Lấy giá nhỏ nhất của các biến thể
+            $minVariantPrice = null;
+            foreach ($request->variants as $variant) {
+                if (isset($variant['price'])) {
+                    if ($minVariantPrice === null || $variant['price'] < $minVariantPrice) {
+                        $minVariantPrice = $variant['price'];
+                    }
+                }
+            }
+            if ($minVariantPrice === null) {
+                return redirect()->back()->withErrors(['Phải nhập giá cho ít nhất một biến thể.'])->withInput();
             }
 
             $imagePath = null;
@@ -134,12 +168,12 @@ class ProductController extends Controller
             // Tính tổng số lượng từ biến thể
             $totalStock = 0;
             foreach ($request->variants as $variant) {
-                $totalStock += (int)($variant['stock_quantity'] ?? 0);
+                $totalStock += (int) ($variant['stock_quantity'] ?? 0);
             }
 
             $product = Products::create([
                 'name' => $validate['name'],
-                'price' => $validate['price'],
+                'price' => $minVariantPrice, // Lưu giá nhỏ nhất của biến thể
                 'brand_id' => $validate['brand_id'],
                 'category_id' => $validate['category_id'],
                 'sku_code' => $validate['sku_code'],
@@ -199,7 +233,7 @@ class ProductController extends Controller
         $categories = DB::table('categories')->get();
         $product = Products::find($id);
         // dd($product);
-        return view('admin.products.edit', compact('product','categories','brands'));
+        return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
 
     /**
@@ -208,13 +242,13 @@ class ProductController extends Controller
     public function updateProduct(Request $request, string $id)
     {
         $validate = $request->validate([
-            'name'=> 'required',
+            'name' => 'required',
             'description' => 'required',
-            'price'=> 'required',
-            'stock_quantity'=>'required',
-            'category_id'=>'required',
-            'brand_id'=>'required',
-            'image_url'=>'nullable',
+            'price' => 'required',
+            'stock_quantity' => 'required',
+            'category_id' => 'required',
+            'brand_id' => 'required',
+            'image_url' => 'nullable',
         ], [
             'name.required' => 'Tên sản phẩm là bắt buộc.',
             'description.required' => 'Mô tả sản phẩm là bắt buộc.',
@@ -226,23 +260,23 @@ class ProductController extends Controller
 
         $product = Products::find($id);
 
-        if($request->hasFile('image_url')){
+        if ($request->hasFile('image_url')) {
             if ($product->image_url && Storage::disk('public')->exists($product->image_url)) {
                 Storage::disk('public')->delete($product->image_url);
             }
-            $part = $request->file('image_url')->store('uploads/image_url','public');
-        }else{
+            $part = $request->file('image_url')->store('uploads/image_url', 'public');
+        } else {
             $part = $product->image_url;
         }
 
         $product->update([
-            'name'=>$validate['name'],
-            'description'=>$validate['description'],
-            'price'=>$validate['price'],
-            'stock_quantity'=>$validate['stock_quantity'],
-            'category_id'=>$validate['category_id'],
-            'brand_id'=>$validate['brand_id'],
-            'image_url'=>$part,
+            'name' => $validate['name'],
+            'description' => $validate['description'],
+            'price' => $validate['price'],
+            'stock_quantity' => $validate['stock_quantity'],
+            'category_id' => $validate['category_id'],
+            'brand_id' => $validate['brand_id'],
+            'image_url' => $part,
         ]);
         return redirect()->route('products.list')->with('success', 'Cập nhật sản phẩm thành công!');
     }
@@ -252,8 +286,12 @@ class ProductController extends Controller
      */
     public function destroyProduct($id)
     {
-        Products::findOrFail($id)->delete();
-        return redirect()->route('products.list');
+        $product = Products::findOrFail($id);
+        if ($product->stock_quantity == 0) {
+            $product->delete(); // Soft delete
+            return redirect()->route('products.list')->with('success', 'Sản phẩm đã được ẩn vì hết hàng!');
+        }
+        return redirect()->route('products.list')->with('error', 'Chỉ có thể ẩn sản phẩm khi số lượng tồn kho là 0!');
     }
 
     /**
@@ -262,8 +300,11 @@ class ProductController extends Controller
     public function hide($id)
     {
         $product = Products::findOrFail($id);
-        $product->delete(); // Soft delete
-        return redirect()->route('products.list')->with('success', 'Sản phẩm đã được ẩn!');
+        if ($product->stock_quantity == 0) {
+            $product->delete(); // Soft delete
+            return redirect()->route('products.list')->with('success', 'Sản phẩm đã được ẩn vì hết hàng!');
+        }
+        return redirect()->route('products.list')->with('error', 'Chỉ có thể ẩn sản phẩm khi số lượng tồn kho là 0!');
     }
 
     /**

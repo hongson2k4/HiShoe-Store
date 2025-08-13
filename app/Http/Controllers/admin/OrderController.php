@@ -8,16 +8,6 @@ use App\Http\Controllers\Controller;
 
 class OrderController extends Controller
 {
-    // public function index(Request $request)
-    // {
-    //     $orders = Order::with(['user', 'orderDetails']) // eager load relationships
-    //         ->when($request->filled('status'), function ($query) use ($request) {
-    //             $query->where('status', $request->status);
-    //         })
-    //         ->paginate(10); // Use paginate instead of get()
-    //     return view('admin.orders.index', compact('orders'));
-    // }
-
     //Cập nhập index cho trạng thái hủy đơn hàng
     public function index(Request $request)
     {

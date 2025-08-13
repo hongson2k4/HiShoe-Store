@@ -23,6 +23,7 @@ class Admin extends Authenticatable
         'password',
         'full_name',
         'email',
+        'email_verified_at',
         'avatar',
         'phone_number',
         'address',
@@ -30,6 +31,7 @@ class Admin extends Authenticatable
         'status',
         'ban_reason',
         'banned_at',
+        'google_id',
     ];
 
     /**
@@ -54,4 +56,12 @@ class Admin extends Authenticatable
 
     public $timestamp = false;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($admin) {
+            $admin->role = 1;
+        });
+    }
 }

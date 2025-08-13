@@ -7,36 +7,27 @@
         @method('PUT')
         <div class="form-group">
             <label for="size_id">Kích thước</label>
-            <select name="size_id" id="size_id" class="form-control">
+            <select name="size_id" id="size_id" class="form-control" disabled>
                 @foreach($sizes as $size)
                     <option value="{{ $size->id }}" {{ $size->id == $product_variant->size_id ? 'selected' : '' }}>
                         {{ $size->name }}
                     </option>
                 @endforeach
             </select>
-            @error('size_id')
-                <small class="text-danger">{{ $message }}</small>
-            @enderror
         </div>
         <div class="form-group">
             <label for="color_id">Màu sắc</label>
-            <select name="color_id" id="color_id" class="form-control">
+            <select name="color_id" id="color_id" class="form-control" disabled>
                 @foreach($colors as $color)
                     <option value="{{ $color->id }}" {{ $color->id == $product_variant->color_id ? 'selected' : '' }}>
                         {{ $color->name }}
                     </option>
                 @endforeach
             </select>
-            @error('color_id')
-                <small class="text-danger">{{ $message }}</small>
-            @enderror
         </div>
         <div class="form-group">
             <label for="price">Giá</label>
-            <input type="text" name="price" id="price" class="form-control" value="{{ old('price', $product_variant->price) }}">
-            @error('price')
-                <small class="text-danger">{{ $message }}</small>
-            @enderror
+            <input type="text" name="price" id="price" class="form-control" value="{{ old('price', $product_variant->price) }}" readonly>
         </div>
         <div class="form-group">
             <label for="stock_quantity">Số lượng</label>

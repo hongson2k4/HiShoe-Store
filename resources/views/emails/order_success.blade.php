@@ -75,27 +75,29 @@
     </style>
 
     <div class="header">
-        <img src="/api/placeholder/200/60" alt="Logo Công ty">
+        <img src="{{ asset('logo.png') }}" alt="Logo Công ty">
         <h1>Xác Nhận Đơn Hàng</h1>
     </div>
     
     <div class="content">
-        <p>Kính gửi <strong>[Tên khách hàng]</strong>,</p>
+        <p>Kính gửi <strong>{{ $order->user_receiver }}</strong>,</p>
         
         <p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đã được xác nhận và đang được xử lý.</p>
         
         <div class="order-info">
             <h2>Thông tin đơn hàng</h2>
-            <p><strong>Mã đơn hàng:</strong> DH-2025051801</p>
-            <p><strong>Ngày đặt hàng:</strong> 18/05/2025</p>
-            <p><strong>Phương thức thanh toán:</strong> [Phương thức thanh toán]</p>
+            <p><strong>Mã đơn hàng:</strong> {{ $order->order_check }}</p>
+            <p><strong>Ngày đặt hàng:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
+            <p><strong>Phương thức thanh toán:</strong> 
+                {{ $payment->payment_method == 'cod' ? 'Thanh toán khi nhận hàng (COD)' : 'VNPAY' }}
+            </p>
         </div>
         
         <div class="customer-info">
             <h2>Thông tin người nhận</h2>
-            <p><strong>Họ và tên:</strong> [Tên người nhận]</p>
-            <p><strong>Địa chỉ:</strong> [Địa chỉ người nhận]</p>
-            <p><strong>Số điện thoại:</strong> [Số điện thoại người nhận]</p>
+            <p><strong>Họ và tên:</strong> {{ $order->user_receiver }}</p>
+            <p><strong>Địa chỉ:</strong> {{ $order->shipping_address }}</p>
+            <p><strong>Số điện thoại:</strong> {{ $order->phone_receiver }}</p>
         </div>
         
         <h2>Chi tiết đơn hàng</h2>
@@ -111,42 +113,36 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>[Tên sản phẩm 1]</td>
-                    <td>[Màu sắc]</td>
-                    <td>[Kích thước]</td>
-                    <td>[Số lượng]</td>
-                    <td>[Đơn giá]</td>
-                    <td>[Thành tiền]</td>
-                </tr>
-                <tr>
-                    <td>[Tên sản phẩm 2]</td>
-                    <td>[Màu sắc]</td>
-                    <td>[Kích thước]</td>
-                    <td>[Số lượng]</td>
-                    <td>[Đơn giá]</td>
-                    <td>[Thành tiền]</td>
-                </tr>
+                @foreach($cartItems as $item)
+                    <tr>
+                        <td>{{ $item->productVariant->product->name ?? '' }}</td>
+                        <td>{{ $item->productVariant->color->name ?? '' }}</td>
+                        <td>{{ $item->productVariant->size->name ?? '' }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>{{ number_format($item->productVariant->price) }} VNĐ</td>
+                        <td>{{ number_format($item->productVariant->price * $item->quantity) }} VNĐ</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
         
         <div class="total">
-            <p>Tổng tiền hàng: [Tổng tiền hàng] VNĐ</p>
-            <p>Phí vận chuyển: [Phí vận chuyển] VNĐ</p>
-            <p>Tổng thanh toán: [Tổng thanh toán] VNĐ</p>
+            <p>Tổng tiền hàng: {{ number_format($cartItems->sum(fn($i) => $i->productVariant->price * $i->quantity)) }} VNĐ</p>
+            <p>Phí vận chuyển: 0 VNĐ</p>
+            <p>Tổng thanh toán: {{ number_format($order->total_price) }} VNĐ</p>
         </div>
         
         <div class="thank-you">
             <p>Cảm ơn bạn đã mua sắm cùng chúng tôi!</p>
         </div>
         
-        <a href="#" class="cta-button">Theo dõi đơn hàng</a>
+        <a href="{{ url('/') }}" class="cta-button">Theo dõi đơn hàng</a>
         
-        <p>Nếu bạn có bất kỳ câu hỏi nào về đơn hàng, vui lòng liên hệ với chúng tôi qua email [email@congty.com] hoặc số điện thoại [số điện thoại hỗ trợ].</p>
+        <p>Nếu bạn có bất kỳ câu hỏi nào về đơn hàng, vui lòng liên hệ với chúng tôi qua email {{ config('mail.from.address') }} hoặc số điện thoại [số điện thoại hỗ trợ].</p>
     </div>
     
     <div class="footer">
         <p>[Tên công ty] | [Địa chỉ công ty]</p>
-        <p>[Số điện thoại] | [Email] | [Website]</p>
-        <p>&copy; 2025 [Tên công ty]. Tất cả các quyền được bảo lưu.</p>
+        <p>[Số điện thoại] | {{ config('mail.from.address') }} | [Website]</p>
+        <p>&copy; {{ date('Y') }} [Tên công ty]. Tất cả các quyền được bảo lưu.</p>
     </div>

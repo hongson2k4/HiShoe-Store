@@ -27,8 +27,8 @@ HiShoe Store là dự án website bán giày thể thao, xây dựng bằng Lara
 
 1. Clone source code:
     ```sh
-    git clone https://github.com/datahihi1/HiShoe.git
-    cd HiShoe
+    git clone https://github.com/hongson2k4/HiShoe-Store.git
+    cd HiShoe-Store
     ```
 
 2. Cài đặt các package PHP:
@@ -36,30 +36,24 @@ HiShoe Store là dự án website bán giày thể thao, xây dựng bằng Lara
     composer install
     ```
 
-3. Cài đặt các package JS (nếu có):
-    ```sh
-    npm install
-    ```
-
-4. Tạo file `.env` và cấu hình database:
+3. Tạo file `.env` và cấu hình database:
     ```sh
     cp .env.example .env
     # Chỉnh sửa thông tin DB trong .env
+    # Cấu hình thanh toán vnpay (thanh toán online)
+    # Cấu hình mật khẩu ứng dụng cho gmail
     ```
+
+4. Import tệp sql vào MySQL database được cấu hình trong .env
 
 5. Generate key:
     ```sh
     php artisan key:generate
     ```
 
-6. Chạy migration:
-    ```sh
-    php artisan migrate
-    ```
-
-7. Khởi động server:
+6. Khởi động server:
     ```sh
     php artisan serve
     ```
 
-8. Truy cập website tại [http://localhost:8000](http://localhost:8000)
+7. Truy cập website tại [http://localhost:8000](http://localhost:8000)

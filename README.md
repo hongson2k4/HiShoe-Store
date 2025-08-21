@@ -42,6 +42,7 @@ HiShoe Store là dự án website bán giày thể thao, xây dựng bằng Lara
     # Chỉnh sửa thông tin DB trong .env
     # Cấu hình thanh toán vnpay (thanh toán online)
     # Cấu hình mật khẩu ứng dụng cho gmail
+    # Cấu hình auth đăng nhập google
     ```
 
 4. Import tệp sql vào MySQL database được cấu hình trong .env

@@ -258,10 +258,8 @@ class AuthController extends Controller
             }
 
             try {
-                $otp = rand(100000, 999999); // Tạo mã OTP
-                $user->update(['otp' => $otp]); // Lưu OTP vào cơ sở dữ liệu
-
-                // Không gửi OTP qua Twilio nữa
+                $otp = rand(100000, 999999);
+                $user->update(['otp' => $otp]);
 
                 return back()->with('status', 'Mã OTP đã được tạo. Vui lòng kiểm tra thông báo hoặc liên hệ hỗ trợ để nhận mã OTP.');
             } catch (\Exception $e) {
@@ -278,7 +276,10 @@ class AuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            // Use a typed provider variable so static analyzers/IDEs know about stateless()
+            /** @var \Laravel\Socialite\Two\AbstractProvider $provider */
+            $provider = Socialite::driver('google');
+            $googleUser = $provider->stateless()->user();
 
             $user = User::where('email', $googleUser->getEmail())->first();
 

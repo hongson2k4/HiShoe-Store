@@ -58,3 +58,5 @@ HiShoe Store là dự án website bán giày thể thao, xây dựng bằng Lara
     ```
 
 7. Truy cập website tại [http://localhost:8000](http://localhost:8000)
+
+Dự án đang được thử nghiệm tại https://hishoe.datahihi1.id.vn
